@@ -1,0 +1,50 @@
+.back-link {
+  display: inline-block;
+  margin-bottom: var(--s-3);
+  font-size: var(--t-sm);
+  color: var(--muted);
+}
+.back-link:hover { color: var(--ink); text-decoration: none; }
+
+.detail-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  margin-bottom: var(--s-4);
+}
+.detail-head h1 { font-size: var(--t-h2); }
+.detail-head > :last-child { margin-left: auto; flex: none; }
+
+.section-head {
+  margin: var(--s-6) 0 var(--s-3);
+  font-size: var(--t-h3);
+}
+
+/* --- day rows --------------------------------------------------------- */
+/* A table would wrap badly on a phone, so each day is a flex row that keeps
+   the number and status pinned while the middle column shrinks. */
+.day-list { margin-top: var(--s-3); }
+
+.day-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+.day-row:last-child { border-bottom: 0; }
+
+.day-num {
+  width: 26px;
+  flex: none;
+  font-weight: 700;
+  color: var(--muted);
+  font-size: var(--t-sm);
+}
+.day-when { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.day-amount { font-weight: 600; font-size: var(--t-sm); flex: none; }
+
+@media (max-width: 520px) {
+  .day-row { flex-wrap: wrap; }
+  .day-when { flex-basis: 55%; }
+}

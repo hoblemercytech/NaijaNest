@@ -1,0 +1,79 @@
+/* =====================================================================
+   NaijaNest design tokens
+   Green carries trust. Gold is reserved for money and primary action —
+   if it appears anywhere else, it stops meaning anything.
+   ===================================================================== */
+
+:root {
+  /* --- brand ------------------------------------------------------- */
+  --ink:        #0A1F16;   /* deep green-black, used for body copy */
+  --green-900:  #072A1E;
+  --green-800:  #0B3D2C;   /* primary surface */
+  --green-600:  #12694A;
+  --green-400:  #3E9873;
+  --green-100:  #E1EFE8;
+  --green-050:  #F1F7F4;
+
+  --gold:       #FAB500;
+  --gold-deep:  #8F6200;   /* darkened for text contrast on light surfaces */
+  --gold-050:   #FFF6E0;
+
+  /* --- neutrals ---------------------------------------------------- */
+  --paper:      #F5F7F5;   /* app background */
+  --surface:    #FFFFFF;
+  --line:       #E2E7E3;
+  --line-strong:#CBD4CD;
+  --muted:      #5D6B63;
+  --muted-soft: #869089;
+
+  /* --- status ------------------------------------------------------ */
+  --ok:         #17784F;
+  --ok-bg:      #E4F2EA;
+  --warn:       #A6650B;
+  --warn-bg:    #FBF0DC;
+  --danger:     #A32B22;
+  --danger-bg:  #FAE7E4;
+  --neutral:    #5B6B63;
+  --neutral-bg: #ECEFEC;
+  --future:     #7C8A82;
+  --future-bg:  #F2F4F2;
+
+  /* --- type -------------------------------------------------------- */
+  --font-display: 'Sora', system-ui, sans-serif;
+  --font-body: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+
+  --t-display: 2.25rem;
+  --t-h1:      1.625rem;
+  --t-h2:      1.25rem;
+  --t-h3:      1.0625rem;
+  --t-body:    0.9375rem;
+  --t-sm:      0.8125rem;
+  --t-xs:      0.75rem;
+
+  /* --- space ------------------------------------------------------- */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 20px; --s-6: 24px; --s-8: 32px; --s-10: 40px; --s-12: 56px;
+
+  /* --- form -------------------------------------------------------- */
+  /* Radius encodes hierarchy: bigger surface, softer corner. */
+  --r-chip:  8px;
+  --r-input: 10px;
+  --r-tile:  12px;
+  --r-panel: 20px;
+  --r-full:  999px;
+
+  --shadow-tile:  0 1px 2px rgba(10, 31, 22, 0.04);
+  --shadow-panel: 0 12px 28px -14px rgba(7, 42, 30, 0.45);
+  --shadow-pop:   0 20px 48px -20px rgba(7, 42, 30, 0.35);
+
+  --tap: 44px;              /* minimum touch target */
+  --nav-h: 62px;            /* mobile bottom bar */
+  --sidebar-w: 244px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

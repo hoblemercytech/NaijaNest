@@ -1,0 +1,57 @@
+.auth {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-5) var(--s-4);
+  /* A quiet green field so the white card reads as the focus. */
+  background:
+    radial-gradient(1100px 460px at 50% -12%, var(--green-100), transparent 65%),
+    var(--paper);
+}
+
+.auth-panel {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+  padding: var(--s-6) var(--s-5) var(--s-5);
+  box-shadow: var(--shadow-tile);
+}
+
+.auth-brand { display: inline-block; margin-bottom: var(--s-5); }
+.auth-brand:hover { text-decoration: none; }
+
+.auth-panel h1 { font-size: var(--t-h1); }
+.auth-panel > p { margin: var(--s-2) 0 var(--s-5); font-size: var(--t-sm); }
+
+.auth-alert {
+  padding: var(--s-3) var(--s-4);
+  margin-bottom: var(--s-4);
+  border-radius: var(--r-input);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: var(--t-sm);
+  font-weight: 500;
+}
+
+.auth-foot {
+  margin-top: var(--s-5);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+  font-size: var(--t-sm);
+  color: var(--muted);
+  text-align: center;
+}
+
+.avatar-picker {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  margin-bottom: var(--s-5);
+}
+
+@media (min-width: 620px) {
+  .auth-panel { padding: var(--s-8) var(--s-6) var(--s-6); }
+}
