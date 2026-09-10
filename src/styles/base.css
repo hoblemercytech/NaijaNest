@@ -6,7 +6,13 @@ html, body, #root { height: 100%; }
 
 body {
   margin: 0;
-  background: var(--paper);
+  /* A tinted field rather than a flat fill, so white cards sit *on* something
+     instead of dissolving into the page. */
+  background:
+    radial-gradient(1200px 700px at 85% -8%, rgba(62, 152, 115, 0.14), transparent 62%),
+    radial-gradient(900px 600px at -10% 8%, rgba(250, 181, 0, 0.07), transparent 58%),
+    linear-gradient(180deg, var(--paper) 0%, var(--paper-deep) 100%);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--t-body);
@@ -32,7 +38,7 @@ p { margin: 0 0 var(--s-3); max-width: 68ch; }
 a { color: var(--green-600); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-button, input, select, textarea { font: inherit; font-size: 16px; color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
 
 /* Money and any figure that gets scanned in a column. */
 .num {
