@@ -44,8 +44,22 @@ export function friendlyError(error) {
     return 'Your session expired. Please sign in again.';
   }
 
+  // PostgREST caches the schema. A function added by a migration that has not
+  // been picked up yet fails here rather than at the database.
+  if (error.code === 'PGRST202' || /schema cache/i.test(raw)) {
+    return 'That action is not available yet. Reload the page, and if it persists ' +
+      'reload the API schema in Supabase (Settings → API → Reload schema).';
+  }
+
   // Our RPCs raise plain-language exceptions on purpose — those are safe to show.
   if (error.code === 'P0001' || !error.code) return raw;
+
+  // Anything unrecognised: show the database's own message rather than a
+  // generic apology. A staff member who can read "duplicate key on X" can act
+  // on it; "something went wrong" leaves them stuck and leaves us guessing.
+  // Nothing here leaks a secret — Postgres messages describe constraints, not
+  // credentials, and the anon key already scopes what a caller can reach.
+  if (raw) return raw;
 
   return 'Something went wrong. Please try again.';
 }
