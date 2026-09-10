@@ -151,7 +151,7 @@
       rgba(3, 8, 12, .18),
       rgba(3, 8, 12, .82)
     ),
-    url('/naijanest-hero.jpg')
+    url('https://naijanest-nine.vercel.app/naijanest-hero.jpg')
     center / cover no-repeat;
 
   transform: scale(1.015);
