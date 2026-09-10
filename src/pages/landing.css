@@ -140,18 +140,18 @@
   background:
     linear-gradient(
       90deg,
-      rgba(3,8,12,.98) 0%,
-      rgba(3,8,12,.92) 28%,
-      rgba(3,8,12,.68) 55%,
-      rgba(3,8,12,.48) 78%,
-      rgba(3,8,12,.62) 100%
+      rgba(3, 8, 12, .98) 0%,
+      rgba(3, 8, 12, .92) 28%,
+      rgba(3, 8, 12, .68) 55%,
+      rgba(3, 8, 12, .48) 78%,
+      rgba(3, 8, 12, .62) 100%
     ),
     linear-gradient(
       180deg,
-      rgba(3,8,12,.18),
-      rgba(3,8,12,.82)
+      rgba(3, 8, 12, .18),
+      rgba(3, 8, 12, .82)
     ),
-    url('/images/naijanest-hero.jpg')
+    url('/naijanest-hero.jpg')
     center / cover no-repeat;
 
   transform: scale(1.015);
