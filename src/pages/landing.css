@@ -138,25 +138,30 @@
   inset: 0;
 
   background:
+    /* Strong protection behind the text */
     linear-gradient(
       90deg,
-      rgba(3, 8, 12, .98) 0%,
-      rgba(3, 8, 12, .92) 28%,
-      rgba(3, 8, 12, .68) 55%,
-      rgba(3, 8, 12, .48) 78%,
-      rgba(3, 8, 12, .62) 100%
+      rgba(3, 8, 12, .99) 0%,
+      rgba(3, 8, 12, .95) 22%,
+      rgba(3, 8, 12, .78) 42%,
+      rgba(3, 8, 12, .42) 64%,
+      rgba(3, 8, 12, .22) 82%,
+      rgba(3, 8, 12, .35) 100%
     ),
+
+    /* Darken the bottom for a cinematic fade */
     linear-gradient(
       180deg,
-      rgba(3, 8, 12, .18),
-      rgba(3, 8, 12, .82)
+      rgba(3, 8, 12, .12) 0%,
+      rgba(3, 8, 12, .18) 45%,
+      rgba(3, 8, 12, .88) 100%
     ),
+
     url('https://naijanest-nine.vercel.app/naijanest-hero.jpg')
     center / cover no-repeat;
 
   transform: scale(1.015);
 }
-
 
 .lp-hero-image::after {
   content: '';
