@@ -6,7 +6,7 @@ import { useAvatarUrl } from '../../hooks/useAvatar';
 import {
   Home, CalendarDays, ArrowUpRight, Bell, User, Users, Banknote, FileClock,
   ClipboardList, Wallet, LayoutDashboard, UserCog, BarChart3, Layers, ScrollText,
-  MoreHorizontal, LogOut, X,
+  MoreHorizontal, LogOut, X, ShieldCheck,
 } from 'lucide-react';
 import Logo from '../ui/Logo';
 import Avatar from '../ui/Avatar';
@@ -26,6 +26,7 @@ const NAV = {
     { to: '/contributions', label: 'Contributions', Icon: CalendarDays, primary: true },
     { to: '/withdrawals', label: 'Withdrawals', Icon: ArrowUpRight, primary: true },
     { to: '/notifications', label: 'Alerts', Icon: Bell, primary: true, badge: true },
+    { to: '/verification', label: 'Verification', Icon: ShieldCheck },
     { to: '/profile', label: 'Profile', Icon: User },
   ],
   COLLECTOR: [
@@ -47,6 +48,7 @@ const NAV = {
     { to: '/admin/cycles', label: 'Cycles', Icon: FileClock },
     { to: '/admin/contributions', label: 'Contributions', Icon: CalendarDays },
     { to: '/admin/withdrawals', label: 'Withdrawals', Icon: ArrowUpRight },
+    { to: '/admin/verification', label: 'Verification', Icon: ShieldCheck },
     { to: '/admin/cash', label: 'Cash handovers', Icon: Wallet },
     { to: '/admin/audit-logs', label: 'Audit log', Icon: ScrollText },
   ],
