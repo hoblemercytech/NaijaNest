@@ -1,0 +1,57 @@
+/* Verification status banner. Tone plus an icon plus a word — never colour
+   alone, since this is the screen that decides whether someone can withdraw. */
+.kyc-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border-radius: var(--r-tile);
+  border: 1px solid transparent;
+}
+.kyc-banner strong { display: block; font-size: var(--t-body); }
+.kyc-banner p { margin: 2px 0 0; font-size: var(--t-sm); }
+
+.kyc-banner.is-ok {
+  background: var(--ok-bg); color: var(--ok); border-color: #BFE3CE;
+}
+.kyc-banner.is-pending {
+  background: var(--warn-bg); color: var(--warn); border-color: #EFDCB6;
+}
+.kyc-banner.is-rejected {
+  background: var(--danger-bg); color: var(--danger); border-color: #F0CFCA;
+}
+
+/* The reason for asking, before the fields. */
+.kyc-why {
+  padding: var(--s-4);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 var(--r-input) var(--r-input) 0;
+  background: var(--gold-050);
+}
+.kyc-why p { margin: 0; color: var(--ink); }
+.kyc-why p + p { margin-top: var(--s-2); color: var(--muted); }
+
+/* Upload target sized for a thumb, not a mouse. */
+.kyc-upload {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 64px;
+  padding: var(--s-3) var(--s-4);
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--r-input);
+  background: var(--surface-alt);
+  color: var(--muted);
+  font-size: var(--t-sm);
+  cursor: pointer;
+  transition: border-color .14s ease, background-color .14s ease;
+}
+.kyc-upload:hover { border-color: var(--green-400); background: var(--green-050); }
+.kyc-upload.has-file {
+  border-style: solid;
+  border-color: var(--green-600);
+  background: var(--green-050);
+  color: var(--green-800);
+  font-weight: 500;
+}
+.kyc-upload span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
