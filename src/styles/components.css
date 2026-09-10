@@ -1,64 +1,296 @@
-/* =====================================================================
-   Component styles. Kept flat and class-scoped to avoid specificity
-   collisions between page sections and shared primitives.
-   ===================================================================== */
+/* ================================================================
+   BUTTONS — PREMIUM FINTECH SYSTEM
+   ================================================================ */
 
-/* --- button --------------------------------------------------------- */
 .btn {
+  position: relative;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--s-2);
-  min-height: var(--tap);
-  padding: 0 var(--s-5);
+  gap: 9px;
+
+  width: auto;
+  min-height: 50px;
+  padding: 0 18px;
+
   border: 1px solid transparent;
-  border-radius: var(--r-input);
+  border-radius: 13px;
+
   font-family: var(--font-body);
-  font-size: var(--t-body);
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1;
+
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color .15s ease, border-color .15s ease, opacity .15s ease;
+
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  transform: translateY(0);
+
+  transition:
+    transform 160ms cubic-bezier(.2,.8,.2,1),
+    box-shadow 160ms cubic-bezier(.2,.8,.2,1),
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease;
 }
-.btn:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Keyboard accessibility */
+.btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px var(--green-100),
+    0 0 0 5px var(--green-500);
+}
+
+/* Disabled */
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ================================================================
+   PRIMARY
+   ================================================================ */
 
 .btn-primary {
-  background: linear-gradient(180deg, var(--green-700), var(--green-800));
   color: #fff;
-  box-shadow: 0 1px 2px rgba(6, 35, 26, 0.2), 0 6px 16px -8px rgba(6, 35, 26, 0.5);
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--green-600) 0%,
+      var(--green-800) 100%
+    );
+
+  border-color: var(--green-700);
+
+  box-shadow:
+    0 1px 2px rgba(6, 35, 26, 0.22),
+    0 7px 18px -7px rgba(6, 35, 26, 0.55);
 }
+
 .btn-primary:not(:disabled):hover {
-  background: linear-gradient(180deg, var(--green-800), var(--green-900));
+  transform: translateY(-1px);
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--green-700) 0%,
+      var(--green-900) 100%
+    );
+
+  box-shadow:
+    0 2px 4px rgba(6, 35, 26, 0.24),
+    0 12px 26px -8px rgba(6, 35, 26, 0.60);
 }
 
-/* Gold is the money button: withdrawals and payment recording only. */
+.btn-primary:not(:disabled):active {
+  transform: translateY(0);
+
+  box-shadow:
+    0 1px 2px rgba(6, 35, 26, 0.25);
+}
+
+/* ================================================================
+   MONEY
+   Gold is intentionally reserved for financial actions.
+   ================================================================ */
+
 .btn-money {
-  background: linear-gradient(180deg, var(--gold-light), var(--gold));
   color: var(--green-950);
-  box-shadow: 0 1px 2px rgba(143, 98, 0, 0.25), 0 6px 16px -8px rgba(250, 181, 0, 0.7);
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--gold-light) 0%,
+      var(--gold) 100%
+    );
+
+  border-color: var(--gold);
+
+  box-shadow:
+    0 1px 2px rgba(143, 98, 0, 0.22),
+    0 8px 20px -8px rgba(250, 181, 0, 0.55);
 }
-.btn-money:not(:disabled):hover { background: linear-gradient(180deg, var(--gold), #E0A200); }
 
-.btn-outline { background: var(--surface); border-color: var(--line-strong); color: var(--ink); }
-.btn-outline:not(:disabled):hover { background: var(--green-050); border-color: var(--green-400); }
+.btn-money:not(:disabled):hover {
+  transform: translateY(-1px);
 
-.btn-ghost { background: transparent; color: var(--muted); padding: 0 var(--s-3); }
-.btn-ghost:not(:disabled):hover { background: var(--neutral-bg); color: var(--ink); }
+  background:
+    linear-gradient(
+      180deg,
+      var(--gold) 0%,
+      #e0a200 100%
+    );
 
-.btn-danger { background: var(--danger-bg); color: var(--danger); border-color: #F0CFCA; }
-.btn-danger:not(:disabled):hover { background: #F6DAD5; }
+  box-shadow:
+    0 3px 6px rgba(143, 98, 0, 0.20),
+    0 12px 26px -8px rgba(250, 181, 0, 0.62);
+}
 
-.btn-sm { min-height: 36px; padding: 0 var(--s-3); font-size: var(--t-sm); }
-.btn-block { width: 100%; }
+.btn-money:not(:disabled):active {
+  transform: translateY(0);
+}
 
+/* ================================================================
+   OUTLINE
+   ================================================================ */
+
+.btn-outline {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--line-strong);
+
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.btn-outline:not(:disabled):hover {
+  transform: translateY(-1px);
+
+  background: var(--green-050);
+  border-color: var(--green-400);
+
+  box-shadow:
+    0 6px 16px rgba(15, 23, 42, 0.07);
+}
+
+.btn-outline:not(:disabled):active {
+  transform: translateY(0);
+}
+
+/* ================================================================
+   GHOST
+   ================================================================ */
+
+.btn-ghost {
+  min-height: 42px;
+  padding: 0 13px;
+
+  color: var(--muted);
+  background: transparent;
+  border-color: transparent;
+
+  box-shadow: none;
+}
+
+.btn-ghost:not(:disabled):hover {
+  background: var(--neutral-bg);
+  color: var(--ink);
+}
+
+.btn-ghost:not(:disabled):active {
+  transform: none;
+}
+
+/* ================================================================
+   DANGER
+   ================================================================ */
+
+.btn-danger {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-color: #f0cfca;
+
+  box-shadow:
+    0 1px 2px rgba(124, 32, 26, 0.06);
+}
+
+.btn-danger:not(:disabled):hover {
+  transform: translateY(-1px);
+
+  background: #f6dad5;
+  border-color: #e7b8b1;
+
+  box-shadow:
+    0 7px 18px rgba(124, 32, 26, 0.10);
+}
+
+.btn-danger:not(:disabled):active {
+  transform: translateY(0);
+}
+
+/* ================================================================
+   SIZES
+   ================================================================ */
+
+.btn-sm {
+  min-height: 38px;
+  padding: 0 13px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ================================================================
+   CONTENT
+   ================================================================ */
+
+.btn-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: inherit;
+}
+
+.btn-content-hidden {
+  visibility: hidden;
+}
+
+/* ================================================================
+   LOADING
+   ================================================================ */
+
+.btn.is-loading {
+  cursor: wait;
+}
+
+.btn.is-loading .spinner {
+  position: absolute;
+}
+
+/* Premium spinner */
 .spinner {
-  width: 15px; height: 15px;
+  width: 17px;
+  height: 17px;
+
   border: 2px solid currentColor;
   border-right-color: transparent;
+
   border-radius: 50%;
-  animation: nn-spin .6s linear infinite;
+
+  animation: nn-spin 650ms linear infinite;
 }
-@keyframes nn-spin { to { transform: rotate(360deg); } }
+
+@keyframes nn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ================================================================
+   REDUCED MOTION
+   ================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+
+  .spinner {
+    animation-duration: 1.2s;
+  }
+}
 
 /* --- fields --------------------------------------------------------- */
 .field { display: block; }
