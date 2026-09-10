@@ -161,6 +161,7 @@
     center / cover no-repeat;
 
   transform: scale(1.015);
+    background-position: 68% center;
 }
 
 .lp-hero-image::after {
