@@ -23,6 +23,7 @@ const Dashboard = lazy(() => import('./pages/user/Dashboard'));
 const Contributions = lazy(() => import('./pages/user/Contributions'));
 const Withdrawals = lazy(() => import('./pages/user/Withdrawals'));
 const Profile = lazy(() => import('./pages/user/Profile'));
+const Verification = lazy(() => import('./pages/user/Verification'));
 
 // collector
 const CollectorDashboard = lazy(() => import('./pages/collector/CollectorDashboard'));
@@ -45,6 +46,7 @@ const AdminCycles = lazy(() => import('./pages/admin/Cycles'));
 const AdminContributions = lazy(() => import('./pages/admin/Contributions'));
 const AdminWithdrawals = lazy(() => import('./pages/admin/Withdrawals'));
 const AdminCash = lazy(() => import('./pages/admin/Cash'));
+const AdminKyc = lazy(() => import('./pages/admin/Kyc'));
 const Analytics = lazy(() => import('./pages/admin/Analytics'));
 const AuditLog = lazy(() => import('./pages/admin/AuditLog'));
 
@@ -74,6 +76,7 @@ export default function App() {
         <Route path="/contributions" element={<Contributions />} />
         <Route path="/withdrawals" element={<Withdrawals />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/verification" element={<Verification />} />
         <Route path="/notifications" element={<NotificationsPage />} />
       </Route>
 
@@ -102,6 +105,7 @@ export default function App() {
         <Route path="/admin/contributions" element={<AdminContributions />} />
         <Route path="/admin/withdrawals" element={<AdminWithdrawals />} />
         <Route path="/admin/cash" element={<AdminCash />} />
+        <Route path="/admin/verification" element={<AdminKyc />} />
         <Route path="/admin/analytics" element={<Analytics />} />
         <Route path="/admin/audit-logs" element={<AuditLog />} />
         <Route path="/admin/notifications" element={<NotificationsPage />} />
