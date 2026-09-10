@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { FileQuestion } from 'lucide-react';
 import {
   useFinancialSummary, useOpenCycle, useCycleSchedule,
   useActivePlans, useCustomerActions,
@@ -15,7 +16,15 @@ import { useToast } from '../../components/ui/Toast';
 import ContributionCalendar from '../../components/ContributionCalendar';
 import './user.css';
 
-const DURATIONS = [30, 60, 90];
+/* Labelled because "365" reads as a number to scan past, while "1 year" is a
+   commitment someone weighs. */
+const DURATIONS = [
+  { days: 30, label: '30', unit: 'days' },
+  { days: 60, label: '60', unit: 'days' },
+  { days: 90, label: '90', unit: 'days' },
+  { days: 180, label: '6', unit: 'months' },
+  { days: 365, label: '1', unit: 'year' },
+];
 
 export default function Dashboard() {
   const { profile } = useAuth();
@@ -97,7 +106,7 @@ export default function Dashboard() {
             <EmptyState
               title="You don't have an active contribution cycle yet"
               message="Choose a daily amount and how long you want to save for. Your collector activates it, then you start contributing."
-              icon="◇"
+              Icon={FileQuestion}
               action={<Button onClick={() => setStartOpen(true)}>Start a cycle</Button>}
             />
           </Card>
@@ -251,14 +260,15 @@ function StartCycleModal({ open, onClose, onDone }) {
           <div className="choice-grid">
             {DURATIONS.map((d) => (
               <button
-                key={d}
+                key={d.days}
                 type="button"
-                className={`choice${duration === d ? ' is-picked' : ''}`}
-                onClick={() => setDuration(d)}
-                aria-pressed={duration === d}
+                className={`choice${duration === d.days ? ' is-picked' : ''}`}
+                onClick={() => setDuration(d.days)}
+                aria-pressed={duration === d.days}
+                aria-label={`${d.days} days`}
               >
-                <span className="choice-main num">{d}</span>
-                <span className="choice-sub">days</span>
+                <span className="choice-main num">{d.label}</span>
+                <span className="choice-sub">{d.unit}</span>
               </button>
             ))}
           </div>
