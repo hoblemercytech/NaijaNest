@@ -1,42 +1,55 @@
 /* =====================================================================
    NaijaNest design tokens
-   Green carries trust. Gold is reserved for money and primary action —
-   if it appears anywhere else, it stops meaning anything.
+
+   Green carries trust. Gold is reserved for money and primary action — if it
+   appears anywhere else it stops meaning anything.
+
+   The neutral scale is warm and green-leaning rather than pure grey. A flat
+   #FFF surface on a #F5F5F5 background is what makes an interface read as a
+   default template; giving both a slight green cast and putting real depth
+   between the layers is what makes it read as a considered product.
    ===================================================================== */
 
 :root {
   /* --- brand ------------------------------------------------------- */
-  --ink:        #0A1F16;   /* deep green-black, used for body copy */
+  --ink:        #06231A;   /* deepest green-black, body copy */
+  --green-950:  #04180F;
   --green-900:  #072A1E;
   --green-800:  #0B3D2C;   /* primary surface */
+  --green-700:  #0E5238;
   --green-600:  #12694A;
   --green-400:  #3E9873;
-  --green-100:  #E1EFE8;
-  --green-050:  #F1F7F4;
+  --green-200:  #BEDCCC;
+  --green-100:  #DDEDE4;
+  --green-050:  #EFF6F2;
 
   --gold:       #FAB500;
-  --gold-deep:  #8F6200;   /* darkened for text contrast on light surfaces */
+  --gold-light: #FFD166;
+  --gold-deep:  #8F6200;
   --gold-050:   #FFF6E0;
 
   /* --- neutrals ---------------------------------------------------- */
-  --paper:      #F5F7F5;   /* app background */
-  --surface:    #FFFFFF;
-  --line:       #E2E7E3;
-  --line-strong:#CBD4CD;
-  --muted:      #5D6B63;
-  --muted-soft: #869089;
+  /* Warm-green tinted, never pure grey. */
+  --paper:       #EDF2EE;
+  --paper-deep:  #E3EBE6;
+  --surface:     #FFFFFF;
+  --surface-alt: #F8FBF9;
+  --line:        #DDE6E0;
+  --line-strong: #C3D2C9;
+  --muted:       #4F6159;
+  --muted-soft:  #7B8D84;
 
   /* --- status ------------------------------------------------------ */
-  --ok:         #17784F;
-  --ok-bg:      #E4F2EA;
-  --warn:       #A6650B;
-  --warn-bg:    #FBF0DC;
-  --danger:     #A32B22;
-  --danger-bg:  #FAE7E4;
-  --neutral:    #5B6B63;
-  --neutral-bg: #ECEFEC;
-  --future:     #7C8A82;
-  --future-bg:  #F2F4F2;
+  --ok:         #10714A;
+  --ok-bg:      #DDF0E6;
+  --warn:       #93590A;
+  --warn-bg:    #FBEED6;
+  --danger:     #9B241C;
+  --danger-bg:  #FAE2DF;
+  --neutral:    #4F6159;
+  --neutral-bg: #E7EDE9;
+  --future:     #7B8D84;
+  --future-bg:  #F0F4F1;
 
   /* --- type -------------------------------------------------------- */
   --font-display: 'Sora', system-ui, sans-serif;
@@ -56,19 +69,30 @@
 
   /* --- form -------------------------------------------------------- */
   /* Radius encodes hierarchy: bigger surface, softer corner. */
-  --r-chip:  8px;
-  --r-input: 10px;
-  --r-tile:  12px;
-  --r-panel: 20px;
+  --r-chip:  10px;
+  --r-input: 12px;
+  --r-tile:  16px;
+  --r-panel: 24px;
   --r-full:  999px;
 
-  --shadow-tile:  0 1px 2px rgba(10, 31, 22, 0.04);
-  --shadow-panel: 0 12px 28px -14px rgba(7, 42, 30, 0.45);
-  --shadow-pop:   0 20px 48px -20px rgba(7, 42, 30, 0.35);
+  /* Layered shadows. A single soft blur reads as a cheap drop shadow; a tight
+     contact shadow plus a wide ambient one is what gives a card real weight. */
+  --shadow-tile:
+    0 1px 2px rgba(6, 35, 26, 0.05),
+    0 4px 12px -4px rgba(6, 35, 26, 0.06);
+  --shadow-raised:
+    0 2px 4px rgba(6, 35, 26, 0.06),
+    0 12px 28px -12px rgba(6, 35, 26, 0.14);
+  --shadow-panel:
+    0 2px 6px rgba(4, 24, 15, 0.24),
+    0 20px 48px -20px rgba(4, 24, 15, 0.55);
+  --shadow-pop:
+    0 8px 16px -8px rgba(6, 35, 26, 0.2),
+    0 32px 64px -24px rgba(6, 35, 26, 0.35);
 
   --tap: 44px;              /* minimum touch target */
-  --nav-h: 62px;            /* mobile bottom bar */
-  --sidebar-w: 244px;
+  --nav-h: 64px;            /* mobile bottom bar */
+  --sidebar-w: 252px;
 }
 
 @media (prefers-reduced-motion: reduce) {
