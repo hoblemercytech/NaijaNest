@@ -13,8 +13,8 @@
   height: 56px;
   padding: 0 var(--s-4);
   padding-top: env(safe-area-inset-top);
-  background: rgba(245, 247, 245, 0.92);
-  backdrop-filter: blur(10px);
+  background: rgba(237, 242, 238, 0.82);
+  backdrop-filter: saturate(180%) blur(14px);
   border-bottom: 1px solid var(--line);
 }
 
@@ -69,8 +69,14 @@
   text-decoration: none;
 }
 .nav-item:hover { background: var(--green-050); color: var(--ink); text-decoration: none; }
-.nav-item.is-active { background: var(--green-100); color: var(--green-800); font-weight: 600; }
-.nav-icon { width: 20px; text-align: center; font-size: 15px; flex: none; }
+.nav-item.is-active {
+  background: linear-gradient(90deg, var(--green-100), var(--green-050));
+  color: var(--green-800);
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--green-600);
+}
+.nav-icon { flex: none; opacity: .8; }
+.nav-item.is-active .nav-icon { opacity: 1; }
 .nav-count {
   margin-left: auto;
   min-width: 20px;
@@ -99,8 +105,10 @@
   display: flex;
   height: calc(var(--nav-h) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: saturate(180%) blur(14px);
   border-top: 1px solid var(--line);
+  box-shadow: 0 -4px 20px -8px rgba(6, 35, 26, 0.14);
 }
 
 .tab {
@@ -121,18 +129,16 @@
 }
 .tab:hover { text-decoration: none; }
 .tab.is-active { color: var(--green-800); font-weight: 600; }
-.tab-icon { font-size: 18px; line-height: 1; }
+.tab-icon { display: grid; place-items: center; height: 22px; }
 .tab-label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* The collector's "Collect" action is the one thing they tap all day. */
 .tab-accent .tab-icon {
-  background: var(--gold);
-  color: var(--green-900);
-  width: 34px; height: 26px;
+  background: linear-gradient(180deg, var(--gold-light), var(--gold));
+  color: var(--green-950);
+  width: 40px; height: 28px;
   border-radius: var(--r-chip);
-  display: grid; place-items: center;
-  font-weight: 700;
-  font-size: 15px;
+  box-shadow: 0 4px 12px -4px rgba(250, 181, 0, .8);
 }
 .tab-accent.is-active .tab-icon { background: var(--gold); }
 
@@ -155,7 +161,7 @@
   .shell-side {
     display: flex;
     flex-direction: column;
-    background: var(--surface);
+    background: linear-gradient(180deg, var(--surface) 0%, var(--surface-alt) 100%);
     border-right: 1px solid var(--line);
     position: sticky;
     top: 0;
