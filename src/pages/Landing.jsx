@@ -14,8 +14,8 @@ const SAMPLE_DAYS = [
 ];
 
 const STEPS = [
-  { title: 'Pick your daily amount', body: 'Choose from the plans NaijaNest offers — ₦500 a day up to ₦5,000 a day.' },
-  { title: 'Choose how long', body: '30, 60 or 90 days. Your terms are locked in when your collector activates the cycle.' },
+  { title: 'Pick your daily amount', body: 'Choose from the plans NaijaNest offers — ₦500 a day up to ₦10,000 a day.' },
+  { title: 'Choose how long', body: 'From 30 days up to a full year. Your terms are locked in when your collector activates the cycle.' },
   { title: 'Pay your collector in cash', body: 'They record each payment against the day it was made, on the spot.' },
   { title: 'Check the record any time', body: 'Every day shows as paid or unpaid, with the time and who recorded it.' },
   { title: 'Withdraw what you saved', body: 'Ask for your balance whenever you want it. Your collector pays you in cash.' },
@@ -26,7 +26,8 @@ export default function Landing() {
     <div className="lp">
       <header className="lp-nav">
         <div className="container row-between">
-          <Logo size={30} />
+          {/* The nav sits on the dark hero, so the wordmark has to invert. */}
+          <Logo size={30} tone="light" />
           <nav className="row" style={{ gap: 8 }}>
             <Link to="/login" className="btn btn-ghost btn-sm">Sign in</Link>
             <Link to="/signup" className="btn btn-primary btn-sm">Create account</Link>
