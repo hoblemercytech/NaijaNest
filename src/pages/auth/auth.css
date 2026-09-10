@@ -1,57 +1,360 @@
+/* ================================================================
+   PREMIUM SAAS / FINTECH AUTH
+   ================================================================ */
+
 .auth {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--s-5) var(--s-4);
-  /* A quiet green field so the white card reads as the focus. */
+  position: relative;
+  overflow: hidden;
+  padding: 32px 20px;
+
   background:
-    radial-gradient(1100px 460px at 50% -12%, var(--green-100), transparent 65%),
-    var(--paper);
+    radial-gradient(
+      900px 500px at 50% -15%,
+      color-mix(in srgb, var(--green-100) 85%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(
+      180deg,
+      #f8faf9 0%,
+      var(--paper) 100%
+    );
 }
+
+/* Premium ambient glow */
+.auth::before {
+  content: "";
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  top: -260px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: var(--green-100);
+  opacity: 0.35;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.auth::after {
+  content: "";
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  right: -140px;
+  bottom: -140px;
+  border-radius: 50%;
+  background: var(--green-100);
+  opacity: 0.22;
+  filter: blur(70px);
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------------------
+   PANEL
+   ---------------------------------------------------------------- */
 
 .auth-panel {
+  position: relative;
+  z-index: 1;
+
   width: 100%;
-  max-width: 420px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r-panel);
-  padding: var(--s-6) var(--s-5) var(--s-5);
-  box-shadow: var(--shadow-tile);
+  max-width: 440px;
+
+  padding: 34px 32px 28px;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 24px;
+
+  box-shadow:
+    0 30px 80px rgba(15, 23, 42, 0.10),
+    0 8px 24px rgba(15, 23, 42, 0.05);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
-.auth-brand { display: inline-block; margin-bottom: var(--s-5); }
-.auth-brand:hover { text-decoration: none; }
+/* ----------------------------------------------------------------
+   BRAND
+   ---------------------------------------------------------------- */
 
-.auth-panel h1 { font-size: var(--t-h1); }
-.auth-panel > p { margin: var(--s-2) 0 var(--s-5); font-size: var(--t-sm); }
+.auth-brand {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 30px;
+
+  transition:
+    transform 160ms ease,
+    opacity 160ms ease;
+}
+
+.auth-brand:hover {
+  text-decoration: none;
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+/* ----------------------------------------------------------------
+   TYPOGRAPHY
+   ---------------------------------------------------------------- */
+
+.auth-panel h1 {
+  margin: 0;
+
+  font-size: clamp(28px, 6vw, 34px);
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.auth-panel > p {
+  margin: 10px 0 28px;
+
+  max-width: 380px;
+
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ----------------------------------------------------------------
+   ALERT
+   ---------------------------------------------------------------- */
 
 .auth-alert {
-  padding: var(--s-3) var(--s-4);
-  margin-bottom: var(--s-4);
-  border-radius: var(--r-input);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  padding: 13px 14px;
+  margin-bottom: 18px;
+
+  border: 1px solid color-mix(
+    in srgb,
+    var(--danger) 18%,
+    transparent
+  );
+
+  border-radius: 12px;
+
   background: var(--danger-bg);
   color: var(--danger);
-  font-size: var(--t-sm);
+
+  font-size: 14px;
+  line-height: 1.5;
   font-weight: 500;
 }
 
+/* ----------------------------------------------------------------
+   FORM INPUTS
+   ---------------------------------------------------------------- */
+
+/*
+  IMPORTANT:
+  16px prevents iOS Safari from zooming when users focus inputs.
+*/
+
+.auth-panel input,
+.auth-panel textarea,
+.auth-panel select {
+  font-size: 16px !important;
+  line-height: 1.45;
+}
+
+/* Better input height for premium fintech feel */
+.auth-panel input {
+  min-height: 52px;
+  border-radius: 13px;
+}
+
+/* Better touch target */
+.auth-panel button,
+.auth-panel a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ----------------------------------------------------------------
+   LINKS
+   ---------------------------------------------------------------- */
+
+.auth-panel a {
+  transition:
+    color 160ms ease,
+    opacity 160ms ease;
+}
+
+.auth-panel a:hover {
+  text-decoration: none;
+}
+
+/* Forgot password */
+.auth-panel .small {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------------------
+   PRIMARY BUTTON
+   ---------------------------------------------------------------- */
+
+.auth-panel form > button {
+  min-height: 52px;
+
+  border-radius: 13px;
+
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.08);
+
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+
+.auth-panel form > button:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.11);
+}
+
+.auth-panel form > button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ----------------------------------------------------------------
+   FOOTER
+   ---------------------------------------------------------------- */
+
 .auth-foot {
-  margin-top: var(--s-5);
-  padding-top: var(--s-4);
-  border-top: 1px solid var(--line);
-  font-size: var(--t-sm);
+  margin-top: 26px;
+  padding-top: 20px;
+
+  border-top: 1px solid rgba(15, 23, 42, 0.07);
+
+  font-size: 14px;
+  line-height: 1.5;
+
   color: var(--muted);
   text-align: center;
 }
 
+.auth-foot a {
+  font-weight: 650;
+}
+
+/* ----------------------------------------------------------------
+   AVATAR
+   ---------------------------------------------------------------- */
+
 .avatar-picker {
   display: flex;
   align-items: center;
-  gap: var(--s-4);
-  margin-bottom: var(--s-5);
+  gap: 16px;
+
+  margin-bottom: 24px;
+  padding: 14px;
+
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  border-radius: 16px;
+
+  background: rgba(248, 250, 249, 0.75);
 }
 
-@media (min-width: 620px) {
-  .auth-panel { padding: var(--s-8) var(--s-6) var(--s-6); }
+.avatar-picker .field-hint {
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* ----------------------------------------------------------------
+   MOBILE
+   ---------------------------------------------------------------- */
+
+@media (max-width: 619px) {
+  .auth {
+    align-items: flex-start;
+    padding: 18px 14px;
+  }
+
+  .auth-panel {
+    margin-top: 12px;
+
+    max-width: 100%;
+
+    padding: 28px 20px 22px;
+
+    border-radius: 20px;
+
+    box-shadow:
+      0 20px 50px rgba(15, 23, 42, 0.08),
+      0 4px 14px rgba(15, 23, 42, 0.04);
+  }
+
+  .auth-brand {
+    margin-bottom: 26px;
+  }
+
+  .auth-panel h1 {
+    font-size: 29px;
+  }
+
+  .auth-panel > p {
+    margin-bottom: 24px;
+    font-size: 15px;
+  }
+
+  .auth-panel input {
+    min-height: 54px;
+    font-size: 16px !important;
+  }
+
+  .auth-panel form > button {
+    min-height: 54px;
+  }
+
+  .avatar-picker {
+    padding: 12px;
+  }
+}
+
+/* ----------------------------------------------------------------
+   SMALL PHONES
+   ---------------------------------------------------------------- */
+
+@media (max-width: 380px) {
+  .auth {
+    padding: 12px 10px;
+  }
+
+  .auth-panel {
+    padding: 24px 16px 20px;
+    border-radius: 18px;
+  }
+
+  .auth-panel h1 {
+    font-size: 27px;
+  }
+}
+
+/* ----------------------------------------------------------------
+   REDUCED MOTION
+   ---------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-brand,
+  .auth-panel a,
+  .auth-panel button {
+    transition: none;
+  }
 }
