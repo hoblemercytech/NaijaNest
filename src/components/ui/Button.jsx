@@ -1,15 +1,22 @@
 /**
- * variant: primary | money | outline | ghost | danger
- * `money` (gold) is reserved for withdrawal and payment-recording actions.
+ * Button
+ *
+ * variant:
+ * primary | money | outline | ghost | danger
+ *
+ * `money` (gold) is reserved for withdrawal and
+ * payment-recording actions.
  */
+
 export default function Button({
   variant = 'primary',
   size,
-  block,
+  block = false,
   loading = false,
-  disabled,
+  disabled = false,
   children,
   type = 'button',
+  className = '',
   ...rest
 }) {
   const classes = [
@@ -18,18 +25,33 @@ export default function Button({
     size === 'sm' ? 'btn-sm' : '',
     block ? 'btn-block' : '',
     loading ? 'is-loading' : '',
-  ].filter(Boolean).join(' ');
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <button
-      className={classes}
-      type={type}
-      disabled={disabled || loading}
-      aria-busy={loading || undefined}
       {...rest}
+      type={type}
+      className={classes}
+      disabled={disabled || loading}
+      aria-busy={loading ? 'true' : undefined}
     >
-      {loading && <span className="spinner" aria-hidden="true" />}
-      <span className={loading ? 'btn-content btn-content-hidden' : 'btn-content'}>
+      {loading && (
+        <span
+          className="spinner"
+          aria-hidden="true"
+        />
+      )}
+
+      <span
+        className={
+          loading
+            ? 'btn-content btn-content-hidden'
+            : 'btn-content'
+        }
+      >
         {children}
       </span>
     </button>
