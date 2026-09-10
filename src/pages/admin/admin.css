@@ -1,0 +1,113 @@
+/* Admin screens. */
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--s-3);
+}
+
+/* A missing collector blocks the customer entirely, so it reads as a warning
+   rather than an empty field. */
+.warn-text { color: var(--warn); font-weight: 500; }
+
+@media (min-width: 780px) {
+  .metric-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* --- audit log ------------------------------------------------------- */
+.audit-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+.audit-row:last-child { border-bottom: 0; }
+
+.audit-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.audit-action { font-weight: 600; font-size: var(--t-sm); }
+.audit-reason { color: var(--muted); font-style: italic; }
+
+/* --- promotion picker ------------------------------------------------- */
+.promote-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-input);
+}
+
+/* --- charts ----------------------------------------------------------- */
+/* Recharts needs a bounded parent or ResponsiveContainer collapses to zero. */
+.chart-wrap { width: 100%; min-height: 200px; }
+.chart-wrap .recharts-cartesian-axis-tick text { font-family: var(--font-body); }
+
+.done-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--s-3); padding: var(--s-3) 0; border-bottom: 1px solid var(--line);
+}
+.done-row:last-child { border-bottom: 0; }
+
+/* --- ledger filters --------------------------------------------------- */
+.filter-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-3);
+}
+.filter-grid .field + .field { margin-top: 0; }
+
+@media (min-width: 640px) {
+  .filter-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Customer names in a ledger are the way into their detail page, so they read
+   as links rather than plain text. */
+.ledger-name {
+  font-weight: 600;
+  font-size: var(--t-body);
+  color: var(--ink);
+}
+.ledger-name:hover { color: var(--green-600); text-decoration: underline; }
+
+/* Segmented control, shared with the collector screens. */
+.seg {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: var(--s-4);
+  background: var(--neutral-bg);
+  border-radius: var(--r-input);
+}
+.seg-btn {
+  flex: 1;
+  min-height: 38px;
+  border: 0;
+  border-radius: var(--r-chip);
+  background: transparent;
+  color: var(--muted);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.seg-btn.is-on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-tile); }
+
+/* Review actions: the document sits left, the decision sits right, and they
+   stack rather than crush on a narrow screen. */
+.kyc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+.kyc-actions > :first-child { margin-right: auto; }
+
+@media (max-width: 480px) {
+  .kyc-actions > * { flex: 1; }
+  .kyc-actions > :first-child { margin-right: 0; flex-basis: 100%; }
+}
