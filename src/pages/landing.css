@@ -2014,21 +2014,65 @@
 @media (max-width: 879px) {
 
   .lp-hero {
-     margin-top: 80px;
+     margin-top: 70px;
     min-height: auto;
   }
 
-  .lp-hero-image {
-    background:
-      linear-gradient(
-        180deg,
-        rgba(3,8,12,.88) 0%,
-        rgba(3,8,12,.78) 38%,
-        rgba(3,8,12,.95) 100%
-      ),
-      url('https://naijanest-nine.vercel.app/naijanest-hero.jpg')
-      65% center / cover no-repeat;
-  }
+.lp-hero-image {
+  position: absolute;
+  inset: 0;
+
+  /* Photo only. Keeping it on its own layer means the filter below lifts the
+     image without also washing out the gradients that protect the text. */
+  background:
+    url('/naijanest-hero.jpg')
+    center / cover no-repeat;
+
+  filter: brightness(1.18) saturate(1.12) contrast(1.04);
+
+  transform: scale(1.015);
+}
+
+/* Gradients move here so they sit above the filtered photo, unaffected by it. */
+.lp-hero-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+
+  background:
+    /* Still opaque under the headline, but it lets go much earlier — the
+       right half is where the photo has something to show. */
+    linear-gradient(
+      90deg,
+      rgba(3, 8, 12, .96) 0%,
+      rgba(3, 8, 12, .88) 20%,
+      rgba(3, 8, 12, .62) 40%,
+      rgba(3, 8, 12, .26) 62%,
+      rgba(3, 8, 12, .06) 80%,
+      rgba(3, 8, 12, .14) 100%
+    ),
+
+    /* Bottom fade kept only where it meets the next section. */
+    linear-gradient(
+      180deg,
+      rgba(3, 8, 12, .04) 0%,
+      rgba(3, 8, 12, .06) 50%,
+      rgba(3, 8, 12, .72) 100%
+    );
+}
+
+.lp-hero-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(
+      600px 500px at 72% 45%,
+      rgba(24,167,106,.15),
+      transparent 72%
+    );
+}
 
   .lp-hero-grid {
     grid-template-columns: 1fr;
