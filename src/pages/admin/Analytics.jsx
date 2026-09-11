@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { BarChart3, UserCog } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import { useAnalytics, useCollectorPerformance } from '../../hooks/useAdmin';
+import { useChartColors } from '../../context/ThemeContext';
 import { money, moneyShort, dayMonth, isoDate } from '../../lib/format';
 import { downloadCsv } from '../../lib/csv';
 import { Card, CardHead } from '../../components/ui/Card';
@@ -33,6 +35,9 @@ export default function Analytics() {
   const [start, setStart] = useState(daysAgo(29));
   const [end, setEnd] = useState(isoDate());
 
+  // recharts sets stroke/fill as SVG attributes, where var() does not resolve,
+  // so the theme's colours are read from the document and passed as values.
+  const c = useChartColors();
   const series = useAnalytics(start, end);
   const collectors = useCollectorPerformance(start, end);
 
@@ -133,7 +138,7 @@ export default function Analytics() {
           <EmptyState
             title="No financial activity found for this period"
             message="Try a wider date range, or check back once contributions have been recorded."
-            icon="◫"
+            Icon={BarChart3}
           />
         </Card>
       )}
@@ -155,12 +160,21 @@ export default function Analytics() {
             <div className="chart-wrap">
               <ResponsiveContainer width="100%" height={240}>
                 <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 0, left: -12 }}>
-                  <CartesianGrid stroke="var(--line)" vertical={false} />
-                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: 'var(--muted)' }} tickLine={false} axisLine={false} minTickGap={24} />
-                  <YAxis tickFormatter={moneyShort} tick={{ fontSize: 11, fill: 'var(--muted)' }} tickLine={false} axisLine={false} width={56} />
-                  <Tooltip formatter={(v) => money(v)} contentStyle={{ borderRadius: 10, border: '1px solid var(--line)', fontSize: 13 }} />
-                  <Line type="monotone" dataKey="contributions" name="In" stroke="var(--green-600)" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="withdrawals" name="Out" stroke="var(--gold-deep)" strokeWidth={2} dot={false} />
+                  <CartesianGrid stroke={c.grid} vertical={false} />
+                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: c.text }} tickLine={false} axisLine={false} minTickGap={24} />
+                  <YAxis tickFormatter={moneyShort} tick={{ fontSize: 11, fill: c.text }} tickLine={false} axisLine={false} width={56} />
+                  <Tooltip
+                    formatter={(v) => money(v)}
+                    contentStyle={{
+                      borderRadius: 10,
+                      border: `1px solid ${c.grid}`,
+                      background: c.surface,
+                      color: c.text,
+                      fontSize: 13,
+                    }}
+                  />
+                  <Line type="monotone" dataKey="contributions" name="In" stroke={c.accent} strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="withdrawals" name="Out" stroke={c.money} strokeWidth={2} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -172,11 +186,20 @@ export default function Analytics() {
             <div className="chart-wrap">
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={chartData} margin={{ top: 4, right: 8, bottom: 0, left: -12 }}>
-                  <CartesianGrid stroke="var(--line)" vertical={false} />
-                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: 'var(--muted)' }} tickLine={false} axisLine={false} minTickGap={24} />
-                  <YAxis tickFormatter={moneyShort} tick={{ fontSize: 11, fill: 'var(--muted)' }} tickLine={false} axisLine={false} width={56} />
-                  <Tooltip formatter={(v) => money(v)} contentStyle={{ borderRadius: 10, border: '1px solid var(--line)', fontSize: 13 }} />
-                  <Bar dataKey="net" name="Net" fill="var(--green-800)" radius={[3, 3, 0, 0]} />
+                  <CartesianGrid stroke={c.grid} vertical={false} />
+                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: c.text }} tickLine={false} axisLine={false} minTickGap={24} />
+                  <YAxis tickFormatter={moneyShort} tick={{ fontSize: 11, fill: c.text }} tickLine={false} axisLine={false} width={56} />
+                  <Tooltip
+                    formatter={(v) => money(v)}
+                    contentStyle={{
+                      borderRadius: 10,
+                      border: `1px solid ${c.grid}`,
+                      background: c.surface,
+                      color: c.text,
+                      fontSize: 13,
+                    }}
+                  />
+                  <Bar dataKey="net" name="Net" fill={c.bar} radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -198,11 +221,11 @@ export default function Analytics() {
           <ErrorState message={collectors.error} onRetry={collectors.refetch} />
         )}
         {!collectors.loading && !collectors.error && !collectors.data?.length && (
-          <EmptyState title="No collectors yet" message="Add a collector to see their figures here." icon="◈" />
+          <EmptyState title="No collectors yet" message="Add a collector to see their figures here." Icon={UserCog} />
         )}
         {!!collectors.data?.length && (
           <div className="table-wrap">
-            <table className="table">
+            <table className="table is-stacked">
               <thead>
                 <tr>
                   <th>Collector</th>
@@ -216,12 +239,12 @@ export default function Analytics() {
               <tbody>
                 {collectors.data.map((c) => (
                   <tr key={c.collector_id}>
-                    <td>{c.collector_name}</td>
-                    <td className="right num">{c.customers}</td>
-                    <td className="right num">{money(c.collected)}</td>
-                    <td className="right num">{c.paid_days}</td>
-                    <td className="right num">{c.missed_days}</td>
-                    <td className="right num">{money(c.handed_over)}</td>
+                    <td data-label="Collector">{c.collector_name}</td>
+                    <td data-label="Customers" className="right num">{c.customers}</td>
+                    <td data-label="Collected" className="right num">{money(c.collected)}</td>
+                    <td data-label="Paid days" className="right num">{c.paid_days}</td>
+                    <td data-label="Missed" className="right num">{c.missed_days}</td>
+                    <td data-label="Handed over" className="right num">{money(c.handed_over)}</td>
                   </tr>
                 ))}
               </tbody>
