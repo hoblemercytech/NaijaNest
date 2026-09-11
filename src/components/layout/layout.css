@@ -147,6 +147,16 @@
 .user-menu-item.is-danger:hover { background: var(--danger-soft); }
 
 /* --- main -------------------------------------------------------------- */
+/* The column that holds the header and page body. min-width:0 lets it shrink
+   inside the grid instead of overflowing; isolation keeps its sticky header in
+   its own stacking context, above the page but never over the sidebar. */
+.shell-col {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+}
+
 .shell-main {
   padding: var(--s-5) 0 calc(var(--nav-h) + var(--s-8) + env(safe-area-inset-bottom));
 }
@@ -303,11 +313,19 @@
 @media (min-width: 900px) {
   .shell {
     display: grid;
-    grid-template-columns: var(--sidebar-w) 1fr;
+    /* Fallbacks are deliberate: if tokens.css is ever stale or half-applied,
+       an undefined variable would void the whole declaration and collapse the
+       grid to one column, dropping the main content into an auto-width strip. */
+    grid-template-columns: var(--sidebar-w, 252px) minmax(0, 1fr);
     min-height: 100vh;
     transition: grid-template-columns .2s ease;
   }
-  .shell.is-compact { grid-template-columns: var(--sidebar-w-compact); }
+
+  /* Both tracks, every time. Naming only the sidebar leaves the content in an
+     implicit column that shrinks to its smallest possible width. */
+  .shell.is-compact {
+    grid-template-columns: var(--sidebar-w-compact, 76px) minmax(0, 1fr);
+  }
 
   .shell-side {
     display: flex;
@@ -317,10 +335,15 @@
     position: sticky;
     top: 0;
     height: 100vh;
+    /* Grid items default to min-width:auto, so a long unbroken string in the
+       nav could otherwise push this track wider than its declared size. */
+    min-width: 0;
+    overflow: hidden;
   }
 
   .shell-bottom { display: none; }
   .shell-top { padding: 0 var(--s-8); }
+  .shell-side { z-index: 2; }   /* above the main column's sticky header */
   .top-mark { display: none; }        /* the sidebar already carries the mark */
   .top-title { font-size: 1.25rem; }
 
