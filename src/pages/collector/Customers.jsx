@@ -1,16 +1,20 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useMyCustomers } from '../../hooks/useCollector';
+import { useAvatarUrls } from '../../hooks/useAvatar';
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Field';
 import StatusBadge from '../../components/ui/Status';
 import Avatar from '../../components/ui/Avatar';
 import { EmptyState, ErrorState, SkeletonLines } from '../../components/ui/States';
 import './collector.css';
+import { Users } from 'lucide-react';
 
 /** Only the collector's own customers — enforced by RLS, not by this query. */
 export default function Customers() {
   const [search, setSearch] = useState('');
   const { data, loading, error, refetch } = useMyCustomers(search);
+  const avatars = useAvatarUrls(data?.map((c) => c.avatar_url));
 
   return (
     <>
@@ -39,17 +43,17 @@ export default function Customers() {
                   ? 'Try a different name, member ID or phone number.'
                   : 'An admin assigns customers to you. They will show up here.'
               }
-              icon="☰"
+              Icon={Users}
             />
           </Card>
         )}
 
         <div className="stack">
           {data?.map((c) => (
-            <Card key={c.id}>
+            <Link key={c.id} to={`/collector/customers/${c.id}`} className="card card-link">
               <div className="row-between">
                 <div className="row" style={{ gap: 12, minWidth: 0 }}>
-                  <Avatar name={c.full_name} size={42} />
+                  <Avatar name={c.full_name} url={avatars[c.avatar_url]} size={42} />
                   <div style={{ minWidth: 0 }}>
                     <h3 style={{ fontSize: 'var(--t-body)' }}>{c.full_name}</h3>
                     <p className="xs muted num" style={{ margin: '2px 0 0' }}>
@@ -59,7 +63,7 @@ export default function Customers() {
                 </div>
                 <StatusBadge status={c.status} />
               </div>
-            </Card>
+            </Link>
           ))}
         </div>
       </div>
