@@ -2000,7 +2000,7 @@
         rgba(3,8,12,.78) 38%,
         rgba(3,8,12,.95) 100%
       ),
-      url('/images/naijanest-hero.jpg')
+      url('https://naijanest-nine.vercel.app/naijanest-hero.jpg')
       65% center / cover no-repeat;
   }
 
