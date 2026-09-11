@@ -348,7 +348,15 @@ textarea.field-input { padding: var(--s-3); min-height: 88px; resize: vertical; 
   border-bottom: 1px solid var(--line);
 }
 .detail-list > div:last-of-type { border-bottom: 0; }
-.detail-list dt { color: var(--muted); font-size: var(--t-sm); flex: none; }
+.detail-list dt {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--text-secondary);
+  font-size: var(--t-sm);
+  flex: none;
+}
+.detail-list dt svg { opacity: .7; flex: none; }
 .detail-list dd { margin: 0; font-weight: 500; text-align: right; }
 
 /* Long values (addresses) get room to wrap instead of squeezing the label. */
@@ -388,3 +396,87 @@ textarea.field-input { padding: var(--s-3); min-height: 88px; resize: vertical; 
   }
   .table.is-stacked td.right { text-align: right; }
 }
+
+/* --- autofill ----------------------------------------------------------
+   Chrome and Safari paint their own background and text colour on autofilled
+   fields, ignoring ours. In dark mode that lands dark text on a pale wash;
+   while typing, the value can be invisible until the field loses focus.
+
+   There is no property that overrides the background directly, so the standard
+   workaround is an inset shadow the width of the field, plus text-fill-color
+   for the glyphs. The long transition delay stops the browser repainting its
+   own colour a moment after ours. */
+.field-input:-webkit-autofill,
+.field-input:-webkit-autofill:hover,
+.field-input:-webkit-autofill:focus,
+.field-input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text-primary) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+  box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+  caret-color: var(--text-primary);
+  transition: background-color 100000s ease-in-out 0s;
+}
+
+/* Firefox uses its own mechanism. */
+.field-input:autofill {
+  background: var(--input-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Placeholders were inheriting the input colour, so on a dark field they came
+   out nearly invisible. */
+.field-input::placeholder { color: var(--text-muted); opacity: 1; }
+
+/* Native date and time pickers render a black glyph on dark backgrounds. */
+[data-theme='dark'] .field-input::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(.65);
+}
+
+/* --- stat card head ---------------------------------------------------- */
+.stat-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-2);
+  margin-bottom: var(--s-2);
+}
+.stat-head .stat-label { margin: 0; }
+.stat-foot { margin-top: var(--s-1); }
+
+/* A tinted glyph, not a filled badge — at this size a solid block competes
+   with the number, which is what the card exists to show. */
+.stat-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: var(--r-chip);
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+.stat-icon.is-ok    { background: var(--success-soft); color: var(--success); }
+.stat-icon.is-warn  { background: var(--warning-soft); color: var(--warning); }
+.stat-icon.is-money { background: var(--warning-soft); color: var(--gold-deep); }
+
+/* Icons inside a label sit on the text baseline rather than floating. */
+.detail-list dt { display: inline-flex; align-items: center; gap: 6px; }
+.detail-list dt svg { opacity: .7; flex: none; }
+
+/* --- stat icons --------------------------------------------------------
+   A tinted square, not a loose glyph. Someone scanning a grid of figures
+   recognises the shapes before they read any of the labels. */
+.stat-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: var(--s-3);
+  border-radius: var(--r-chip);
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+.stat-icon.is-money   { background: var(--warning-soft); color: var(--warning); }
+.stat-icon.is-success { background: var(--success-soft); color: var(--success); }
+.stat-icon.is-danger  { background: var(--danger-soft);  color: var(--danger); }
+.stat-icon.is-neutral { background: var(--neutral-soft); color: var(--neutral); }
