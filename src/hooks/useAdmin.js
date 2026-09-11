@@ -266,6 +266,19 @@ export function useCollectorDetail(collectorId) {
   );
 }
 
+export function useNotificationSettings() {
+  return useSupabaseQuery(
+    () =>
+      unwrap(
+        supabase
+          .from('notification_settings')
+          .select('type, send_email, description')
+          .order('type', { ascending: true })
+      ),
+    []
+  );
+}
+
 export function useAdminActions() {
   const savePlan = useCallback(async (plan) => {
     const payload = {
@@ -334,8 +347,16 @@ export function useAdminActions() {
     if (error) throw error;
   }, []);
 
+  const setEmailForType = useCallback(async (type, sendEmail) => {
+    const { error } = await supabase
+      .from('notification_settings')
+      .update({ send_email: sendEmail, updated_at: new Date().toISOString() })
+      .eq('type', type);
+    if (error) throw error;
+  }, []);
+
   return {
     savePlan, togglePlan, assignCollector, setAccountStatus,
-    receiveHandover, disputeHandover, setUserRole,
+    receiveHandover, disputeHandover, setUserRole, setEmailForType,
   };
 }
