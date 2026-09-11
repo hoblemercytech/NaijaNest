@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
-import { FileQuestion, ShieldCheck, ShieldAlert, Clock } from 'lucide-react';
+import { FileQuestion, ShieldCheck, ShieldAlert, Clock, Banknote, CalendarCheck } from 'lucide-react';
 import {
   useFinancialSummary, useOpenCycle, useCycleSchedule,
   useActivePlans, useCustomerActions,
@@ -98,11 +98,15 @@ export default function Dashboard() {
             label="Today's contribution"
             value={todayRow ? money(todayRow.expected_amount) : '—'}
             foot={todayRow ? (todayRow.status === 'PAID' ? 'Paid' : 'Not paid yet') : 'Outside your cycle'}
+            Icon={Banknote}
+            tone={todayRow?.status === 'PAID' ? 'ok' : 'warn'}
           />
           <Stat
             label="Days paid"
             value={`${openCycle.days_paid} / ${openCycle.duration_days}`}
             foot={openCycle.days_missed > 0 ? `${openCycle.days_missed} missed` : 'On track'}
+            Icon={CalendarCheck}
+            tone={openCycle.days_missed > 0 ? 'warn' : 'ok'}
           />
         </div>
       )}
