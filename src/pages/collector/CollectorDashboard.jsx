@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ClipboardList, ArrowUpRight } from 'lucide-react';
 import { useDailySummary, usePendingCycles, useCollectorWithdrawals } from '../../hooks/useCollector';
 import { useAuth } from '../../context/AuthContext';
 import { money } from '../../lib/format';
@@ -81,6 +82,7 @@ export default function CollectorDashboard() {
 
       <div className="grid-2" style={{ marginTop: 'var(--s-4)' }}>
         <TaskTile
+          Icon={ClipboardList}
           to="/collector/cycles"
           label="Cycle requests"
           count={cycles.data?.length ?? 0}
@@ -88,6 +90,7 @@ export default function CollectorDashboard() {
           hint="Waiting for you to activate"
         />
         <TaskTile
+          Icon={ArrowUpRight}
           to="/collector/withdrawals"
           label="Withdrawals"
           count={pendingWithdrawals.length}
@@ -103,9 +106,14 @@ export default function CollectorDashboard() {
   );
 }
 
-function TaskTile({ to, label, count, loading, hint }) {
+function TaskTile({ to, label, count, loading, hint, Icon }) {
   return (
     <Link to={to} className={`task-tile${count > 0 ? ' is-waiting' : ''}`}>
+      {Icon && (
+        <span className={`stat-icon is-${count > 0 ? 'money' : 'neutral'}`} aria-hidden="true">
+          <Icon size={17} strokeWidth={1.9} />
+        </span>
+      )}
       <span className="stat-label">{label}</span>
       <span className="stat-value num">{loading ? '—' : count}</span>
       <span className="xs muted">{count > 0 ? hint : 'Nothing waiting'}</span>
