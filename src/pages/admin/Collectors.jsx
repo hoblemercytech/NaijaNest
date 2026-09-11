@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { UserCog } from 'lucide-react';
 import {
   useCollectors, useCollectorLoads, usePromotableUsers, useAdminActions,
 } from '../../hooks/useAdmin';
+import { useAvatarUrls } from '../../hooks/useAvatar';
 import { shortDate } from '../../lib/format';
 import { friendlyError } from '../../lib/errors';
 import { Card } from '../../components/ui/Card';
@@ -31,6 +33,7 @@ export default function Collectors() {
   const [promoting, setPromoting] = useState(false);
   const [demoting, setDemoting] = useState(null);
   const [busyId, setBusyId] = useState(null);
+  const avatars = useAvatarUrls(data?.map((c) => c.avatar_url));
 
   const refreshAll = () => {
     refetch();
@@ -69,7 +72,7 @@ export default function Collectors() {
           <EmptyState
             title="No collectors yet"
             message="Until a collector exists, customers cannot be assigned and no cycle can be activated."
-            icon="◈"
+            Icon={UserCog}
             action={<Button onClick={() => setPromoting(true)}>Add your first collector</Button>}
           />
         </Card>
@@ -82,7 +85,7 @@ export default function Collectors() {
             <Card key={c.id}>
               <div className="row-between" style={{ alignItems: 'flex-start' }}>
                 <div className="row" style={{ gap: 12, minWidth: 0 }}>
-                  <Avatar name={c.full_name} size={42} />
+                  <Avatar name={c.full_name} url={avatars[c.avatar_url]} size={42} />
                   <div style={{ minWidth: 0 }}>
                     <h3 style={{ fontSize: 'var(--t-body)' }}>{c.full_name}</h3>
                     <p className="xs muted num" style={{ margin: '2px 0 0' }}>
@@ -183,7 +186,7 @@ function PromoteModal({ open, onClose, onDone }) {
                 ? 'Try a different name, member ID or email.'
                 : 'Ask the person to sign up first, then promote them here.'
             }
-            icon="◈"
+            Icon={UserCog}
           />
         )}
 
