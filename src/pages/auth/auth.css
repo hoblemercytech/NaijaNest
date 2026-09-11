@@ -1148,6 +1148,78 @@
   }
 }
 
+
+/* ================================================================
+   SCOPE GUARD
+
+   The form rules above are unscoped, so they trade blows with
+   components.css: whichever loads second wins. main.jsx imports the
+   stylesheets after App, so components.css lands last and its
+   `background: var(--input-bg)` — white in light mode — overrode the
+   dark gradient. White box, white text, invisible until blur.
+
+   Re-declaring under `.auth` raises specificity to (0,2,0), which beats
+   a bare class regardless of load order. It also stops these leaking
+   into the dashboard, where #c7d0dc labels on a white card are unreadable.
+   ================================================================ */
+
+.auth .field-input {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(9, 17, 26, 0.92),
+      rgba(8, 15, 23, 0.96)
+    );
+  border-color: rgba(255, 255, 255, 0.105);
+  color: #f5f7fa;
+  -webkit-text-fill-color: #f5f7fa;
+  caret-color: var(--auth-primary-bright);
+}
+
+.auth .field-input::placeholder {
+  color: #586577;
+  -webkit-text-fill-color: #586577;
+  opacity: 1;
+}
+
+.auth .field-input:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.auth .field-input:focus {
+  border-color: rgba(36, 196, 125, 0.66);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(11, 21, 30, 0.98),
+      rgba(8, 17, 25, 1)
+    );
+  box-shadow:
+    0 0 0 4px rgba(24, 167, 106, 0.095),
+    0 0 22px rgba(24, 167, 106, 0.055),
+    inset 0 1px 2px rgba(0, 0, 0, 0.30);
+}
+
+.auth .field-label { color: #c7d0dc; }
+.auth .field-hint  { color: #687587; }
+.auth .field-error { color: var(--auth-danger); }
+
+/* Autofill. Chrome and Safari paint their own background and text colour and
+   ignore `background` entirely — a long inset shadow is the only thing that
+   covers it, and -webkit-text-fill-color the only thing that beats their text
+   colour. This is what makes the field look white on iOS. */
+.auth .field-input:-webkit-autofill,
+.auth .field-input:-webkit-autofill:hover,
+.auth .field-input:-webkit-autofill:focus,
+.auth .field-input:-webkit-autofill:active {
+  -webkit-text-fill-color: #f5f7fa;
+  -webkit-box-shadow: 0 0 0 1000px #0a121b inset;
+  caret-color: var(--auth-primary-bright);
+  border-color: rgba(255, 255, 255, 0.105);
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+
 /* ================================================================
    REDUCED MOTION
    ================================================================ */
