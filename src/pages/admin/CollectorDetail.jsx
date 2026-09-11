@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { useCollectorDetail } from '../../hooks/useAdmin';
-import { useAvatarUrl } from '../../hooks/useAvatar';
+import { useAvatarUrl, useAvatarUrls } from '../../hooks/useAvatar';
 import { money, shortDate, dateTime } from '../../lib/format';
 import { Card, CardHead } from '../../components/ui/Card';
 import Avatar from '../../components/ui/Avatar';
@@ -8,6 +8,7 @@ import StatusBadge from '../../components/ui/Status';
 import { EmptyState, ErrorState, SkeletonPanel, SkeletonLines } from '../../components/ui/States';
 import '../../components/customer-detail.css';
 import './admin.css';
+import { UserCog, Users, Wallet } from 'lucide-react';
 
 /**
  * One collector's position.
@@ -20,6 +21,7 @@ export default function CollectorDetail() {
   const { id } = useParams();
   const { data, loading, error, refetch } = useCollectorDetail(id);
   const avatar = useAvatarUrl(data?.profile?.avatar_url);
+  const avatars = useAvatarUrls(data?.customers?.map((c) => c.avatar_url));
 
   if (loading) {
     return (
@@ -34,7 +36,7 @@ export default function CollectorDetail() {
     return (
       <EmptyState
         title="Collector not found"
-        icon="◈"
+        Icon={UserCog}
         action={<Link to="/admin/collectors" className="btn btn-outline">Back to collectors</Link>}
       />
     );
@@ -81,7 +83,7 @@ export default function CollectorDetail() {
           <EmptyState
             title="No customers assigned"
             message="Assign customers from the Customers screen so this collector has a round."
-            icon="☰"
+            Icon={Users}
           />
         </Card>
       )}
@@ -91,7 +93,7 @@ export default function CollectorDetail() {
           <Link key={c.id} to={`/admin/users/${c.id}`} className="card card-link">
             <div className="row-between">
               <div className="row" style={{ gap: 12, minWidth: 0 }}>
-                <Avatar name={c.full_name} size={38} />
+                <Avatar name={c.full_name} url={avatars[c.avatar_url]} size={38} />
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontWeight: 600 }}>{c.full_name}</div>
                   <div className="xs muted num">{c.member_id} · {c.phone || 'no phone'}</div>
@@ -111,7 +113,7 @@ export default function CollectorDetail() {
           <EmptyState
             title="No handovers yet"
             message="They have not passed any cash to the office."
-            icon="▦"
+            Icon={Wallet}
           />
         )}
         {handovers.map((h) => (
