@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useDueContributions, useTodaysCollections, useCollectorActions } from '../../hooks/useCollector';
+import { useAvatarUrls } from '../../hooks/useAvatar';
 import { money, shortDate, timeOnly } from '../../lib/format';
 import { friendlyError } from '../../lib/errors';
 import { Card } from '../../components/ui/Card';
@@ -10,6 +11,7 @@ import Avatar from '../../components/ui/Avatar';
 import { EmptyState, ErrorState, SkeletonLines } from '../../components/ui/States';
 import { useToast } from '../../components/ui/Toast';
 import './collector.css';
+import { CheckCircle2 } from 'lucide-react';
 
 /**
  * The screen a collector uses all day, standing up, one-handed.
@@ -27,6 +29,7 @@ export default function Collect() {
   const [search, setSearch] = useState('');
   const due = useDueContributions(scope, search);
   const collected = useTodaysCollections();
+  const avatars = useAvatarUrls(due.data?.map((r) => r.customer?.avatar_url));
   const [selected, setSelected] = useState(null);
 
   const refreshAll = () => {
@@ -80,7 +83,7 @@ export default function Collect() {
                   ? "Nothing left on today's round. Check back tomorrow."
                   : 'None of your customers have an unpaid day behind them.'
               }
-              icon="✓"
+              Icon={CheckCircle2}
             />
           </Card>
         )}
@@ -88,7 +91,7 @@ export default function Collect() {
         <div className="pay-list">
           {due.data?.map((row) => (
             <button key={row.id} className="pay-row" onClick={() => setSelected(row)}>
-              <Avatar name={row.customer?.full_name} size={44} />
+              <Avatar name={row.customer?.full_name} url={avatars[row.customer?.avatar_url]} size={44} />
               <span className="pay-who">
                 <span className="pay-name">{row.customer?.full_name}</span>
                 <span className="pay-meta num">
