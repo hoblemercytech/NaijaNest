@@ -1,3 +1,6 @@
+import {
+  ArrowUpRight, CalendarDays, CalendarRange, TrendingUp, UserCog, Users, Wallet,
+} from 'lucide-react';
 import { useAdminDashboard } from '../../hooks/useAdmin';
 import { money } from '../../lib/format';
 import { Card, CardHead } from '../../components/ui/Card';
@@ -51,15 +54,22 @@ export default function AdminDashboard() {
       </section>
 
       <div className="metric-grid" style={{ marginTop: 'var(--s-4)' }}>
-        <Metric label="Collected today" value={money(d.collected_today)} />
-        <Metric label="This week" value={money(d.collected_week)} />
-        <Metric label="This month" value={money(d.collected_month)} />
-        <Metric label="Customers" value={d.total_users ?? 0} foot={`${d.active_contributors ?? 0} contributing`} />
-        <Metric label="Collectors" value={d.total_collectors ?? 0} />
+        <Metric label="Collected today" value={money(d.collected_today)} Icon={TrendingUp} />
+        <Metric label="This week" value={money(d.collected_week)} Icon={CalendarDays} />
+        <Metric label="This month" value={money(d.collected_month)} Icon={CalendarRange} />
+        <Metric
+          label="Customers"
+          value={d.total_users ?? 0}
+          foot={`${d.active_contributors ?? 0} contributing`}
+          Icon={Users}
+        />
+        <Metric label="Collectors" value={d.total_collectors ?? 0} Icon={UserCog} />
         <Metric
           label="Pending withdrawals"
           value={d.pending_withdrawals ?? 0}
           foot={money(d.pending_withdrawal_amount)}
+          Icon={ArrowUpRight}
+          tone={(d.pending_withdrawals ?? 0) > 0 ? 'warn' : 'accent'}
         />
       </div>
 
@@ -67,7 +77,7 @@ export default function AdminDashboard() {
         <CardHead title="Cash position" />
         <dl className="detail-list">
           <div>
-            <dt>Held by collectors</dt>
+            <dt><Wallet size={14} strokeWidth={1.9} /> Held by collectors</dt>
             <dd className="num">{money(withCollectors)}</dd>
           </div>
           <div>
@@ -92,12 +102,19 @@ export default function AdminDashboard() {
   );
 }
 
-function Metric({ label, value, foot }) {
+function Metric({ label, value, foot, Icon, tone = 'accent' }) {
   return (
     <div className="stat">
-      <div className="stat-label">{label}</div>
+      <div className="stat-head">
+        <span className="stat-label">{label}</span>
+        {Icon && (
+          <span className={`stat-icon is-${tone}`} aria-hidden="true">
+            <Icon size={15} strokeWidth={2} />
+          </span>
+        )}
+      </div>
       <div className="stat-value num">{value}</div>
-      {foot && <div className="xs muted" style={{ marginTop: 2 }}>{foot}</div>}
+      {foot && <div className="xs muted stat-foot">{foot}</div>}
     </div>
   );
 }
