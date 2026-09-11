@@ -1,57 +1,179 @@
+
 /* =====================================================================
    NaijaNest design tokens
 
-   Green carries trust. Gold is reserved for money and primary action — if it
-   appears anywhere else it stops meaning anything.
+   Two layers, on purpose:
 
-   The neutral scale is warm and green-leaning rather than pure grey. A flat
-   #FFF surface on a #F5F5F5 background is what makes an interface read as a
-   default template; giving both a slight green cast and putting real depth
-   between the layers is what makes it read as a considered product.
+   1. BRAND — the green and gold from the logo. Constant in both themes. A
+      brand that changes colour when the lights go out is not a brand.
+
+   2. SEMANTIC — --bg, --surface, --text-primary and so on. These are what
+      components use. Switching [data-theme] rewrites this layer only, so the
+      whole dashboard transforms without a single component knowing a theme
+      exists.
+
+   The legacy aliases at the bottom map the original variable names onto the
+   semantic layer, so every stylesheet written before this file themes itself
+   without being touched.
    ===================================================================== */
 
 :root {
-  /* --- brand ------------------------------------------------------- */
-  --ink:        #06231A;   /* deepest green-black, body copy */
-  --green-950:  #04180F;
-  --green-900:  #072A1E;
-  --green-800:  #0B3D2C;   /* primary surface */
-  --green-700:  #0E5238;
-  --green-600:  #12694A;
-  --green-400:  #3E9873;
-  --green-200:  #BEDCCC;
-  --green-100:  #DDEDE4;
-  --green-050:  #EFF6F2;
+  /* ---------- brand: identical in both themes --------------------- */
+  --brand-950:  #04180F;
+  --brand-900:  #072A1E;
+  --brand-800:  #0B3D2C;
+  --brand-700:  #0E5238;
+  --brand-600:  #12694A;
+  --brand-400:  #3E9873;
+  --brand-200:  #BEDCCC;
 
   --gold:       #FAB500;
   --gold-light: #FFD166;
   --gold-deep:  #8F6200;
-  --gold-050:   #FFF6E0;
 
-  /* --- neutrals ---------------------------------------------------- */
-  /* Warm-green tinted, never pure grey. */
-  --paper:       #EDF2EE;
-  --paper-deep:  #E3EBE6;
-  --surface:     #FFFFFF;
-  --surface-alt: #F8FBF9;
-  --line:        #DDE6E0;
-  --line-strong: #C3D2C9;
-  --muted:       #4F6159;
-  --muted-soft:  #7B8D84;
+  /* ---------- semantic: LIGHT (the default) ------------------------ */
+  --bg:               #F2F6F3;
+  --bg-subtle:        #E8EFEA;
+  --surface:          #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --surface-hover:    #F5F9F6;
+  --surface-sunken:   #F8FBF9;
 
-  /* --- status ------------------------------------------------------ */
-  --ok:         #10714A;
-  --ok-bg:      #DDF0E6;
-  --warn:       #93590A;
-  --warn-bg:    #FBEED6;
-  --danger:     #9B241C;
-  --danger-bg:  #FAE2DF;
-  --neutral:    #4F6159;
-  --neutral-bg: #E7EDE9;
-  --future:     #7B8D84;
-  --future-bg:  #F0F4F1;
+  --text-primary:     #06231A;
+  --text-secondary:   #4F6159;
+  --text-muted:       #7B8D84;
+  --text-inverse:     #FFFFFF;
 
-  /* --- type -------------------------------------------------------- */
+  --border:           #DFE8E2;
+  --border-strong:    #C3D2C9;
+
+  --accent:           var(--brand-800);
+  --accent-hover:     var(--brand-900);
+  --accent-soft:      #E4F0EA;
+  --accent-text:      var(--brand-800);
+
+  --money:            var(--gold);
+  --money-hover:      #E0A200;
+  --money-text:       var(--brand-950);
+
+  --success:          #10714A;
+  --success-soft:     #DDF0E6;
+  --warning:          #93590A;
+  --warning-soft:     #FBEED6;
+  --danger:           #9B241C;
+  --danger-soft:      #FAE2DF;
+  --neutral:          #4F6159;
+  --neutral-soft:     #E7EDE9;
+
+  --input-bg:         #FFFFFF;
+  --input-border:     #C3D2C9;
+
+  /* The dark hero panel that carries a balance. Kept as its own token so it
+     can stay dark in light mode and shift subtly in dark mode. */
+  --panel-from:       var(--brand-700);
+  --panel-via:        var(--brand-900);
+  --panel-to:         var(--brand-950);
+  --panel-text:       #FFFFFF;
+  --panel-text-soft:  rgba(255, 255, 255, .74);
+  --panel-rule:       rgba(255, 255, 255, .16);
+
+  --shadow-sm:
+    0 1px 2px rgba(6, 35, 26, 0.05),
+    0 4px 12px -4px rgba(6, 35, 26, 0.06);
+  --shadow-md:
+    0 2px 4px rgba(6, 35, 26, 0.06),
+    0 12px 28px -12px rgba(6, 35, 26, 0.14);
+  --shadow-panel:
+    0 2px 6px rgba(4, 24, 15, 0.24),
+    0 20px 48px -20px rgba(4, 24, 15, 0.55);
+  --shadow-pop:
+    0 8px 16px -8px rgba(6, 35, 26, 0.2),
+    0 32px 64px -24px rgba(6, 35, 26, 0.35);
+
+  --overlay-bg: rgba(4, 24, 15, .55);
+
+  /* The app background field. A token because dark mode needs a different
+     recipe, not a darker version of the same one. */
+  --bg-field:
+    radial-gradient(1200px 700px at 85% -8%, rgba(62, 152, 115, 0.14), transparent 62%),
+    radial-gradient(900px 600px at -10% 8%, rgba(250, 181, 0, 0.07), transparent 58%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-subtle) 100%);
+}
+
+/* =====================================================================
+   DARK
+
+   Deep green-navy, not black and not an inversion. Surfaces step up toward
+   the light as they come forward, borders stay quiet, and the accent shifts
+   lighter because the deep brand green disappears against a dark ground.
+   ===================================================================== */
+[data-theme='dark'] {
+  --bg:               #081310;
+  --bg-subtle:        #050E0B;
+  --surface:          #0E1F1A;
+  --surface-elevated: #132720;
+  --surface-hover:    #182F27;
+  --surface-sunken:   #0B1915;
+
+  --text-primary:     #E9F1EC;
+  --text-secondary:   #9EB3A9;
+  --text-muted:       #74897F;
+  --text-inverse:     #06231A;
+
+  --border:           #1D332B;
+  --border-strong:    #2C4739;
+
+  /* The 800 green vanishes on a dark ground, so the accent moves up the
+     scale rather than the background moving down. */
+  --accent:           var(--brand-600);
+  --accent-hover:     var(--brand-400);
+  --accent-soft:      rgba(62, 152, 115, .14);
+  --accent-text:      #6FC49B;
+
+  --money:            var(--gold);
+  --money-hover:      var(--gold-light);
+  --money-text:       #04180F;
+
+  --success:          #5CC08D;
+  --success-soft:     rgba(92, 192, 141, .14);
+  --warning:          #E8B75A;
+  --warning-soft:     rgba(232, 183, 90, .14);
+  --danger:           #E8887F;
+  --danger-soft:      rgba(232, 136, 127, .14);
+  --neutral:          #9EB3A9;
+  --neutral-soft:     rgba(158, 179, 169, .12);
+
+  --input-bg:         #0B1915;
+  --input-border:     #2C4739;
+
+  --panel-from:       #10352A;
+  --panel-via:        #0A2319;
+  --panel-to:         #051510;
+  --panel-text:       #FFFFFF;
+  --panel-text-soft:  rgba(255, 255, 255, .7);
+  --panel-rule:       rgba(255, 255, 255, .12);
+
+  /* Shadows barely read on a dark ground — depth comes from the surface
+     steps above. Keeping them subtle avoids muddy halos. */
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, .4);
+  --shadow-md:  0 2px 8px rgba(0, 0, 0, .45), 0 12px 32px -16px rgba(0, 0, 0, .6);
+  --shadow-panel: 0 2px 8px rgba(0, 0, 0, .5), 0 24px 56px -24px rgba(0, 0, 0, .8);
+  --shadow-pop: 0 12px 24px -12px rgba(0, 0, 0, .6), 0 40px 80px -32px rgba(0, 0, 0, .9);
+
+  --overlay-bg: rgba(0, 0, 0, .68);
+
+  --bg-field:
+    radial-gradient(1100px 640px at 84% -10%, rgba(62, 152, 115, .10), transparent 60%),
+    radial-gradient(800px 520px at -8% 10%, rgba(250, 181, 0, .045), transparent 58%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-subtle) 100%);
+
+  color-scheme: dark;   /* native scrollbars, date pickers and form controls */
+}
+
+/* =====================================================================
+   Typography, space and form — theme-independent
+   ===================================================================== */
+:root {
   --font-display: 'Sora', system-ui, sans-serif;
   --font-body: 'Instrument Sans', system-ui, -apple-system, sans-serif;
 
@@ -63,36 +185,62 @@
   --t-sm:      0.8125rem;
   --t-xs:      0.75rem;
 
-  /* --- space ------------------------------------------------------- */
   --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
   --s-5: 20px; --s-6: 24px; --s-8: 32px; --s-10: 40px; --s-12: 56px;
 
-  /* --- form -------------------------------------------------------- */
-  /* Radius encodes hierarchy: bigger surface, softer corner. */
   --r-chip:  10px;
   --r-input: 12px;
   --r-tile:  16px;
   --r-panel: 24px;
   --r-full:  999px;
 
-  /* Layered shadows. A single soft blur reads as a cheap drop shadow; a tight
-     contact shadow plus a wide ambient one is what gives a card real weight. */
-  --shadow-tile:
-    0 1px 2px rgba(6, 35, 26, 0.05),
-    0 4px 12px -4px rgba(6, 35, 26, 0.06);
-  --shadow-raised:
-    0 2px 4px rgba(6, 35, 26, 0.06),
-    0 12px 28px -12px rgba(6, 35, 26, 0.14);
-  --shadow-panel:
-    0 2px 6px rgba(4, 24, 15, 0.24),
-    0 20px 48px -20px rgba(4, 24, 15, 0.55);
-  --shadow-pop:
-    0 8px 16px -8px rgba(6, 35, 26, 0.2),
-    0 32px 64px -24px rgba(6, 35, 26, 0.35);
-
-  --tap: 44px;              /* minimum touch target */
-  --nav-h: 64px;            /* mobile bottom bar */
+  --tap: 44px;
+  --nav-h: 64px;
   --sidebar-w: 252px;
+  --sidebar-w-compact: 76px;
+  --header-h: 64px;
+}
+
+/* =====================================================================
+   Legacy aliases
+
+   Every stylesheet written before the semantic layer existed uses these
+   names. Pointing them at the semantic tokens themes those files for free —
+   no sweep through a dozen CSS files, and nothing left behind to drift.
+   ===================================================================== */
+:root, [data-theme='dark'] {
+  --ink:         var(--text-primary);
+  --muted:       var(--text-secondary);
+  --muted-soft:  var(--text-muted);
+  --paper:       var(--bg);
+  --paper-deep:  var(--bg-subtle);
+  --surface-alt: var(--surface-sunken);
+  --line:        var(--border);
+  --line-strong: var(--border-strong);
+
+  --green-950: var(--brand-950);
+  --green-900: var(--brand-900);
+  --green-800: var(--accent);
+  --green-700: var(--brand-700);
+  --green-600: var(--accent-text);
+  --green-400: var(--brand-400);
+  --green-200: var(--brand-200);
+  --green-100: var(--accent-soft);
+  --green-050: var(--accent-soft);
+
+  --gold-050:  var(--warning-soft);
+
+  --ok:         var(--success);
+  --ok-bg:      var(--success-soft);
+  --warn:       var(--warning);
+  --warn-bg:    var(--warning-soft);
+  --danger-bg:  var(--danger-soft);
+  --neutral-bg: var(--neutral-soft);
+  --future:     var(--text-muted);
+  --future-bg:  var(--surface-sunken);
+
+  --shadow-tile:   var(--shadow-sm);
+  --shadow-raised: var(--shadow-md);
 }
 
 @media (prefers-reduced-motion: reduce) {
