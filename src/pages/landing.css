@@ -133,6 +133,7 @@
   /images/naijanest-hero.jpg
 */
 
+
 .lp-hero-image {
   position: absolute;
   inset: 0;
@@ -161,8 +162,8 @@
     center / cover no-repeat;
 
   transform: scale(1.015);
-    background-position: 68% center;
 }
+
 
 .lp-hero-image::after {
   content: '';
