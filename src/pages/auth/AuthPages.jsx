@@ -138,7 +138,7 @@ export function LoginPage() {
   return (
     <AuthFrame
       title="Welcome back"
-      lead="Sign in to manage your contributions, balance, and account."
+      lead="Sign in to manage your contributions."
       foot={<>New to NaijaNest? <Link to="/signup">Create an account</Link></>}
     >
       <form onSubmit={submit} noValidate className="auth-form">
