@@ -47,6 +47,7 @@ const AdminContributions = lazy(() => import('./pages/admin/Contributions'));
 const AdminWithdrawals = lazy(() => import('./pages/admin/Withdrawals'));
 const AdminCash = lazy(() => import('./pages/admin/Cash'));
 const AdminKyc = lazy(() => import('./pages/admin/Kyc'));
+const AdminNotificationSettings = lazy(() => import('./pages/admin/Notifications'));
 const Analytics = lazy(() => import('./pages/admin/Analytics'));
 const AuditLog = lazy(() => import('./pages/admin/AuditLog'));
 
@@ -107,6 +108,7 @@ export default function App() {
         <Route path="/admin/cash" element={<AdminCash />} />
         <Route path="/admin/verification" element={<AdminKyc />} />
         <Route path="/admin/analytics" element={<Analytics />} />
+        <Route path="/admin/email-alerts" element={<AdminNotificationSettings />} />
         <Route path="/admin/audit-logs" element={<AuditLog />} />
         <Route path="/admin/notifications" element={<NotificationsPage />} />
       </Route>
