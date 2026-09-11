@@ -69,7 +69,7 @@ export function useCollectors() {
       unwrap(
         supabase
           .from('profiles')
-          .select('id, member_id, full_name, email, phone, status, created_at')
+          .select('id, member_id, full_name, email, phone, avatar_url, status, created_at')
           .eq('role', 'COLLECTOR')
           .order('full_name', { ascending: true })
       ),
@@ -210,7 +210,7 @@ export function useCollectorDetail(collectorId) {
             .from('collector_assignments')
             .select(`
               assigned_at,
-              customer:profiles!collector_assignments_customer_id_fkey(id, member_id, full_name, phone, status)
+              customer:profiles!collector_assignments_customer_id_fkey(id, member_id, full_name, phone, avatar_url, status)
             `)
             .eq('collector_id', collectorId)
             .eq('is_active', true)
