@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useCustomers, useCollectors, useCollectorLoads, useAdminActions } from '../../hooks/useAdmin';
+import { useAvatarUrls } from '../../hooks/useAvatar';
 import { shortDate } from '../../lib/format';
 import { friendlyError } from '../../lib/errors';
 import { Card } from '../../components/ui/Card';
@@ -11,6 +13,7 @@ import Avatar from '../../components/ui/Avatar';
 import { EmptyState, ErrorState, SkeletonLines } from '../../components/ui/States';
 import { useToast } from '../../components/ui/Toast';
 import './admin.css';
+import { UserCog, Users } from 'lucide-react';
 
 const PAGE_SIZE = 20;
 
@@ -25,6 +28,7 @@ export default function Customers() {
   const [assigning, setAssigning] = useState(null);
 
   const rows = data?.rows || [];
+  const avatars = useAvatarUrls(rows.map((c) => c.avatar_url));
   const total = data?.count || 0;
   const pages = Math.ceil(total / PAGE_SIZE);
 
@@ -56,7 +60,7 @@ export default function Customers() {
             <EmptyState
               title={search ? 'No customers match that search' : 'No customers yet'}
               message={search ? 'Try a different name, member ID or phone number.' : 'Customers appear here as soon as they sign up.'}
-              icon="☰"
+              Icon={Users}
             />
           </Card>
         )}
@@ -66,7 +70,7 @@ export default function Customers() {
             <Card key={c.id}>
               <div className="row-between" style={{ alignItems: 'flex-start', gap: 'var(--s-3)' }}>
                 <div className="row" style={{ gap: 12, minWidth: 0 }}>
-                  <Avatar name={c.full_name} size={42} />
+                  <Avatar name={c.full_name} url={avatars[c.avatar_url]} size={42} />
                   <div style={{ minWidth: 0 }}>
                     <h3 style={{ fontSize: 'var(--t-body)' }}>{c.full_name}</h3>
                     <p className="xs muted num" style={{ margin: '2px 0 0' }}>
@@ -84,9 +88,12 @@ export default function Customers() {
                 <div style={{ textAlign: 'right', flex: 'none' }}>
                   <StatusBadge status={c.status} />
                   <div className="xs muted" style={{ marginTop: 6 }}>{shortDate(c.created_at)}</div>
-                  <Button variant="outline" size="sm" style={{ marginTop: 8 }} onClick={() => setAssigning(c)}>
-                    {c.collector ? 'Reassign' : 'Assign'}
-                  </Button>
+                  <div className="row" style={{ gap: 6, marginTop: 8, justifyContent: 'flex-end' }}>
+                    <Link to={`/admin/users/${c.id}`} className="btn btn-ghost btn-sm">Open</Link>
+                    <Button variant="outline" size="sm" onClick={() => setAssigning(c)}>
+                      {c.collector ? 'Reassign' : 'Assign'}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -159,7 +166,7 @@ function AssignModal({ customer, onClose, onDone }) {
         <EmptyState
           title="No active collectors"
           message="Create a collector before assigning customers."
-          icon="◈"
+          Icon={UserCog}
         />
       )}
 
