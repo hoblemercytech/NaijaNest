@@ -30,7 +30,7 @@ export default function Cash() {
       <header className="page-head row-between">
         <div>
           <h1>Cash handover</h1>
-          <p>Money you have passed to NaijaNest.</p>
+          <p>Money you have passed to BudgetSave.</p>
         </div>
         <Button onClick={() => setOpen(true)}>New handover</Button>
       </header>
