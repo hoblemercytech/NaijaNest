@@ -338,6 +338,30 @@ export function useAdminActions() {
     if (error) throw error;
   }, []);
 
+  const confirmWithdrawal = useCallback(async (id) => {
+    const { error } = await supabase.rpc('nn_confirm_withdrawal', { p_withdrawal_id: id });
+    if (error) throw error;
+  }, []);
+
+  const rejectWithdrawal = useCallback(async (id, reason) => {
+    const { error } = await supabase.rpc('nn_reject_withdrawal', {
+      p_withdrawal_id: id,
+      p_reason: reason,
+    });
+    if (error) throw error;
+  }, []);
+
+  const payWithdrawal = useCallback(async (id, amount, reference, note) => {
+    const { error } = await supabase.rpc('nn_mark_withdrawal_paid', {
+      p_withdrawal_id: id,
+      p_amount: amount,
+      p_paid_at: new Date().toISOString(),
+      p_note: note || null,
+      p_reference: reference || null,
+    });
+    if (error) throw error;
+  }, []);
+
   const setUserRole = useCallback(async (userId, role, reason) => {
     const { error } = await supabase.rpc('nn_set_user_role', {
       p_user: userId,
@@ -358,5 +382,6 @@ export function useAdminActions() {
   return {
     savePlan, togglePlan, assignCollector, setAccountStatus,
     receiveHandover, disputeHandover, setUserRole, setEmailForType,
+    confirmWithdrawal, rejectWithdrawal, payWithdrawal,
   };
 }
