@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useDueContributions, useTodaysCollections, useCollectorActions } from '../../hooks/useCollector';
 import { useAvatarUrls } from '../../hooks/useAvatar';
+import { useRealtime } from '../../hooks/useRealtime';
 import { money, shortDate, timeOnly } from '../../lib/format';
 import { friendlyError } from '../../lib/errors';
 import { Card } from '../../components/ui/Card';
@@ -32,10 +33,14 @@ export default function Collect() {
   const avatars = useAvatarUrls(due.data?.map((r) => r.customer?.avatar_url));
   const [selected, setSelected] = useState(null);
 
-  const refreshAll = () => {
+  const refreshAll = useCallback(() => {
     due.refetch();
     collected.refetch();
-  };
+  }, [due, collected]);
+
+  // Two collectors can work the same round. Without this, one records a payment
+  // and the other still sees the customer as owing.
+  useRealtime(['daily_contributions'], refreshAll);
 
   return (
     <>
