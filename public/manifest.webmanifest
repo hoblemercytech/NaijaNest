@@ -3,7 +3,7 @@
   "short_name": "Budgetsave",
   "description": "Track the cash you contribute to your collector. Every naira, every day.",
   "id": "/",
-  "start_url": "/dashboard",
+ "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
