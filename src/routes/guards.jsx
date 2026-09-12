@@ -3,6 +3,7 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LoadingState } from '../components/ui/States';
+import { isStandalone } from '../lib/pwa';
 
 export const homeFor = (role) =>
   role === 'ADMIN' ? '/admin/dashboard' : role === 'COLLECTOR' ? '/collector/dashboard' : '/dashboard';
@@ -17,7 +18,16 @@ export function RequireAuth({ roles, children }) {
   const location = useLocation();
 
   if (loading) return <LoadingState label="Checking your session" />;
-  if (!session) return <Navigate to="/login" state={{ from: location }} replace />;
+
+  if (!session) {
+    // Installed from the home screen there is no marketing page to fall back
+    // to, and a bare login form gives someone no route to "create an account".
+    // The welcome screen is the app's front door; in a browser tab the landing
+    // page already does that job.
+    const entry = isStandalone() ? '/welcome' : '/login';
+    return <Navigate to={entry} state={{ from: location }} replace />;
+  }
+
   if (!profile) return <LoadingState label="Loading your profile" />;
 
   if (profile.status === 'DISABLED') {
