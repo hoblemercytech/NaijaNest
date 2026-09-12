@@ -47,10 +47,6 @@ export default function Welcome() {
             <Link to="/">Learn more</Link>
           </div>
 
-          <p className="wc-note">
-            BudgetSave never collects money online. Contributions and withdrawals
-            are cash, handled by your assigned collector.
-          </p>
         </div>
       </div>
     </div>
