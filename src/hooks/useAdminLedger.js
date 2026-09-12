@@ -76,7 +76,7 @@ export function useAdminWithdrawals({ status = '', from = '', to = '', page = 0 
       .from('withdrawals')
       .select(
         `id, requested_amount, status, requested_at, confirmed_at, paid_at,
-         rejection_reason, note,
+         rejection_reason, note, bank_name, account_number, account_name, paid_reference,
          customer:profiles!withdrawals_user_id_fkey(id, member_id, full_name),
          collector:profiles!withdrawals_collector_id_fkey(id, full_name)`,
         { count: 'exact' }
