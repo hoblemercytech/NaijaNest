@@ -24,7 +24,7 @@ export default function Withdrawals() {
 
   const exportRows = () =>
     downloadCsv(
-      'naijanest-withdrawals',
+      'budgetsave-withdrawals',
       [
         { key: 'requested_at', label: 'Requested', format: (v) => dateTime(v) },
         { key: 'customer.member_id', label: 'Member ID' },
