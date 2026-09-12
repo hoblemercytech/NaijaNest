@@ -105,7 +105,7 @@ export default function NotificationSettings() {
           <p className="field-hint">
             Contribution recorded fires once per customer per day. With a few hundred
             customers that alone is a few hundred emails daily — turn it off first if
-            people start ignoring NaijaNest mail.
+            people start ignoring BudgetSave mail.
           </p>
         </>
       )}
