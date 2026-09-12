@@ -7,26 +7,20 @@ import {
   useActivePlans, useCustomerActions,
 } from '../../hooks/useCustomer';
 import { useRealtime, LIVE_TABLES } from '../../hooks/useRealtime';
+import { FREQUENCIES, PER_LABEL, NIGERIAN_BANKS } from '../../lib/banks';
 import { money, shortDate, isoDate } from '../../lib/format';
 import { friendlyError } from '../../lib/errors';
 import { Card, CardHead, Stat } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
+import { Input, Select } from '../../components/ui/Field';
 import StatusBadge, { ProgressBar } from '../../components/ui/Status';
 import { EmptyState, ErrorState, SkeletonPanel, SkeletonLines } from '../../components/ui/States';
 import { useToast } from '../../components/ui/Toast';
 import ContributionCalendar from '../../components/ContributionCalendar';
 import './user.css';
 
-/* Labelled because "365" reads as a number to scan past, while "1 year" is a
-   commitment someone weighs. */
-const DURATIONS = [
-  { days: 30, label: '30', unit: 'days' },
-  { days: 60, label: '60', unit: 'days' },
-  { days: 90, label: '90', unit: 'days' },
-  { days: 180, label: '6', unit: 'months' },
-  { days: 365, label: '1', unit: 'year' },
-];
+
 
 export default function Dashboard() {
   const { profile } = useAuth();
@@ -50,7 +44,9 @@ export default function Dashboard() {
   const openCycle = cycle.data;
   const balance = Number(summary.data?.current_balance ?? 0);
   const cycleBalance = Number(openCycle?.contributed ?? 0) - Number(openCycle?.withdrawn ?? 0);
-  const hasBalance = openCycle && ['ACTIVE', 'COMPLETED'].includes(openCycle.status) && cycleBalance > 0;
+  // A fixed term means fixed: the money is locked until the cycle completes.
+  const hasBalance = openCycle?.status === 'COMPLETED' && cycleBalance > 0;
+  const stillRunning = openCycle?.status === 'ACTIVE';
   // The database refuses an unverified withdrawal regardless, but showing the
   // button and then failing would be a worse experience than saying so first.
   const verified = profile?.kyc_verified;
@@ -92,6 +88,13 @@ export default function Dashboard() {
               Verify your identity to withdraw
             </Link>
           )}
+
+          {stillRunning && cycleBalance > 0 && (
+            <p className="panel-locked">
+              Locked until {shortDate(openCycle.expected_end_date)} — your savings are
+              held for the full term.
+            </p>
+          )}
         </section>
       )}
 
@@ -99,15 +102,15 @@ export default function Dashboard() {
       {openCycle?.status === 'ACTIVE' && (
         <div className="grid-2" style={{ marginTop: 'var(--s-4)' }}>
           <Stat
-            label="Today's contribution"
+            label="Due now"
             value={todayRow ? money(todayRow.expected_amount) : '—'}
             foot={todayRow ? (todayRow.status === 'PAID' ? 'Paid' : 'Not paid yet') : 'Outside your cycle'}
             Icon={Banknote}
             tone={todayRow?.status === 'PAID' ? 'ok' : 'warn'}
           />
           <Stat
-            label="Days paid"
-            value={`${openCycle.days_paid} / ${openCycle.duration_days}`}
+            label="Payments made"
+            value={`${openCycle.days_paid} / ${openCycle.periods ?? openCycle.duration_days}`}
             foot={openCycle.days_missed > 0 ? `${openCycle.days_missed} missed` : 'On track'}
             Icon={CalendarCheck}
             tone={openCycle.days_missed > 0 ? 'warn' : 'ok'}
@@ -155,7 +158,7 @@ export default function Dashboard() {
         {(openCycle?.status === 'ACTIVE' || openCycle?.status === 'COMPLETED') && (
           <Card large>
             <CardHead
-              title={`${money(openCycle.daily_amount_snapshot)} a day`}
+              title={`${money(openCycle.daily_amount_snapshot)} ${PER_LABEL[openCycle.frequency] || "a day"}`}
               action={<StatusBadge status={openCycle.status} />}
             >
               <p className="small muted" style={{ margin: '2px 0 0' }}>
@@ -165,11 +168,11 @@ export default function Dashboard() {
 
             <ProgressBar
               value={openCycle.days_paid}
-              max={openCycle.duration_days}
-              label={`${openCycle.days_paid} of ${openCycle.duration_days} days paid`}
+              max={openCycle.periods ?? openCycle.duration_days}
+              label={`${openCycle.days_paid} of ${openCycle.periods ?? openCycle.duration_days} payments made`}
             />
             <div className="row-between small muted" style={{ marginTop: 8 }}>
-              <span>Day {openCycle.days_paid} of {openCycle.duration_days}</span>
+              <span>Payment {openCycle.days_paid} of {openCycle.periods ?? openCycle.duration_days}</span>
               <span className="num">{money(cycleBalance)} saved</span>
             </div>
 
@@ -241,18 +244,33 @@ function StartCycleModal({ open, onClose, onDone }) {
   const plans = useActivePlans();
   const { requestCycle } = useCustomerActions();
   const { toast, toastError } = useToast();
+  const [frequency, setFrequency] = useState('DAILY');
   const [planId, setPlanId] = useState(null);
-  const [duration, setDuration] = useState(30);
+  const [periods, setPeriods] = useState(30);
   const [busy, setBusy] = useState(false);
 
+  const freq = FREQUENCIES.find((f) => f.value === frequency);
   const plan = plans.data?.find((p) => p.id === planId);
-  const target = plan ? Number(plan.daily_amount) * duration : 0;
+  const target = plan ? Number(plan.daily_amount) * periods : 0;
+
+  // A plan may not offer every frequency, and a term only exists within one.
+  const available = (plans.data || []).filter(
+    (p) => !p.allowed_frequencies || p.allowed_frequencies.includes(frequency)
+  );
+
+  const pickFrequency = (value) => {
+    setFrequency(value);
+    // The old term is meaningless under a new frequency — 30 weeks is not on
+    // offer — so it resets to that frequency's first option.
+    const next = FREQUENCIES.find((f) => f.value === value);
+    setPeriods(next.terms[0].periods);
+  };
 
   const submit = async () => {
     if (!planId) return;
     setBusy(true);
     try {
-      await requestCycle(planId, duration);
+      await requestCycle(planId, periods, frequency);
       toast('Request sent. Your collector will activate it.');
       onClose();
       onDone();
@@ -279,8 +297,6 @@ function StartCycleModal({ open, onClose, onDone }) {
       {plans.loading && <SkeletonLines count={3} height={56} />}
       {plans.error && <ErrorState message={plans.error} onRetry={plans.refetch} />}
 
-      {/* `!plans.data?.length` covers both an empty list and a null result, so a
-          query that returns nothing can never render an empty modal body. */}
       {!plans.loading && !plans.error && !plans.data?.length && (
         <EmptyState
           title="No plans available yet"
@@ -290,9 +306,27 @@ function StartCycleModal({ open, onClose, onDone }) {
 
       {!plans.loading && !plans.error && plans.data?.length > 0 && (
         <>
-          <p className="field-label">How much a day?</p>
+          <p className="field-label">How often will you contribute?</p>
           <div className="choice-grid">
-            {plans.data.map((p) => (
+            {FREQUENCIES.map((f) => (
+              <button
+                key={f.value}
+                type="button"
+                className={`choice${frequency === f.value ? ' is-picked' : ''}`}
+                onClick={() => pickFrequency(f.value)}
+                aria-pressed={frequency === f.value}
+              >
+                <span className="choice-main">{f.label}</span>
+                <span className="choice-sub">{f.every}</span>
+              </button>
+            ))}
+          </div>
+
+          <p className="field-label" style={{ marginTop: 'var(--s-5)' }}>
+            How much {freq.every}?
+          </p>
+          <div className="choice-grid">
+            {available.map((p) => (
               <button
                 key={p.id}
                 type="button"
@@ -301,32 +335,33 @@ function StartCycleModal({ open, onClose, onDone }) {
                 aria-pressed={planId === p.id}
               >
                 <span className="choice-main num">{money(p.daily_amount)}</span>
-                <span className="choice-sub">a day</span>
+                <span className="choice-sub">{PER_LABEL[frequency]}</span>
               </button>
             ))}
           </div>
 
           <p className="field-label" style={{ marginTop: 'var(--s-5)' }}>For how long?</p>
           <div className="choice-grid">
-            {DURATIONS.map((d) => (
+            {freq.terms.map((t) => (
               <button
-                key={d.days}
+                key={t.periods}
                 type="button"
-                className={`choice${duration === d.days ? ' is-picked' : ''}`}
-                onClick={() => setDuration(d.days)}
-                aria-pressed={duration === d.days}
-                aria-label={`${d.days} days`}
+                className={`choice${periods === t.periods ? ' is-picked' : ''}`}
+                onClick={() => setPeriods(t.periods)}
+                aria-pressed={periods === t.periods}
               >
-                <span className="choice-main num">{d.label}</span>
-                <span className="choice-sub">{d.unit}</span>
+                <span className="choice-main num">{t.label.split(' ')[0]}</span>
+                <span className="choice-sub">{t.label.split(' ').slice(1).join(' ')}</span>
               </button>
             ))}
           </div>
 
           {plan && (
             <p className="choice-total">
-              Paying every day, you'd save <strong className="num">{money(target)}</strong> by the end.
-              Miss a day and you simply save less — nothing is owed.
+              Paying every time, you'd save <strong className="num">{money(target)}</strong> over{' '}
+              {periods} {freq.unit}. Miss one and you simply save less — nothing is owed.
+              <br />
+              <strong>Your savings stay locked until the term ends.</strong>
             </p>
           )}
         </>
@@ -339,13 +374,29 @@ function StartCycleModal({ open, onClose, onDone }) {
 function WithdrawModal({ open, onClose, cycle, amount, onDone }) {
   const { requestWithdrawal } = useCustomerActions();
   const { toast, toastError } = useToast();
+  const [form, setForm] = useState({ bankName: '', accountNumber: '', accountName: '' });
+  const [errors, setErrors] = useState({});
   const [busy, setBusy] = useState(false);
 
+  if (!cycle) return null;
+
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
   const submit = async () => {
+    const next = {};
+    if (!form.bankName) next.bankName = 'Choose your bank.';
+    if (!/^\d{10}$/.test(form.accountNumber.replace(/\s/g, ''))) {
+      next.accountNumber = 'A Nigerian account number is exactly 10 digits.';
+    }
+    if (!form.accountName.trim()) next.accountName = 'Enter the name on the account.';
+    setErrors(next);
+    if (Object.keys(next).length) return;
+
     setBusy(true);
     try {
-      await requestWithdrawal(cycle.id);
-      toast('Withdrawal requested.');
+      await requestWithdrawal(cycle.id, form);
+      toast('Request sent to the BudgetSave office.');
+      setForm({ bankName: '', accountNumber: '', accountName: '' });
       onClose();
       onDone();
     } catch (err) {
@@ -355,13 +406,12 @@ function WithdrawModal({ open, onClose, cycle, amount, onDone }) {
     }
   };
 
-  if (!cycle) return null;
-
   return (
     <Modal
       open={open}
       onClose={onClose}
-      title="Withdraw your balance"
+      title="Withdraw your savings"
+      description="Paid by bank transfer from the BudgetSave office."
       footer={
         <>
           <Button variant="outline" onClick={onClose} disabled={busy}>Cancel</Button>
@@ -369,17 +419,47 @@ function WithdrawModal({ open, onClose, cycle, amount, onDone }) {
         </>
       }
     >
-      {/* The amount is fixed by the database, not typed in — showing it as a
-          figure rather than an input is the honest representation of that. */}
+      {/* Shown as a figure, never an input — the database computes it and
+          would reject anything else. */}
       <div className="withdraw-amount">
         <span className="small muted">You'll receive</span>
         <span className="num">{money(amount)}</span>
       </div>
+
       <p className="muted small">
-        This is everything you've contributed to this cycle. Your collector confirms the
-        request and pays you in cash. Once paid, this cycle closes and you can start a
-        new one.
+        Your cycle has completed, so this is everything you contributed. Send your bank
+        details and the office will transfer it.
       </p>
+
+      <Select
+        label="Bank"
+        value={form.bankName}
+        onChange={set('bankName')}
+        error={errors.bankName}
+      >
+        <option value="">Choose your bank…</option>
+        {NIGERIAN_BANKS.map((b) => (
+          <option key={b} value={b}>{b}</option>
+        ))}
+      </Select>
+
+      <Input
+        label="Account number"
+        inputMode="numeric"
+        maxLength={10}
+        placeholder="0123456789"
+        value={form.accountNumber}
+        onChange={set('accountNumber')}
+        error={errors.accountNumber}
+      />
+
+      <Input
+        label="Account name"
+        value={form.accountName}
+        onChange={set('accountName')}
+        error={errors.accountName}
+        hint="Must match the name on your bank account, or the transfer will fail."
+      />
     </Modal>
   );
 }
