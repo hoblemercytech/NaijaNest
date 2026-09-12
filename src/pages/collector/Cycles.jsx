@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { usePendingCycles, useCollectorActions } from '../../hooks/useCollector';
+import { PER_LABEL, FREQUENCY_LABEL } from '../../lib/banks';
 import { money, shortDate, isoDate } from '../../lib/format';
 import { friendlyError } from '../../lib/errors';
 import { Card } from '../../components/ui/Card';
@@ -9,6 +10,7 @@ import { Input, Textarea } from '../../components/ui/Field';
 import { EmptyState, ErrorState, SkeletonLines } from '../../components/ui/States';
 import { useToast } from '../../components/ui/Toast';
 import './collector.css';
+import { FileQuestion } from 'lucide-react';
 
 /**
  * Cycle requests. Activating one generates the full day-by-day schedule in a
@@ -34,7 +36,7 @@ export default function Cycles() {
           <EmptyState
             title="No requests waiting"
             message="When one of your customers chooses a plan, it appears here for you to activate."
-            icon="◇"
+            Icon={FileQuestion}
           />
         </Card>
       )}
@@ -48,11 +50,25 @@ export default function Cycles() {
             </p>
 
             <dl className="detail-list" style={{ marginTop: 'var(--s-3)' }}>
-              <div><dt>Daily amount</dt><dd className="num">{money(c.daily_amount_snapshot)}</dd></div>
-              <div><dt>Duration</dt><dd className="num">{c.duration_days} days</dd></div>
               <div>
-                <dt>If they pay every day</dt>
-                <dd className="num">{money(c.daily_amount_snapshot * c.duration_days)}</dd>
+                <dt>Amount</dt>
+                <dd className="num">
+                  {money(c.daily_amount_snapshot)} {PER_LABEL[c.frequency] || 'a day'}
+                </dd>
+              </div>
+              <div>
+                <dt>Frequency</dt>
+                <dd>{FREQUENCY_LABEL[c.frequency] || 'daily'}</dd>
+              </div>
+              <div>
+                <dt>Term</dt>
+                <dd className="num">{c.periods ?? c.duration_days} payments</dd>
+              </div>
+              <div>
+                <dt>If they pay every time</dt>
+                <dd className="num">
+                  {money(c.daily_amount_snapshot * (c.periods ?? c.duration_days))}
+                </dd>
               </div>
               <div><dt>Requested</dt><dd>{shortDate(c.created_at)}</dd></div>
             </dl>
@@ -98,7 +114,7 @@ function ActivateModal({ cycle, onClose, onDone }) {
       open
       onClose={onClose}
       title="Activate this cycle"
-      description={`${cycle.customer?.full_name} · ${money(cycle.daily_amount_snapshot)} for ${cycle.duration_days} days`}
+      description={`${cycle.customer?.full_name} · ${money(cycle.daily_amount_snapshot)} ${PER_LABEL[cycle.frequency] || "a day"}`}
       footer={
         <>
           <Button variant="outline" onClick={onClose} disabled={busy}>Cancel</Button>
@@ -107,11 +123,11 @@ function ActivateModal({ cycle, onClose, onDone }) {
       }
     >
       <Input
-        label="Day 1 falls on"
+        label="First payment falls on"
         type="date"
         value={startDate}
         onChange={(e) => setStartDate(e.target.value)}
-        hint="Every contribution day is created from this date. It cannot be changed afterwards."
+        hint="Every payment date is generated from this. It cannot be changed afterwards."
       />
     </Modal>
   );
