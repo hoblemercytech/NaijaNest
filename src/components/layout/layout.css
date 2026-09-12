@@ -313,16 +313,11 @@
 @media (min-width: 900px) {
   .shell {
     display: grid;
-    /* Fallbacks are deliberate: if tokens.css is ever stale or half-applied,
-       an undefined variable would void the whole declaration and collapse the
-       grid to one column, dropping the main content into an auto-width strip. */
     grid-template-columns: var(--sidebar-w, 252px) minmax(0, 1fr);
     min-height: 100vh;
     transition: grid-template-columns .2s ease;
   }
 
-  /* Both tracks, every time. Naming only the sidebar leaves the content in an
-     implicit column that shrinks to its smallest possible width. */
   .shell.is-compact {
     grid-template-columns: var(--sidebar-w-compact, 76px) minmax(0, 1fr);
   }
