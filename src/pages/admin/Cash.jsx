@@ -39,7 +39,7 @@ export default function Cash() {
 
   const exportRows = () =>
     downloadCsv(
-      'naijanest-cash-handovers',
+      'budgetsave-cash-handovers',
       [
         { key: 'collector.member_id', label: 'Collector ID' },
         { key: 'collector.full_name', label: 'Collector' },
