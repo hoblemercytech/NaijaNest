@@ -1,0 +1,34 @@
+{
+  "name": "Budgetsave — Daily contribution savings",
+  "short_name": "Budgetsave",
+  "description": "Track the cash you contribute to your collector. Every naira, every day.",
+  "id": "/",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#081310",
+  "theme_color": "#0B3D2C",
+  "lang": "en-NG",
+  "categories": ["finance", "productivity"],
+  "icons": [
+    { "src": "/logo-192.jpg", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/logo.jpg", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/logo-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Record a payment",
+      "short_name": "Collect",
+      "description": "Record a cash contribution",
+      "url": "/collector/collect",
+      "icons": [{ "src": "/logo-192.jpg", "sizes": "192x192" }]
+    },
+    {
+      "name": "My contributions",
+      "short_name": "Contributions",
+      "url": "/contributions",
+      "icons": [{ "src": "/logo-192.jpg", "sizes": "192x192" }]
+    }
+  ]
+}
