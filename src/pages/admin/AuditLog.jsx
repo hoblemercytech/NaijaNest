@@ -36,7 +36,7 @@ export default function AuditLog() {
 
   const exportRows = () =>
     downloadCsv(
-      'naijanest-audit-log',
+      'budgetsave-audit-log',
       [
         { key: 'created_at', label: 'When', format: (v) => dateTime(v) },
         { key: 'actor.full_name', label: 'Who' },
