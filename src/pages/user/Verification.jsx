@@ -83,8 +83,8 @@ function VerifiedView({ record }) {
           </div>
         </dl>
         <p className="field-hint">
-          To change any of this, contact NaijaNest support. Your collector cannot see these
-          details — only NaijaNest administrators can.
+          To change any of this, contact BudgetSave support. Your collector cannot see these
+          details — only BudgetSave administrators can.
         </p>
       </Card>
     </>
@@ -217,11 +217,11 @@ function SubmitView({ profile, record, onDone }) {
 
       <div className="kyc-why">
         <p>
-          NaijaNest holds your savings until you ask for them back. Confirming who you are
+          BudgetSave holds your savings until you ask for them back. Confirming who you are
           is what stops someone else collecting your money.
         </p>
         <p className="small">
-          <strong>Your collector cannot see any of this.</strong> Only NaijaNest
+          <strong>Your collector cannot see any of this.</strong> Only BudgetSave
           administrators can, and only to check it against your ID.
         </p>
       </div>
