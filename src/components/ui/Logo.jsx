@@ -21,10 +21,10 @@ export default function Logo({ size = 30, showName = true, tone = 'dark' }) {
             whiteSpace: 'nowrap',
           }}
         >
-          NaijaNest
+          BudgetSave
         </span>
       ) : (
-        <span className="sr-only">NaijaNest</span>
+        <span className="sr-only">BudgetSave</span>
       )}
     </span>
   );
