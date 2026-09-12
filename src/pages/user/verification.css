@@ -55,3 +55,11 @@
   font-weight: 500;
 }
 .kyc-upload span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Wins over the unscoped .field-input rules in auth.css, which leak here. */
+.verification-form .field-input,
+.card .field-input {
+  background: var(--input-bg);
+  color: var(--text-primary);
+  -webkit-text-fill-color: var(--text-primary);
+}
