@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 const ThemeContext = createContext(null);
-const STORAGE_KEY = 'naijanest-theme';
+const STORAGE_KEY = 'budgetsave-theme';
 
 /**
  * Light is the default. A saved choice always wins over the system setting,
