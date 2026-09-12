@@ -1,6 +1,9 @@
+
 import { Link } from 'react-router-dom';
 import { ClipboardList, ArrowUpRight } from 'lucide-react';
+import { useCallback } from 'react';
 import { useDailySummary, usePendingCycles, useCollectorWithdrawals } from '../../hooks/useCollector';
+import { useRealtime, LIVE_TABLES } from '../../hooks/useRealtime';
 import { useAuth } from '../../context/AuthContext';
 import { money } from '../../lib/format';
 import { Card, CardHead } from '../../components/ui/Card';
@@ -18,6 +21,14 @@ export default function CollectorDashboard() {
   const summary = useDailySummary();
   const cycles = usePendingCycles();
   const withdrawals = useCollectorWithdrawals();
+
+  const refreshAll = useCallback(() => {
+    summary.refetch();
+    cycles.refetch();
+    withdrawals.refetch();
+  }, [summary, cycles, withdrawals]);
+
+  useRealtime(LIVE_TABLES.COLLECTOR, refreshAll);
 
   const s = summary.data;
   const expected = Number(s?.expected_amount ?? 0);
