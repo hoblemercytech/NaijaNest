@@ -3,11 +3,12 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { RequireAuth, RedirectIfAuthed } from './routes/guards';
 import AppShell from './components/layout/AppShell';
 import Landing from './pages/Landing';
+import Welcome from './pages/Welcome';
+import { isStandalone } from './lib/pwa';
 import {
   LoginPage, SignupPage, ForgotPasswordPage, ResetPasswordPage, AccountDisabledPage,
 } from './pages/auth/AuthPages';
 import { LoadingState } from './components/ui/States';
-import Welcome from './pages/Welcome';
 
 /**
  * Route sections load on demand.
@@ -64,9 +65,17 @@ function Section({ children }) {
 export default function App() {
   return (
     <Routes>
+      {/*
+        Public routes, deliberately not lazy — this is the first paint.
+
+        "/" resolves by context rather than being two different URLs. iOS
+        discards a backgrounded PWA and relaunches it at start_url, so anything
+        that depends on remembering where you were is unreliable; making the
+        root itself correct means a relaunch always lands somewhere sensible.
+      */}
+      <Route path="/" element={isStandalone() ? <Welcome /> : <Landing />} />
       <Route path="/welcome" element={<Welcome />} />
-      {/* public — deliberately not lazy; this is the first paint */}
-      <Route path="/" element={<Landing />} />
+      <Route path="/home" element={<Landing />} />
       <Route path="/login" element={<RedirectIfAuthed><LoginPage /></RedirectIfAuthed>} />
       <Route path="/signup" element={<RedirectIfAuthed><SignupPage /></RedirectIfAuthed>} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
