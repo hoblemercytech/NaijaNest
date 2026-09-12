@@ -72,7 +72,7 @@ function AuthFrame({ title, lead, children, foot, mode = 'default' }) {
       <main className="auth-shell">
         <section className="auth-panel">
           <div className="auth-topbar">
-            <Link to="/" className="auth-brand" aria-label="NaijaNest home">
+            <Link to="/" className="auth-brand" aria-label="BudgetSave home">
               <Logo size={32} />
             </Link>
 
@@ -85,7 +85,7 @@ function AuthFrame({ title, lead, children, foot, mode = 'default' }) {
           <div className="auth-heading">
             <div className="auth-eyebrow">
               <span className="auth-eyebrow-dot" />
-              NaijaNest
+              BudgetSave
             </div>
             <h1>{title}</h1>
             {lead && <p className="muted">{lead}</p>}
@@ -138,8 +138,8 @@ export function LoginPage() {
   return (
     <AuthFrame
       title="Welcome back"
-      lead="Sign in to manage your contributions."
-      foot={<>New to NaijaNest? <Link to="/signup">Create an account</Link></>}
+      lead="Sign in to manage your contributions, balance, and account."
+      foot={<>New to BudgetSave? <Link to="/signup">Create an account</Link></>}
     >
       <form onSubmit={submit} noValidate className="auth-form">
         {failure && (
@@ -262,7 +262,7 @@ export function SignupPage() {
   return (
     <AuthFrame
       title="Create your account"
-      lead="Set up your NaijaNest account and get matched with a collector."
+      lead="Set up your BudgetSave account and get matched with a collector."
     >
       <form onSubmit={submit} noValidate className="auth-form">
         {failure && (
@@ -504,7 +504,7 @@ export function AccountDisabledPage() {
   const { signOut } = useAuth();
 
   return (
-    <AuthFrame title="Account not active" lead="This account has been disabled. Contact your collector or NaijaNest support to reactivate it.">
+    <AuthFrame title="Account not active" lead="This account has been disabled. Contact your collector or BudgetSave support to reactivate it.">
       <div className="auth-disabled">
         <div className="auth-disabled-icon">
           <AlertCircle size={25} strokeWidth={1.9} />
