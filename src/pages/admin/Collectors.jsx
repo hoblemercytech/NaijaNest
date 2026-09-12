@@ -157,7 +157,7 @@ function PromoteModal({ open, onClose, onDone }) {
       open
       onClose={onClose}
       title="Add a collector"
-      description="Promote someone who already has a NaijaNest account."
+      description="Promote someone who already has a BudgetSave account."
       footer={<Button variant="outline" onClick={onClose} block>Done</Button>}
     >
       <Input
