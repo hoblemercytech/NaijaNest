@@ -1219,6 +1219,12 @@
   transition: background-color 9999s ease-in-out 0s;
 }
 
+/* On the reset page the only field is also the last one, so the rule that
+   removes trailing margin leaves the button touching the input. */
+.auth-form .field:last-of-type + .btn,
+.auth-form .field:last-of-type + .auth-submit {
+  margin-top: 20px;
+}
 
 /* ================================================================
    REDUCED MOTION
