@@ -8,6 +8,7 @@ import {
   ClipboardList, Wallet, LayoutDashboard, UserCog, BarChart3, Layers, ScrollText,
   MoreHorizontal, LogOut, X, ShieldCheck, PanelLeftClose, PanelLeft, ChevronDown, Mail,
 } from 'lucide-react';
+import { isStandalone } from '../../lib/pwa';
 import Logo from '../ui/Logo';
 import ThemeToggle from '../ui/ThemeToggle';
 import Avatar from '../ui/Avatar';
@@ -105,7 +106,11 @@ export default function AppShell() {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/login', { replace: true });
+    // The welcome screen, not the login form. Signing out is a deliberate exit,
+    // and dropping straight onto a password field reads as "you got signed out"
+    // rather than "you signed out". In a browser tab the landing page does the
+    // same job and keeps the marketing page reachable.
+    navigate(isStandalone() ? '/welcome' : '/', { replace: true });
   };
 
   const renderLink = (item, onClick) => (
@@ -151,6 +156,7 @@ export default function AppShell() {
         </div>
       </aside>
 
+      <div className="shell-col">
       <header className="shell-top">
         <div className="top-lead">
           <span className="top-mark"><Logo size={26} showName={false} /></span>
@@ -207,6 +213,8 @@ export default function AppShell() {
           <Outlet />
         </div>
       </main>
+
+      </div>
 
       <nav className="shell-bottom" aria-label="Main">
         {primary.map((i) => (
