@@ -1046,7 +1046,7 @@
 
 @media (max-width: 619px) {
   .auth {
-    align-items: flex-start;
+    align-items: center;
 
     padding: 14px 12px;
 
