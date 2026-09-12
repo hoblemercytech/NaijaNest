@@ -56,12 +56,12 @@ const FEATURES = [
   {
     icon: Smartphone,
     title: 'Check from your phone',
-    body: 'Your contribution history is available from your NaijaNest account whenever you need to check it.',
+    body: 'Your contribution history is available from your BudgetSave account whenever you need to check it.',
   },
   {
     icon: WalletCards,
     title: 'Cash stays cash',
-    body: 'Contributions and withdrawals are handled in cash by your assigned collector. NaijaNest keeps the record.',
+    body: 'Contributions and withdrawals are handled in cash by your assigned collector. BudgetSave keeps the record.',
   },
 ];
 
@@ -109,7 +109,7 @@ export default function Landing() {
       <header className="lp-nav">
         <div className="container row-between">
 
-          <Link to="/" className="lp-brand" aria-label="NaijaNest home">
+          <Link to="/" className="lp-brand" aria-label="BudgetSave home">
             <Logo size={30} tone="light" />
           </Link>
 
@@ -150,7 +150,7 @@ export default function Landing() {
             </h1>
 
             <p className="lp-lead">
-              NaijaNest gives you a clear digital record of the cash you
+              BudgetSave gives you a clear digital record of the cash you
               contribute to your collector — every naira, every day, with
               the time it was paid.
             </p>
@@ -203,7 +203,7 @@ export default function Landing() {
 
             <figure
               className="lp-ledger"
-              aria-label="Example NaijaNest contribution record"
+              aria-label="Example BudgetSave contribution record"
             >
 
               <div className="lp-ledger-header">
@@ -310,7 +310,7 @@ export default function Landing() {
 
 
         <div className="lp-scroll-hint">
-          <span>Explore NaijaNest</span>
+          <span>Explore BudgetSave</span>
           <ArrowRight size={14} />
         </div>
 
@@ -373,7 +373,7 @@ export default function Landing() {
           <div className="lp-section-heading">
 
             <div className="lp-section-eyebrow">
-              WHY NAIJANEST
+              WHY BUDGETSAVE
             </div>
 
             <h2>
@@ -383,7 +383,7 @@ export default function Landing() {
 
             <p>
               Traditional daily savings can depend too much on notebooks,
-              memory and conversations. NaijaNest gives everyone a clearer
+              memory and conversations. BudgetSave gives everyone a clearer
               record of what actually happened.
             </p>
 
@@ -676,12 +676,12 @@ export default function Landing() {
             </span>
 
             <h2>
-              NaijaNest records
+              BudgetSave records
               <span>your cash.</span>
             </h2>
 
             <p>
-              NaijaNest is the record-keeping layer. Your assigned collector
+              BudgetSave is the record-keeping layer. Your assigned collector
               handles your physical cash contributions and withdrawals.
               The app does not receive your cash online.
             </p>
@@ -735,7 +735,7 @@ export default function Landing() {
           <div>
 
             <div className="lp-section-eyebrow">
-              START WITH NAIJANEST
+              START WITH BUDGETSAVE
             </div>
 
             <h2>
@@ -808,14 +808,14 @@ export default function Landing() {
 
 
               <div>
-                <span>NaijaNest</span>
+                <span>BudgetSave</span>
 
                 <a href="#how-it-works">
                   How it works
                 </a>
 
-                <a href="#why-naijanest">
-                  Why NaijaNest
+                <a href="#why-budgetsave">
+                  Why BudgetSave
                 </a>
               </div>
 
@@ -827,7 +827,7 @@ export default function Landing() {
           <div className="lp-foot-bottom">
 
             <p>
-              © {new Date().getFullYear()} NaijaNest.
+              © {new Date().getFullYear()} BudgetSave.
               All rights reserved.
             </p>
 
