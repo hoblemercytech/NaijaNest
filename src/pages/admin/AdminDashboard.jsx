@@ -5,6 +5,7 @@ import { useAdminDashboard } from '../../hooks/useAdmin';
 import { money } from '../../lib/format';
 import { Card, CardHead } from '../../components/ui/Card';
 import { ErrorState, SkeletonPanel, SkeletonLines } from '../../components/ui/States';
+import { useRealtime, LIVE_TABLES } from '../../hooks/useRealtime';
 import './admin.css';
 
 /**
@@ -15,6 +16,8 @@ import './admin.css';
 export default function AdminDashboard() {
   const { data, loading, error, refetch } = useAdminDashboard();
 
+    useRealtime(LIVE_TABLES.ADMIN, refetch);
+    
   if (loading) {
     return (
       <>
