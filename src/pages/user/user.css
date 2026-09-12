@@ -123,3 +123,15 @@
   border-color: rgba(255, 255, 255, .45);
   color: #fff;
 }
+
+/* Savings are locked for the term — said plainly on the panel rather than by
+   quietly hiding the withdraw button, which just reads as a missing feature. */
+.panel-locked {
+  margin: var(--s-5) 0 0;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-input);
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid var(--panel-rule);
+  color: var(--panel-text-soft);
+  font-size: var(--t-sm);
+}
