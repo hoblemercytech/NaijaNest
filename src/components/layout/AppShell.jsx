@@ -52,6 +52,7 @@ const NAV = {
     { to: '/admin/withdrawals', label: 'Withdrawals', Icon: ArrowUpRight },
     { to: '/admin/verification', label: 'Verification', Icon: ShieldCheck },
     { to: '/admin/cash', label: 'Cash handovers', Icon: Wallet },
+    { to: '/admin/notifications', label: 'Alerts', Icon: Bell, badge: true },
     { to: '/admin/email-alerts', label: 'Email alerts', Icon: Mail },
     { to: '/admin/audit-logs', label: 'Audit log', Icon: ScrollText },
   ],
@@ -77,6 +78,21 @@ export default function AppShell() {
   const menuRef = useRef(null);
 
   const items = NAV[profile?.role] || NAV.USER;
+
+  /**
+   * The bell has to stay inside the signed-in role's own routes. Falling back
+   * to the bare '/notifications' sent an admin to a customer-only route, where
+   * the guard bounced them to their dashboard — a bell that silently did
+   * nothing. Deriving it from the nav table means adding a role can't
+   * reintroduce that.
+   */
+  const bellTarget =
+    items.find((i) => i.badge)?.to ??
+    (profile?.role === 'ADMIN'
+      ? '/admin/notifications'
+      : profile?.role === 'COLLECTOR'
+        ? '/collector/notifications'
+        : '/notifications');
 
   // The header title comes from the nav table rather than each page repeating
   // it, so a renamed nav item can never disagree with the page it opens.
@@ -167,7 +183,7 @@ export default function AppShell() {
           <ThemeToggle compact />
 
           <NavLink
-            to={items.find((i) => i.badge)?.to || '/notifications'}
+            to={bellTarget}
             className="top-icon-btn"
             aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
           >
