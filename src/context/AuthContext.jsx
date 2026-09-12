@@ -108,11 +108,27 @@ export function AuthProvider({ children }) {
 
   const refreshProfile = useCallback(() => setReloadTick((t) => t + 1), []);
 
-  const signIn = useCallback(async (email, password) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
-      password,
-    });
+  /**
+   * Accepts an email or a phone number.
+   *
+   * Supabase authenticates on email, so a phone number is resolved to one
+   * first. A miss deliberately falls through to a normal sign-in attempt
+   * rather than returning early: the failure then reads "email or password is
+   * incorrect" exactly like a wrong password, instead of confirming whether
+   * that number has an account.
+   */
+  const signIn = useCallback(async (identifier, password) => {
+    const raw = identifier.trim();
+    let email = raw.toLowerCase();
+
+    if (!raw.includes('@')) {
+      const { data } = await supabase.rpc('nn_email_for_identifier', {
+        p_identifier: raw,
+      });
+      if (data) email = data;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
   }, []);
 
