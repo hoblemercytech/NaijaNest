@@ -56,7 +56,7 @@ const NAV = {
   ],
 };
 
-const COMPACT_KEY = 'naijanest-sidebar-compact';
+const COMPACT_KEY = 'budgetsave-sidebar-compact';
 
 export default function AppShell() {
   const { profile, signOut } = useAuth();
@@ -154,7 +154,7 @@ export default function AppShell() {
       <header className="shell-top">
         <div className="top-lead">
           <span className="top-mark"><Logo size={26} showName={false} /></span>
-          <h1 className="top-title">{active?.label || 'NaijaNest'}</h1>
+          <h1 className="top-title">{active?.label || 'BudgetSave'}</h1>
         </div>
 
         <div className="top-actions">
