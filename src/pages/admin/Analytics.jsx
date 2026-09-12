@@ -65,7 +65,7 @@ export default function Analytics() {
 
   const exportSeries = () =>
     downloadCsv(
-      'naijanest-financial-activity',
+      'budgetsave-financial-activity',
       [
         { key: 'day', label: 'Date' },
         { key: 'contributions', label: 'Contributions (NGN)' },
@@ -81,7 +81,7 @@ export default function Analytics() {
 
   const exportCollectors = () =>
     downloadCsv(
-      'naijanest-collector-performance',
+      'bu-collector-performance',
       [
         { key: 'collector_name', label: 'Collector' },
         { key: 'customers', label: 'Customers' },
