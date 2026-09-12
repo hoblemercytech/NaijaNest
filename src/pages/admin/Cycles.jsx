@@ -26,7 +26,7 @@ export default function Cycles() {
 
   const exportRows = () =>
     downloadCsv(
-      'naijanest-cycles',
+      'budgetsave-cycles',
       [
         { key: 'customer.member_id', label: 'Member ID' },
         { key: 'customer.full_name', label: 'Customer' },
