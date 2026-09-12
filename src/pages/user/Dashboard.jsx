@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { FileQuestion, ShieldCheck, ShieldAlert, Clock, Banknote, CalendarCheck } from 'lucide-react';
@@ -6,6 +6,7 @@ import {
   useFinancialSummary, useOpenCycle, useCycleSchedule,
   useActivePlans, useCustomerActions,
 } from '../../hooks/useCustomer';
+import { useRealtime, LIVE_TABLES } from '../../hooks/useRealtime';
 import { money, shortDate, isoDate } from '../../lib/format';
 import { friendlyError } from '../../lib/errors';
 import { Card, CardHead, Stat } from '../../components/ui/Card';
@@ -35,11 +36,14 @@ export default function Dashboard() {
   const [startOpen, setStartOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
 
-  const refreshAll = () => {
+  const refreshAll = useCallback(() => {
     summary.refetch();
     cycle.refetch();
     schedule.refetch();
-  };
+  }, [summary, cycle, schedule]);
+
+  // No address bar in an installed app, so the balance has to keep itself honest.
+  useRealtime(LIVE_TABLES.USER, refreshAll);
 
   const today = isoDate();
   const todayRow = schedule.data?.find((d) => d.contribution_date === today);
@@ -280,7 +284,7 @@ function StartCycleModal({ open, onClose, onDone }) {
       {!plans.loading && !plans.error && !plans.data?.length && (
         <EmptyState
           title="No plans available yet"
-          message="NaijaNest hasn't published any contribution plans. Check back shortly."
+          message="BudgetSave hasn't published any contribution plans. Check back shortly."
         />
       )}
 
