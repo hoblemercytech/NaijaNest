@@ -116,7 +116,7 @@ export function usePendingCycles() {
         supabase
           .from('contribution_cycles')
           .select(`
-            id, daily_amount_snapshot, duration_days, status, created_at,
+            id, daily_amount_snapshot, duration_days, periods, frequency, status, created_at,
             customer:profiles!contribution_cycles_user_id_fkey(id, member_id, full_name, phone)
           `)
           .eq('status', 'PENDING_ACTIVATION')
