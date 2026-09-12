@@ -44,9 +44,11 @@ export default function Welcome() {
           <div className="wc-links">
             <Link to="/signup">Open an Account</Link>
             <span className="wc-sep" aria-hidden="true" />
-            <Link to="/">Learn more</Link>
+            <Link to="/landing">Learn more</Link>
           </div>
-
+ <p className="wc-note">
+            <strong>BudgetSave</strong> where savings become a sucess <strong>PLAN.SAVE.GROW</strong>
+          </p>
         </div>
       </div>
     </div>
