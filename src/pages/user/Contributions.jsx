@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useCycleHistory, useCycleSchedule } from '../../hooks/useCustomer';
+import { PER_LABEL } from '../../lib/banks';
 import { money, shortDate } from '../../lib/format';
 import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -7,6 +8,7 @@ import StatusBadge from '../../components/ui/Status';
 import { EmptyState, ErrorState, SkeletonLines } from '../../components/ui/States';
 import ContributionCalendar from '../../components/ContributionCalendar';
 import './user.css';
+import { CalendarDays } from 'lucide-react';
 
 /**
  * Cycle history. Closed cycles stay visible with their original terms — a plan
@@ -31,7 +33,7 @@ export default function Contributions() {
           <EmptyState
             title="Nothing here yet"
             message="Once you start a contribution cycle, it and every cycle after it stay on this page."
-            icon="▤"
+            Icon={CalendarDays}
           />
         </Card>
       )}
@@ -41,9 +43,9 @@ export default function Contributions() {
           <Card key={c.id}>
             <div className="row-between" style={{ alignItems: 'flex-start' }}>
               <div>
-                <h3 className="num">{money(c.daily_amount_snapshot)} a day</h3>
+                <h3 className="num">{money(c.daily_amount_snapshot)} {PER_LABEL[c.frequency] || "a day"}</h3>
                 <p className="small muted" style={{ margin: '2px 0 0' }}>
-                  {c.duration_days} days
+                  {c.periods ?? c.duration_days} payments
                   {c.start_date && ` · from ${shortDate(c.start_date)}`}
                   {c.closed_at && ` · closed ${shortDate(c.closed_at)}`}
                 </p>
