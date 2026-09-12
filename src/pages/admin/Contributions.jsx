@@ -28,7 +28,7 @@ export default function Contributions() {
 
   const exportRows = () =>
     downloadCsv(
-      'naijanest-contributions',
+      'budgetsave-contributions',
       [
         { key: 'contribution_date', label: 'Date', format: (v) => shortDate(v) },
         { key: 'customer.member_id', label: 'Member ID' },
