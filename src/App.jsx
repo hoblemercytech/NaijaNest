@@ -7,6 +7,7 @@ import {
   LoginPage, SignupPage, ForgotPasswordPage, ResetPasswordPage, AccountDisabledPage,
 } from './pages/auth/AuthPages';
 import { LoadingState } from './components/ui/States';
+import Welcome from './pages/Welcome';
 
 /**
  * Route sections load on demand.
@@ -63,6 +64,7 @@ function Section({ children }) {
 export default function App() {
   return (
     <Routes>
+      <Route path="/welcome" element={<Welcome />} />
       {/* public — deliberately not lazy; this is the first paint */}
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<RedirectIfAuthed><LoginPage /></RedirectIfAuthed>} />
