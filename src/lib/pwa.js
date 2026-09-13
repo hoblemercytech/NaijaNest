@@ -8,6 +8,9 @@
 export function registerServiceWorker(onUpdateReady) {
   if (!('serviceWorker' in navigator)) return;
   if (import.meta.env.DEV) return; // a cached shell in dev hides your own edits
+  // The native shell already ships the assets on device; a second cache layer
+  // there only creates a way for the two to disagree.
+  if (window.Capacitor?.isNativePlatform?.()) return;
 
   window.addEventListener('load', async () => {
     try {
@@ -45,10 +48,24 @@ export function registerServiceWorker(onUpdateReady) {
   });
 }
 
-/** True when launched from the home screen rather than a browser tab. */
+/**
+ * True when launched from the home screen rather than a browser tab.
+ *
+ * Three checks because no single one covers both platforms: Android Chrome can
+ * report minimal-ui or fullscreen depending on the manifest and launcher, iOS
+ * Safari exposes a non-standard `navigator.standalone` instead of a media
+ * query, and some Android launchers set neither but arrive with the referrer
+ * Chrome uses for installed apps.
+ */
 export function isStandalone() {
+  if (typeof window === 'undefined') return false;
+
+  const byDisplayMode = ['standalone', 'minimal-ui', 'fullscreen', 'window-controls-overlay']
+    .some((mode) => window.matchMedia(`(display-mode: ${mode})`).matches);
+
   return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    window.navigator.standalone === true
+    byDisplayMode ||
+    window.navigator.standalone === true ||
+    document.referrer.startsWith('android-app://')
   );
 }
