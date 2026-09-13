@@ -78,7 +78,7 @@ export function isStandalone() {
 
   const native =
     !!window.Capacitor?.isNativePlatform?.() ||
-    window.location.hostname === 'app.budgetsave' ||
+    window.location.hostname === 'localhost' ||
     window.location.protocol === 'capacitor:';
 
   const byDisplayMode = ['standalone', 'minimal-ui', 'fullscreen', 'window-controls-overlay']
