@@ -8,7 +8,7 @@
     "hostname": "app.budgetsave"
   },
   "android": {
-    "webContentsDebuggingEnabled": false,
+    "webContentsDebuggingEnabled": true,
     "allowMixedContent": false
   },
   "ios": {
@@ -16,7 +16,8 @@
   },
   "plugins": {
     "SplashScreen": {
-      "launchAutoHide": false,
+      "launchAutoHide": true,
+      "launchShowDuration": 2500,
       "backgroundColor": "#0B3D2C",
       "androidScaleType": "CENTER_CROP",
       "showSpinner": false
