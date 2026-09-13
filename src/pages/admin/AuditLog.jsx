@@ -1,3 +1,4 @@
+import { ScrollText } from 'lucide-react';
 import { useState } from 'react';
 import { useAuditLog } from '../../hooks/useAdmin';
 import { dateTime, relative } from '../../lib/format';
@@ -81,7 +82,7 @@ export default function AuditLog() {
             <EmptyState
               title={action ? 'Nothing logged for that action' : 'Nothing logged yet'}
               message="Entries appear as soon as anyone records a payment, activates a cycle or moves cash."
-              icon="⎙"
+               Icon={ScrollText}
             />
           </Card>
         )}
