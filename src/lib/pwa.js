@@ -49,21 +49,43 @@ export function registerServiceWorker(onUpdateReady) {
 }
 
 /**
- * True when launched from the home screen rather than a browser tab.
+ * The public origin, used for anything that has to survive leaving the app.
  *
- * Three checks because no single one covers both platforms: Android Chrome can
- * report minimal-ui or fullscreen depending on the manifest and launcher, iOS
- * Safari exposes a non-standard `navigator.standalone` instead of a media
- * query, and some Android launchers set neither but arrive with the referrer
- * Chrome uses for installed apps.
+ * Inside the native shell `window.location.origin` is the WebView's private
+ * hostname (https://app.budgetsave) — a name that resolves nowhere. A password
+ * reset link built from it opens the mail app, hands the URL to the browser,
+ * and the browser reports that the server cannot be found.
+ */
+export const PUBLIC_URL =
+  import.meta.env.VITE_PUBLIC_URL?.replace(/\/$/, '') || 'https://budgetsaveit.com';
+
+/**
+ * True when the app is not a browser tab — installed to a home screen, or
+ * running inside the iOS/Android shell. What the routing actually cares about
+ * is the absence of an address bar, which both cases share.
+ *
+ * No single check covers every case. Android Chrome reports minimal-ui or
+ * fullscreen depending on the manifest and launcher; iOS Safari exposes a
+ * non-standard `navigator.standalone` rather than a media query; and the
+ * native shell has neither, only the Capacitor bridge.
+ *
+ * The hostname check is a backstop for that last one: the bridge is injected
+ * by native code and on a cold start a first render can beat it, whereas the
+ * WebView's hostname is set before any JavaScript runs at all.
  */
 export function isStandalone() {
   if (typeof window === 'undefined') return false;
+
+  const native =
+    !!window.Capacitor?.isNativePlatform?.() ||
+    window.location.hostname === 'app.budgetsave' ||
+    window.location.protocol === 'capacitor:';
 
   const byDisplayMode = ['standalone', 'minimal-ui', 'fullscreen', 'window-controls-overlay']
     .some((mode) => window.matchMedia(`(display-mode: ${mode})`).matches);
 
   return (
+    native ||
     byDisplayMode ||
     window.navigator.standalone === true ||
     document.referrer.startsWith('android-app://')
