@@ -3,33 +3,21 @@
   "appName": "BudgetSave",
   "webDir": "dist",
   "server": {
-    "androidScheme": "https",
-    "iosScheme": "https",
-    "hostname": "app.budgetsave"
+    "androidScheme": "https"
   },
   "android": {
-    "webContentsDebuggingEnabled": true,
-    "allowMixedContent": false
-  },
-  "ios": {
-    "contentInset": "always"
+    "webContentsDebuggingEnabled": true
   },
   "plugins": {
     "SplashScreen": {
       "launchAutoHide": true,
-      "launchShowDuration": 2500,
+      "launchShowDuration": 2000,
       "backgroundColor": "#0B3D2C",
-      "androidScaleType": "CENTER_CROP",
       "showSpinner": false
     },
     "StatusBar": {
       "style": "DARK",
-      "backgroundColor": "#0B3D2C",
-      "overlaysWebView": false
-    },
-    "Keyboard": {
-      "resize": "native",
-      "resizeOnFullScreen": true
+      "backgroundColor": "#0B3D2C"
     }
   }
 }
