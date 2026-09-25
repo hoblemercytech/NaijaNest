@@ -345,3 +345,98 @@
 
 /* The "not a bank" line is a compliance statement, not small print to hide. */
 .pub-footer-note { max-width: 70ch; line-height: 1.6; }
+
+/* =====================================================================
+   FORM CONTROLS ON PUBLIC PAGES
+
+   auth.css declares `.field-input` for a dark glass panel. Those rules are
+   global, so they reach the request and contact forms here and paint a black
+   box on a white card — and whichever stylesheet happens to load last decides
+   which fields get hit, which is why some look right and some do not.
+
+   Scoping under `.pub` raises specificity to (0,2,0), which wins regardless
+   of load order.
+   ===================================================================== */
+
+.pub .field { margin-bottom: 16px; }
+.pub .field:last-of-type { margin-bottom: 0; }
+
+.pub .field-label {
+  display: block;
+  margin: 0 0 6px;
+  color: #35463F;
+  font-size: .875rem;
+  font-weight: 600;
+}
+
+.pub .field-input {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+
+  border: 1px solid #D5E0DA;
+  border-radius: 11px;
+
+  background: #FFFFFF;
+  color: #0F1E18;
+  -webkit-text-fill-color: #0F1E18;
+  caret-color: #12694A;
+
+  font-family: inherit;
+  /* 16px or iOS zooms the page the moment the field gains focus. */
+  font-size: 16px;
+  line-height: 1.5;
+
+  box-shadow: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.pub textarea.field-input {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.pub .field-input::placeholder {
+  color: #8A9A92;
+  -webkit-text-fill-color: #8A9A92;
+  opacity: 1;
+}
+
+.pub .field-input:hover { border-color: #B9C9C1; }
+
+.pub .field-input:focus {
+  outline: none;
+  border-color: #3E9873;
+  box-shadow: 0 0 0 3px rgba(62, 152, 115, .16);
+  background: #FFFFFF;
+}
+
+/* Chrome paints autofilled fields with its own background and ignores
+   `background` entirely. A long inset shadow is the only thing that covers
+   it — this is what makes some fields look black while others look white. */
+.pub .field-input:-webkit-autofill,
+.pub .field-input:-webkit-autofill:hover,
+.pub .field-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0F1E18;
+  -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset;
+  caret-color: #12694A;
+  border-color: #D5E0DA;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.pub .field-hint {
+  margin: 6px 1px 0;
+  color: #5E6F67;
+  font-size: .8125rem;
+  line-height: 1.5;
+}
+
+.pub .field-error {
+  margin: 6px 1px 0;
+  color: #9B241C;
+  font-size: .8125rem;
+  font-weight: 500;
+}
+
+.pub .field-has-error .field-input { border-color: #C9524A; }
