@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://budgetsaveit.com/sitemap.xml
