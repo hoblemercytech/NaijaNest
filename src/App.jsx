@@ -61,7 +61,9 @@ const AdminContributions = lazy(() => import('./pages/admin/Contributions'));
 const AdminWithdrawals = lazy(() => import('./pages/admin/Withdrawals'));
 const AdminCash = lazy(() => import('./pages/admin/Cash'));
 const AdminKyc = lazy(() => import('./pages/admin/Kyc'));
+const AdminEnquiries = lazy(() => import('./pages/admin/Enquiries'));
 const AdminNotificationSettings = lazy(() => import('./pages/admin/Notifications'));
+const ClaimAccount = lazy(() => import('./pages/auth/ClaimAccount'));
 const Analytics = lazy(() => import('./pages/admin/Analytics'));
 const AuditLog = lazy(() => import('./pages/admin/AuditLog'));
 
@@ -93,6 +95,11 @@ export default function App() {
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/account-disabled" element={<AccountDisabledPage />} />
+
+      {/* Claim link from the setup email. Public: the customer is not signed
+          in yet, and the token is what proves who they are. */}
+      <Route path="/claim" element={<Section><ClaimAccount /></Section>} />
+      <Route path="/claim/:token" element={<Section><ClaimAccount /></Section>} />
 
       {/* Public and legal pages. Google Play will not accept the app without a
           reachable privacy policy and account-deletion URL. */}
@@ -142,6 +149,7 @@ export default function App() {
         <Route path="/admin/contributions" element={<AdminContributions />} />
         <Route path="/admin/withdrawals" element={<AdminWithdrawals />} />
         <Route path="/admin/cash" element={<AdminCash />} />
+        <Route path="/admin/requests" element={<AdminEnquiries />} />
         <Route path="/admin/verification" element={<AdminKyc />} />
         <Route path="/admin/analytics" element={<Analytics />} />
         <Route path="/admin/email-alerts" element={<AdminNotificationSettings />} />
