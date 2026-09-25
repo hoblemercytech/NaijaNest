@@ -4,6 +4,7 @@ import { RequireAuth, RedirectIfAuthed } from './routes/guards';
 import AppShell from './components/layout/AppShell';
 import Landing from './pages/Landing';
 import Welcome from './pages/Welcome';
+import PublicLayout from './pages/public/PublicLayout';
 import { isStandalone } from './lib/pwa';
 import {
   LoginPage, SignupPage, ForgotPasswordPage, ResetPasswordPage, AccountDisabledPage,
@@ -19,6 +20,17 @@ import { LoadingState } from './components/ui/States';
  * (the only thing a stranger sees) stays small.
  */
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+
+// public / legal — lazy because a signed-in customer never opens them, but
+// they must exist for Google Play, the App Store and anyone reading the terms
+const About = lazy(() => import('./pages/public/About'));
+const HowItWorks = lazy(() => import('./pages/public/HowItWorks'));
+const Privacy = lazy(() => import('./pages/public/Privacy'));
+const Terms = lazy(() => import('./pages/public/Terms'));
+const FinancialTerms = lazy(() => import('./pages/public/FinancialTerms'));
+const DeleteAccount = lazy(() => import('./pages/public/DeleteAccount'));
+const Faq = lazy(() => import('./pages/public/Faq'));
+const Contact = lazy(() => import('./pages/public/Contact'));
 
 // customer
 const Dashboard = lazy(() => import('./pages/user/Dashboard'));
@@ -81,6 +93,19 @@ export default function App() {
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/account-disabled" element={<AccountDisabledPage />} />
+
+      {/* Public and legal pages. Google Play will not accept the app without a
+          reachable privacy policy and account-deletion URL. */}
+      <Route element={<Section><PublicLayout /></Section>}>
+        <Route path="/about" element={<About />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/financial-terms" element={<FinancialTerms />} />
+        <Route path="/delete-account" element={<DeleteAccount />} />
+        <Route path="/faq" element={<Faq />} />
+        <Route path="/contact" element={<Contact />} />
+      </Route>
 
       {/* customer */}
       <Route element={<RequireAuth roles={['USER']}><Section><AppShell /></Section></RequireAuth>}>
