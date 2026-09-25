@@ -40,13 +40,10 @@ export default function Welcome() {
 
         <div className="wc-actions">
           <Link to="/login" className="wc-btn wc-btn-primary">Login</Link>
-
           <div className="wc-links">
-            {/* Customers no longer sign themselves up, so this goes to the
-                request form rather than a signup page that does not exist. */}
             <Link to="/contact">Request an Account</Link>
             <span className="wc-sep" aria-hidden="true" />
-            <Link to="/how-it-works">Learn more</Link>
+            <Link to="/claim">I have a setup code</Link>
           </div>
 
           <p className="wc-note">
