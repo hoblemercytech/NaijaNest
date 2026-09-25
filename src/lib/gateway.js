@@ -89,6 +89,16 @@ export async function peekClaim(token) {
   return data?.[0] ?? { valid: false, reason: 'This link is not valid.' };
 }
 
+/**
+ * Forgot passcode — sends a fresh setup link by email.
+ *
+ * Always resolves, whether or not the account exists. The caller must not be
+ * able to learn which phone numbers and emails are registered.
+ */
+export function forgotPasscode(identifier) {
+  return call({ action: 'forgot', identifier });
+}
+
 /** Submit an account enquiry. Public — no session needed. */
 export async function submitEnquiry(form) {
   const { error } = await supabase.rpc('nn_submit_enquiry', {
