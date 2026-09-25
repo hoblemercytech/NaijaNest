@@ -1,0 +1,15 @@
+.legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding: 18px 0;
+}
+
+.legal-links a {
+  color: rgba(255, 255, 255, .62);
+  font-size: .8125rem;
+  text-decoration: none;
+}
+.legal-links a:hover { color: #fff; text-decoration: underline; }
+
+/* If your footer is light rather than dark, swap these two colours. */
