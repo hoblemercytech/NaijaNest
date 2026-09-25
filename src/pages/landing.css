@@ -1971,67 +1971,286 @@
   gap: 5px;
 }
 
-/* --- trust links -------------------------------------------------------
-   Sits between the pitch and the footer: the last thing read before someone
-   decides, so it points at the pages that answer "what is the catch". */
+/* =====================================================================
+   BEFORE YOU START
+
+   Sits between the pitch and the footer. Treated as a considered section
+   rather than a link list, because these are the pages that decide whether
+   someone trusts the product enough to hand over cash.
+   ===================================================================== */
+
 .lp-trust-links {
-  padding: 64px 0;
-  background: #0A1A14;
-  border-top: 1px solid rgba(255, 255, 255, .07);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  padding: 92px 0;
+
+  background:
+    linear-gradient(180deg, #050A0E 0%, #071017 55%, #050A0E 100%);
+
+  border-top: 1px solid rgba(255, 255, 255, .06);
 }
 
-.lp-trust-links h2 {
+/* One soft light source, off-centre. Keeps the band from reading flat
+   without adding anything the eye has to decode. */
+.lp-trust-glow {
+  position: absolute;
+  z-index: -1;
+
+  top: -180px;
+  left: 50%;
+  transform: translateX(-30%);
+
+  width: 720px;
+  height: 420px;
+
+  border-radius: 50%;
+  background: rgba(24, 167, 106, .09);
+  filter: blur(90px);
+  pointer-events: none;
+}
+
+/* --- heading ----------------------------------------------------------- */
+.lp-trust-head {
+  max-width: 620px;
+  margin-bottom: 44px;
+}
+
+.lp-trust-head h2 {
+  margin: 10px 0 0;
+
   font-family: var(--font-display, 'Sora', sans-serif);
-  font-size: clamp(1.4rem, 3.5vw, 1.85rem);
-  font-weight: 700;
-  letter-spacing: -.025em;
-  color: #fff;
-  margin: 0 0 6px;
+  font-size: clamp(2rem, 4.2vw, 3rem);
+  font-weight: 780;
+  line-height: 1.04;
+  letter-spacing: -.05em;
+
+  color: #F4F8FA;
 }
 
-.lp-trust-links > .container > p {
-  margin: 0 0 28px;
-  color: rgba(255, 255, 255, .55);
-  font-size: .9375rem;
+.lp-trust-head h2 span {
+  display: block;
+  color: #A2B2BC;
 }
 
+.lp-trust-head > p {
+  margin: 16px 0 0;
+  max-width: 52ch;
+
+  color: #7F8D9A;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+/* --- cards ------------------------------------------------------------- */
 .lp-trust-grid {
   display: grid;
-  gap: 14px;
+  gap: 13px;
   grid-template-columns: 1fr;
 }
-@media (min-width: 640px) { .lp-trust-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1000px) { .lp-trust-grid { grid-template-columns: repeat(4, 1fr); } }
+
+@media (min-width: 680px) {
+  .lp-trust-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1040px) {
+  .lp-trust-grid { grid-template-columns: repeat(4, 1fr); }
+}
 
 .lp-trust-card {
-  display: block;
-  padding: 22px 20px;
-  border: 1px solid rgba(255, 255, 255, .1);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, .035);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 224px;
+  padding: 24px 22px;
+
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      152deg,
+      rgba(18, 30, 39, .9),
+      rgba(9, 17, 23, .92)
+    );
+
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, .18),
+    inset 0 1px 0 rgba(255, 255, 255, .03);
+
   text-decoration: none;
-  transition: border-color .16s ease, background-color .16s ease, transform .16s ease;
+
+  transition:
+    transform 180ms cubic-bezier(.2, .7, .3, 1),
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
+
+/* A hairline that lights along the top edge on hover. Reads as the card
+   becoming active rather than merely being pointed at. */
+.lp-trust-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 26px;
+  right: 26px;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(42, 201, 130, .85),
+      transparent
+    );
+
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
 .lp-trust-card:hover {
-  border-color: rgba(62, 152, 115, .5);
-  background: rgba(255, 255, 255, .06);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  border-color: rgba(24, 167, 106, .26);
   text-decoration: none;
+
+  box-shadow:
+    0 22px 44px rgba(0, 0, 0, .28),
+    0 0 28px rgba(24, 167, 106, .07),
+    inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+
+.lp-trust-card:hover::before { opacity: 1; }
+
+.lp-trust-card:focus-visible {
+  outline: 2px solid rgba(42, 201, 130, .6);
+  outline-offset: 3px;
+}
+
+/* --- card contents ----------------------------------------------------- */
+.lp-trust-icon {
+  display: grid;
+  place-items: center;
+
+  width: 42px;
+  height: 42px;
+  margin-bottom: 20px;
+
+  border: 1px solid rgba(24, 167, 106, .14);
+  border-radius: 12px;
+
+  background: rgba(24, 167, 106, .09);
+  color: #3DCC8B;
+
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+/* Gold for the money page. It is the one people most need to find, and the
+   one a less honest product would hide. */
+.lp-trust-icon.is-gold {
+  border-color: rgba(245, 184, 0, .16);
+  background: rgba(245, 184, 0, .09);
+  color: #F6C63C;
+}
+
+.lp-trust-card:hover .lp-trust-icon {
+  background: rgba(24, 167, 106, .16);
+}
+.lp-trust-card:hover .lp-trust-icon.is-gold {
+  background: rgba(245, 184, 0, .16);
 }
 
 .lp-trust-card h3 {
-  margin: 0 0 6px;
-  font-size: 1rem;
-  font-weight: 650;
-  color: #fff;
-}
-.lp-trust-card p {
-  margin: 0;
-  font-size: .875rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, .58);
+  margin: 0 0 8px;
+
+  color: #E7EDF1;
+  font-size: 15px;
+  font-weight: 720;
+  letter-spacing: -.01em;
 }
 
+.lp-trust-card > p {
+  margin: 0;
+
+  color: #73818E;
+  font-size: 12.5px;
+  line-height: 1.68;
+}
+
+/* Pushed to the bottom so every card's link sits on the same line,
+   regardless of how long the description runs. */
+.lp-trust-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-top: auto;
+  padding-top: 18px;
+
+  color: #4BD094;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .01em;
+}
+
+.lp-trust-go svg {
+  transition: transform 180ms cubic-bezier(.2, .7, .3, 1);
+}
+
+.lp-trust-card:hover .lp-trust-go svg {
+  transform: translateX(3px);
+}
+
+/* --- disclosure -------------------------------------------------------- */
+.lp-trust-footnote {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+
+  margin-top: 28px;
+  padding: 17px 19px;
+
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, .022);
+}
+
+.lp-trust-footnote svg {
+  flex: none;
+  margin-top: 1px;
+  color: #54CF96;
+}
+
+.lp-trust-footnote p {
+  margin: 0;
+  max-width: 82ch;
+
+  color: #78868F;
+  font-size: 11.5px;
+  line-height: 1.7;
+}
+
+/* --- small screens ----------------------------------------------------- */
+@media (max-width: 619px) {
+  .lp-trust-links { padding: 66px 0; }
+  .lp-trust-head { margin-bottom: 30px; }
+  .lp-trust-card { min-height: 0; padding: 21px 19px; }
+  .lp-trust-icon { width: 38px; height: 38px; margin-bottom: 16px; }
+  .lp-trust-go { padding-top: 15px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-trust-card,
+  .lp-trust-card::before,
+  .lp-trust-go svg {
+    transition: none;
+  }
+  .lp-trust-card:hover { transform: none; }
+}
 
 /* ================================================================
    TABLET
