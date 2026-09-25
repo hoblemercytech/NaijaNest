@@ -31,8 +31,10 @@ export function friendlyError(error) {
   if (/Failed to fetch|NetworkError|network/i.test(raw)) {
     return 'No connection. Check your network and try again.';
   }
+  // Sign-in is phone + passcode now. The old wording sent people looking for
+  // an email field that is not on the screen.
   if (/Invalid login credentials/i.test(raw)) {
-    return 'Email or password is incorrect.';
+    return 'Phone number or passcode is incorrect.';
   }
   if (/already registered|already exists|User already/i.test(raw)) {
     return 'An account with that email already exists. Try signing in instead.';
