@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { AlertCircle, BadgeCheck, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { AlertCircle, BadgeCheck, CheckCircle2, KeyRound, ShieldAlert } from 'lucide-react';
 import { claimAccount, peekClaim, signInWithPasscode } from '../../lib/gateway';
 import { AuthFrame, PasscodeInput } from './AuthPages';
+import { Input } from '../../components/ui/Field';
 import Button from '../../components/ui/Button';
 import { useToast } from '../../components/ui/Toast';
 import './auth.css';
@@ -16,11 +17,23 @@ import './auth.css';
  * with no purpose.
  */
 export default function ClaimAccount() {
-  const { token } = useParams();
+  const { token: urlToken } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [state, setState] = useState({ loading: true, claim: null, error: null });
+  // Reached without a token — the app route, where someone types the code a
+  // collector read out. A link in an email opens a browser unless app links
+  // are verified on the domain, so the code is the reliable path on mobile.
+  const [code, setCode] = useState('');
+  const [lookupError, setLookupError] = useState(null);
+  const [looking, setLooking] = useState(false);
+
+  const [state, setState] = useState({
+    loading: !!urlToken,
+    claim: null,
+    error: null,
+    token: urlToken ?? null,
+  });
   const [passcode, setPasscode] = useState('');
   const [confirm, setConfirm] = useState('');
   const [errors, setErrors] = useState({});
@@ -28,21 +41,47 @@ export default function ClaimAccount() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    if (!urlToken) return undefined;
+
     let alive = true;
-    peekClaim(token)
+    peekClaim(urlToken)
       .then((claim) => {
         if (!alive) return;
         setState({
           loading: false,
           claim: claim.valid ? claim : null,
           error: claim.valid ? null : claim.reason,
+          token: urlToken,
         });
       })
       .catch((err) => {
-        if (alive) setState({ loading: false, claim: null, error: err.message });
+        if (alive) setState({ loading: false, claim: null, error: err.message, token: urlToken });
       });
     return () => { alive = false; };
-  }, [token]);
+  }, [urlToken]);
+
+  const lookUpCode = async (e) => {
+    e.preventDefault();
+    const entered = code.trim();
+    if (entered.replace(/[^A-Za-z0-9]/g, '').length < 8) {
+      return setLookupError('Enter the full 8-character code.');
+    }
+
+    setLooking(true);
+    setLookupError(null);
+    try {
+      const claim = await peekClaim(entered);
+      if (!claim.valid) {
+        setLookupError(claim.reason);
+      } else {
+        setState({ loading: false, claim, error: null, token: entered });
+      }
+    } catch (err) {
+      setLookupError(err.message);
+    } finally {
+      setLooking(false);
+    }
+  };
 
   const validate = () => {
     const next = {};
@@ -68,7 +107,7 @@ export default function ClaimAccount() {
     setBusy(true);
     setFailure(null);
     try {
-      await claimAccount(token, passcode);
+      await claimAccount(state.token, passcode);
 
       // Straight in. They have proved they hold the email and just chose the
       // passcode, so a login form would ask for nothing new. If sign-in fails
@@ -86,6 +125,48 @@ export default function ClaimAccount() {
       setBusy(false);
     }
   };
+
+  // No token in the URL and nothing looked up yet: ask for the code.
+  if (!urlToken && !state.claim) {
+    return (
+      <AuthFrame
+        title="Enter your setup code"
+        lead="Your collector or the email we sent has an 8-character code. Enter it to set up your account."
+        foot={<>Already set up? <Link to="/login">Sign in</Link></>}
+      >
+        <form onSubmit={lookUpCode} noValidate className="auth-form">
+          {lookupError && (
+            <div className="auth-alert" role="alert">
+              <AlertCircle size={18} strokeWidth={2} />
+              <span>{lookupError}</span>
+            </div>
+          )}
+
+          <Input
+            label="Setup code"
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            placeholder="ABCD-EFGH"
+            autoComplete="one-time-code"
+            autoCapitalize="characters"
+            spellCheck={false}
+            maxLength={9}
+            inputClassName="claim-code-input"
+            icon={<KeyRound size={18} strokeWidth={1.8} />}
+            hint="Not case sensitive. The dash is optional."
+          />
+
+          <Button type="submit" block loading={looking} className="auth-submit">
+            Continue
+          </Button>
+        </form>
+
+        <div className="auth-inline-foot">
+          No code? <Link to="/forgot-password">Have one emailed to you</Link>
+        </div>
+      </AuthFrame>
+    );
+  }
 
   if (state.loading) {
     return (
