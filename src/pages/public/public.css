@@ -1,0 +1,347 @@
+/* =====================================================================
+   Public pages — marketing and legal.
+
+   Light, document-like and high-contrast. These are read carefully (or
+   skimmed by a Play Store reviewer), not glanced at, so the priority is
+   legibility over atmosphere. The dashboard's dark theme does not apply
+   here: a legal page that changes colour is harder to cite.
+   ===================================================================== */
+
+.pub {
+  background: #FFFFFF;
+  color: #0F1E18;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.pub-container {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* --- nav -------------------------------------------------------------- */
+.pub-nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, .92);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid #E4EBE7;
+}
+
+.pub-nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 64px;
+}
+
+.pub-brand { flex: none; }
+.pub-brand:hover { text-decoration: none; }
+
+.pub-nav-links {
+  display: none;
+  gap: 4px;
+  margin-right: auto;
+}
+
+.pub-nav-link {
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #4A5D55;
+  font-size: .9375rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+.pub-nav-link:hover { background: #F2F7F4; color: #0F1E18; text-decoration: none; }
+.pub-nav-link.is-active { color: #0B3D2C; font-weight: 600; }
+
+.pub-nav .btn { margin-left: auto; }
+
+@media (min-width: 860px) {
+  .pub-nav-links { display: flex; }
+  .pub-nav .btn { margin-left: 0; }
+}
+
+/* --- page body -------------------------------------------------------- */
+.pub-main { flex: 1; }
+
+.pub-hero {
+  padding: 56px 0 40px;
+  background: linear-gradient(180deg, #F4F9F6, #FFFFFF);
+  border-bottom: 1px solid #E4EBE7;
+}
+
+.pub-hero h1 {
+  font-family: var(--font-display, 'Sora', sans-serif);
+  font-size: clamp(1.9rem, 5vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -.03em;
+  margin: 0;
+  color: #06231A;
+}
+
+.pub-hero p {
+  margin: 12px 0 0;
+  max-width: 62ch;
+  color: #4A5D55;
+  font-size: 1.0625rem;
+}
+
+.pub-updated {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #E4F0EA;
+  color: #10714A;
+  font-size: .75rem;
+  font-weight: 600;
+}
+
+/* --- long-form document ------------------------------------------------ */
+/* 68ch is the line length people actually read without losing their place. */
+.pub-doc {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 44px 20px 72px;
+}
+
+.pub-doc h2 {
+  font-family: var(--font-display, 'Sora', sans-serif);
+  font-size: 1.3rem;
+  font-weight: 650;
+  letter-spacing: -.02em;
+  margin: 40px 0 12px;
+  padding-top: 8px;
+  color: #06231A;
+  scroll-margin-top: 80px;
+}
+.pub-doc h2:first-child { margin-top: 0; }
+
+.pub-doc h3 {
+  font-size: 1.0625rem;
+  font-weight: 650;
+  margin: 24px 0 8px;
+  color: #0F1E18;
+}
+
+.pub-doc p,
+.pub-doc li {
+  color: #35463F;
+  font-size: 1rem;
+  line-height: 1.72;
+}
+
+.pub-doc p { margin: 0 0 14px; max-width: 68ch; }
+.pub-doc ul, .pub-doc ol { margin: 0 0 16px; padding-left: 22px; }
+.pub-doc li { margin-bottom: 8px; }
+
+.pub-doc strong { color: #06231A; font-weight: 650; }
+.pub-doc a { color: #12694A; font-weight: 500; }
+
+/* A rule people will argue about later gets its own surface. */
+.pub-callout {
+  margin: 20px 0;
+  padding: 16px 18px;
+  border-left: 3px solid #FAB500;
+  border-radius: 0 10px 10px 0;
+  background: #FFF8E7;
+}
+.pub-callout p { margin: 0; color: #5C4506; }
+.pub-callout p + p { margin-top: 8px; }
+
+.pub-callout.is-warning {
+  border-left-color: #9B241C;
+  background: #FCEDEB;
+}
+.pub-callout.is-warning p { color: #7A201A; }
+
+.pub-callout.is-info {
+  border-left-color: #12694A;
+  background: #EFF7F3;
+}
+.pub-callout.is-info p { color: #104934; }
+
+/* --- contents ---------------------------------------------------------- */
+.pub-toc {
+  margin: 0 0 32px;
+  padding: 18px 20px;
+  border: 1px solid #E4EBE7;
+  border-radius: 14px;
+  background: #F8FBF9;
+}
+.pub-toc h2 { font-size: .8125rem; text-transform: uppercase; letter-spacing: .08em; margin: 0 0 10px; color: #4A5D55; }
+.pub-toc ol { margin: 0; padding-left: 20px; }
+.pub-toc li { margin-bottom: 5px; font-size: .9375rem; }
+
+/* --- cards / steps ----------------------------------------------------- */
+.pub-section { padding: 56px 0; }
+.pub-section.is-tinted { background: #F6FAF8; border-block: 1px solid #E4EBE7; }
+
+.pub-section h2 {
+  font-family: var(--font-display, 'Sora', sans-serif);
+  font-size: clamp(1.4rem, 3.4vw, 1.9rem);
+  font-weight: 700;
+  letter-spacing: -.025em;
+  margin: 0 0 8px;
+  color: #06231A;
+}
+.pub-section > .pub-container > p { color: #4A5D55; max-width: 64ch; margin: 0 0 28px; }
+
+.pub-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 720px) { .pub-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 980px) { .pub-grid.is-three { grid-template-columns: repeat(3, 1fr); } }
+
+.pub-card {
+  padding: 22px;
+  border: 1px solid #E4EBE7;
+  border-radius: 16px;
+  background: #FFFFFF;
+}
+.pub-card h3 { margin: 12px 0 6px; font-size: 1.0625rem; font-weight: 650; color: #06231A; }
+.pub-card p { margin: 0; color: #4A5D55; font-size: .9375rem; line-height: 1.6; }
+
+.pub-card-icon {
+  display: grid;
+  place-items: center;
+  width: 40px; height: 40px;
+  border-radius: 11px;
+  background: #E4F0EA;
+  color: #12694A;
+}
+
+/* Numbered because the order is the point — you cannot withdraw before the
+   term ends, so step 6 genuinely follows step 5. */
+.pub-steps { counter-reset: step; display: grid; gap: 14px; }
+
+.pub-step {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid #E4EBE7;
+  border-radius: 16px;
+  background: #FFFFFF;
+}
+.pub-step-num {
+  flex: none;
+  display: grid; place-items: center;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: #0B3D2C;
+  color: #FAB500;
+  font-family: var(--font-display, 'Sora', sans-serif);
+  font-weight: 700;
+  font-size: .875rem;
+}
+.pub-step h3 { margin: 4px 0 6px; font-size: 1.0625rem; font-weight: 650; color: #06231A; }
+.pub-step p { margin: 0; color: #4A5D55; font-size: .9375rem; line-height: 1.62; }
+
+/* --- FAQ --------------------------------------------------------------- */
+.pub-faq { display: grid; gap: 10px; }
+
+.pub-faq details {
+  border: 1px solid #E4EBE7;
+  border-radius: 14px;
+  background: #FFFFFF;
+  overflow: hidden;
+}
+.pub-faq summary {
+  padding: 18px 20px;
+  font-weight: 600;
+  color: #06231A;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.pub-faq summary::-webkit-details-marker { display: none; }
+.pub-faq summary::after {
+  content: '+';
+  color: #12694A;
+  font-size: 1.3rem;
+  line-height: 1;
+  flex: none;
+}
+.pub-faq details[open] summary::after { content: '−'; }
+.pub-faq details[open] summary { border-bottom: 1px solid #E4EBE7; }
+.pub-faq-body { padding: 16px 20px 20px; }
+.pub-faq-body p { margin: 0 0 10px; color: #35463F; line-height: 1.7; font-size: .9375rem; }
+.pub-faq-body p:last-child { margin: 0; }
+
+/* --- contact ----------------------------------------------------------- */
+.pub-contact-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid #E4EBE7;
+  border-radius: 16px;
+  background: #FFFFFF;
+  text-decoration: none;
+  color: inherit;
+}
+.pub-contact-card:hover { border-color: #3E9873; text-decoration: none; }
+.pub-contact-card h3 { margin: 0 0 4px; font-size: 1rem; font-weight: 650; color: #06231A; }
+.pub-contact-card p { margin: 0; color: #4A5D55; font-size: .9375rem; }
+
+/* --- footer ------------------------------------------------------------ */
+.pub-footer {
+  background: #06231A;
+  color: rgba(255, 255, 255, .72);
+  padding: 48px 0 28px;
+}
+
+.pub-footer-grid {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: 1fr;
+  padding-bottom: 32px;
+}
+@media (min-width: 720px) { .pub-footer-grid { grid-template-columns: 1.6fr 1fr 1fr 1.2fr; } }
+
+.pub-footer h3 {
+  margin: 0 0 12px;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: rgba(255, 255, 255, .5);
+}
+
+.pub-footer a,
+.pub-footer .pub-address {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+  color: rgba(255, 255, 255, .78);
+  font-size: .9375rem;
+  text-decoration: none;
+}
+.pub-footer a:hover { color: #FFFFFF; text-decoration: none; }
+
+.pub-footer-blurb {
+  margin: 14px 0 10px;
+  max-width: 38ch;
+  font-size: .9375rem;
+  line-height: 1.62;
+  color: rgba(255, 255, 255, .6);
+}
+.pub-footer-rc { margin: 0; font-size: .8125rem; color: rgba(255, 255, 255, .42); }
+
+.pub-footer-base {
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+}
+.pub-footer-base p { margin: 0 0 8px; font-size: .8125rem; color: rgba(255, 255, 255, .5); }
+
+/* The "not a bank" line is a compliance statement, not small print to hide. */
+.pub-footer-note { max-width: 70ch; line-height: 1.6; }
