@@ -1,173 +1,1307 @@
+
+/* ================================================================
+   NAIJANEST — PREMIUM DARK FINTECH AUTH
+   Deep navy / emerald / glassmorphism
+   Drop-in replacement for auth.css
+   ================================================================ */
+
 .auth {
-  min-height: 100vh;
+  --auth-ink: #f8fafc;
+  --auth-ink-strong: #ffffff;
+  --auth-muted: #9aa6b6;
+  --auth-subtle: #687587;
+  --auth-line: rgba(255, 255, 255, 0.09);
+  --auth-line-strong: rgba(255, 255, 255, 0.14);
+
+  --auth-surface: rgba(15, 23, 34, 0.88);
+  --auth-surface-solid: #0f1722;
+  --auth-surface-soft: rgba(20, 30, 43, 0.72);
+
+  --auth-bg: #060b11;
+  --auth-bg-deep: #04080d;
+
+  --auth-primary: #18a76a;
+  --auth-primary-bright: #24c47d;
+  --auth-primary-dark: #0f8050;
+  --auth-primary-deep: #0b633d;
+
+  --auth-primary-soft: rgba(24, 167, 106, 0.11);
+  --auth-primary-glow: rgba(24, 167, 106, 0.18);
+
+  --auth-danger: #ff756c;
+  --auth-danger-bg: rgba(190, 49, 42, 0.10);
+  --auth-danger-line: rgba(255, 117, 108, 0.24);
+
+  min-height: 100dvh;
+  width: 100%;
+  box-sizing: border-box;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--s-5) var(--s-4);
-  /* A quiet green field so the white card reads as the focus. */
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  padding: 36px 20px;
+
   background:
-    radial-gradient(1100px 460px at 50% -12%, var(--accent-soft), transparent 65%),
-    var(--bg);
+    radial-gradient(
+      700px 420px at 50% -12%,
+      rgba(24, 167, 106, 0.13),
+      transparent 68%
+    ),
+    radial-gradient(
+      500px 420px at 100% 100%,
+      rgba(20, 91, 70, 0.10),
+      transparent 72%
+    ),
+    radial-gradient(
+      420px 360px at 0% 70%,
+      rgba(13, 43, 66, 0.14),
+      transparent 72%
+    ),
+    linear-gradient(
+      180deg,
+      #071019 0%,
+      var(--auth-bg) 55%,
+      var(--auth-bg-deep) 100%
+    );
+
+  color: var(--auth-ink);
+  text-align: left;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.auth *,
+.auth *::before,
+.auth *::after {
+  box-sizing: border-box;
+}
+
+/* ================================================================
+   AMBIENT LIGHT
+   ================================================================ */
+
+.auth-orb {
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(1px);
+}
+
+.auth-orb-one {
+  width: 520px;
+  height: 520px;
+
+  top: -365px;
+  left: calc(50% - 260px);
+
+  background: rgba(24, 167, 106, 0.065);
+
+  box-shadow:
+    0 0 120px rgba(24, 167, 106, 0.10),
+    0 0 240px rgba(24, 167, 106, 0.045);
+}
+
+.auth-orb-two {
+  width: 360px;
+  height: 360px;
+
+  right: -235px;
+  bottom: -235px;
+
+  background: rgba(18, 126, 91, 0.055);
+
+  box-shadow:
+    0 0 100px rgba(24, 167, 106, 0.075),
+    0 0 180px rgba(24, 167, 106, 0.035);
+}
+
+/* ================================================================
+   SHELL / PANEL
+   ================================================================ */
+
+.auth-shell {
+  width: 100%;
+  max-width: 460px;
 }
 
 .auth-panel {
   width: 100%;
-  max-width: 420px;
-  background: var(--surface-elevated);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--r-panel);
-  padding: var(--s-6) var(--s-5) var(--s-5);
-  box-shadow: var(--shadow-tile);
+
+  padding: 30px 32px 24px;
+
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 24px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(21, 31, 43, 0.94),
+      rgba(10, 17, 25, 0.91)
+    );
+
+  box-shadow:
+    0 35px 90px rgba(0, 0, 0, 0.48),
+    0 12px 32px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.065),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.30);
+
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
-.auth-brand { display: inline-block; margin-bottom: var(--s-5); }
-.auth-brand:hover { text-decoration: none; }
+/* ================================================================
+   TOP BAR
+   ================================================================ */
 
-.auth-panel h1 { font-size: var(--t-h1); }
-.auth-panel > p { margin: var(--s-2) 0 var(--s-5); font-size: var(--t-sm); }
+.auth-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+  margin-bottom: 34px;
+}
+
+.auth-brand {
+  display: inline-flex;
+  align-items: center;
+
+  line-height: 0;
+  text-decoration: none;
+
+  transition:
+    transform 160ms ease,
+    opacity 160ms ease,
+    filter 160ms ease;
+}
+
+.auth-brand:hover {
+  transform: translateY(-1px);
+  opacity: 0.90;
+  filter: brightness(1.08);
+  text-decoration: none;
+}
+
+.auth-secure {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+  padding: 7px 10px;
+
+  border: 1px solid rgba(24, 167, 106, 0.18);
+  border-radius: 999px;
+
+  background: rgba(24, 167, 106, 0.065);
+
+  color: #8bc9aa;
+
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+
+  white-space: nowrap;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.025),
+    0 2px 10px rgba(0, 0, 0, 0.10);
+}
+
+.auth-secure svg {
+  color: #4fd394;
+}
+
+/* ================================================================
+   HEADING
+   ================================================================ */
+
+.auth-heading {
+  margin-bottom: 27px;
+}
+
+.auth-eyebrow {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+  margin-bottom: 11px;
+
+  color: var(--auth-primary-bright);
+
+  font-size: 12px;
+  line-height: 1;
+
+  font-weight: 750;
+  letter-spacing: 0.075em;
+
+  text-transform: uppercase;
+}
+
+.auth-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: var(--auth-primary-bright);
+
+  box-shadow:
+    0 0 0 4px rgba(24, 167, 106, 0.075),
+    0 0 12px rgba(24, 167, 106, 0.35);
+}
+
+.auth-panel h1 {
+  margin: 0;
+
+  color: var(--auth-ink-strong);
+
+  font-size: clamp(28px, 5vw, 35px);
+  line-height: 1.08;
+
+  letter-spacing: -0.045em;
+  font-weight: 760;
+
+  text-shadow:
+    0 1px 20px rgba(0, 0, 0, 0.20);
+}
+
+.auth-panel > .auth-heading > p,
+.auth-heading .muted {
+  max-width: 400px;
+
+  margin: 10px 0 0;
+
+  color: var(--auth-muted);
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ================================================================
+   FORM
+   ================================================================ */
+
+.auth-form {
+  width: 100%;
+}
+
+.auth-form .field {
+  margin-bottom: 17px;
+}
+
+.auth-form .field:last-of-type {
+  margin-bottom: 0;
+}
+
+.field {
+  width: 100%;
+}
+
+/* ================================================================
+   FIELD LABEL
+   ================================================================ */
+
+.field-label {
+  display: block;
+
+  margin: 0 0 7px;
+
+  color: #c7d0dc;
+
+  font-size: 13px;
+  line-height: 1.35;
+
+  font-weight: 650;
+}
+
+/* ================================================================
+   FIELD CONTROL
+   ================================================================ */
+
+.field-control {
+  position: relative;
+  width: 100%;
+}
+
+.field-input {
+  display: block;
+
+  width: 100%;
+  min-height: 52px;
+
+  padding: 0 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.105);
+  border-radius: 13px;
+
+  outline: none;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(9, 17, 26, 0.92),
+      rgba(8, 15, 23, 0.96)
+    );
+
+  color: #f5f7fa;
+
+  font-family: inherit;
+  font-size: 16px !important;
+  line-height: 1.45;
+  font-weight: 450;
+
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.25),
+    0 1px 0 rgba(255, 255, 255, 0.015);
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.field-input::placeholder {
+  color: #586577;
+  opacity: 1;
+}
+
+.field-input:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(11, 20, 30, 0.96),
+      rgba(9, 17, 26, 0.98)
+    );
+}
+
+.field-input:focus {
+  border-color: rgba(36, 196, 125, 0.66);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(11, 21, 30, 0.98),
+      rgba(8, 17, 25, 1)
+    );
+
+  box-shadow:
+    0 0 0 4px rgba(24, 167, 106, 0.095),
+    0 0 22px rgba(24, 167, 106, 0.055),
+    inset 0 1px 2px rgba(0, 0, 0, 0.30);
+}
+
+.field-control.has-icon .field-input {
+  padding-left: 45px;
+}
+
+.field-control.has-end-adornment .field-input {
+  padding-right: 48px;
+}
+
+/* ================================================================
+   FIELD ICON
+   ================================================================ */
+
+.field-icon {
+  position: absolute;
+
+  z-index: 1;
+
+  top: 50%;
+  left: 15px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #697789;
+
+  pointer-events: none;
+
+  transform: translateY(-50%);
+
+  transition:
+    color 150ms ease,
+    filter 150ms ease;
+}
+
+.field-control:focus-within .field-icon {
+  color: var(--auth-primary-bright);
+
+  filter:
+    drop-shadow(0 0 5px rgba(24, 167, 106, 0.20));
+}
+
+/* ================================================================
+   END ADORNMENT / PASSWORD
+   ================================================================ */
+
+.field-end-adornment {
+  position: absolute;
+
+  z-index: 2;
+
+  top: 50%;
+  right: 12px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  transform: translateY(-50%);
+}
+
+.password-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: transparent;
+
+  color: #718093;
+
+  cursor: pointer;
+
+  transition:
+    background 140ms ease,
+    color 140ms ease,
+    transform 140ms ease;
+}
+
+.password-toggle:hover {
+  background: rgba(255, 255, 255, 0.055);
+  color: #e8edf3;
+
+  transform: scale(1.03);
+}
+
+.password-toggle:focus-visible {
+  outline: 2px solid rgba(36, 196, 125, 0.52);
+  outline-offset: 1px;
+}
+
+/* ================================================================
+   HINT / ERROR
+   ================================================================ */
+
+.field-hint,
+.field-error {
+  margin: 7px 1px 0;
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.field-hint {
+  color: #687587;
+}
+
+.field-error {
+  color: var(--auth-danger);
+  font-weight: 550;
+}
+
+.field-has-error .field-input {
+  border-color: rgba(255, 117, 108, 0.52);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(45, 18, 22, 0.48),
+      rgba(20, 13, 17, 0.72)
+    );
+}
+
+.field-has-error .field-input:focus {
+  border-color: var(--auth-danger);
+
+  box-shadow:
+    0 0 0 4px rgba(255, 117, 108, 0.075),
+    0 0 18px rgba(255, 117, 108, 0.035);
+}
+
+/* ================================================================
+   ERROR ALERT
+   ================================================================ */
 
 .auth-alert {
-  padding: var(--s-3) var(--s-4);
-  margin-bottom: var(--s-4);
-  border-radius: var(--r-input);
-  background: var(--danger-soft);
-  color: var(--danger);
-  font-size: var(--t-sm);
-  font-weight: 500;
+  display: flex;
+  align-items: flex-start;
+
+  gap: 10px;
+
+  padding: 12px 13px;
+  margin: 0 0 18px;
+
+  border: 1px solid var(--auth-danger-line);
+  border-radius: 13px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(190, 49, 42, 0.13),
+      rgba(100, 25, 28, 0.08)
+    );
+
+  color: #ffaaa4;
+
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 550;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
 
-.auth-foot {
-  margin-top: var(--s-5);
-  padding-top: var(--s-4);
-  border-top: 1px solid var(--line);
-  font-size: var(--t-sm);
-  color: var(--muted);
-  text-align: center;
+.auth-alert svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+
+  color: #ff756c;
 }
+
+/* ================================================================
+   FORM METADATA
+   ================================================================ */
+
+.auth-form-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin: 8px 1px 20px;
+
+  color: #697789;
+
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.auth-form-meta .small {
+  color: #43ca8b;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-decoration: none;
+
+  transition: color 140ms ease;
+}
+
+.auth-form-meta .small:hover,
+.auth-foot a:hover,
+.auth-inline-foot a:hover {
+  color: #72e2ab;
+}
+
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+
+.auth-panel .btn {
+  min-height: 52px;
+
+  border-radius: 13px;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  letter-spacing: -0.01em;
+
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease,
+    border-color 150ms ease,
+    opacity 150ms ease;
+}
+
+.auth-panel .btn-primary {
+  border-color: transparent;
+
+  background:
+    linear-gradient(
+      135deg,
+      #20ad70 0%,
+      #15965e 52%,
+      #107e50 100%
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 10px 24px rgba(8, 126, 78, 0.24),
+    0 2px 5px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+}
+
+.auth-panel .btn-primary:hover:not(:disabled) {
+  background:
+    linear-gradient(
+      135deg,
+      #27bc79 0%,
+      #18a766 52%,
+      #128955 100%
+    );
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 14px 30px rgba(8, 126, 78, 0.30),
+    0 3px 8px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 24px rgba(24, 167, 106, 0.075);
+}
+
+.auth-panel .btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+
+  box-shadow:
+    0 7px 16px rgba(8, 126, 78, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+.auth-panel .btn-outline {
+  border-color: rgba(255, 255, 255, 0.13);
+
+  background:
+    rgba(255, 255, 255, 0.025);
+
+  color: #d8e0e9;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.auth-panel .btn-outline:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.20);
+
+  background:
+    rgba(255, 255, 255, 0.055);
+
+  color: #ffffff;
+}
+
+.auth-panel .btn:focus-visible {
+  outline: 3px solid rgba(36, 196, 125, 0.20);
+  outline-offset: 2px;
+}
+
+.auth-panel .btn-block {
+  width: 100%;
+}
+
+.btn-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+}
+
+.btn-content-hidden {
+  visibility: hidden;
+}
+
+.auth-submit {
+  position: relative;
+}
+
+.auth-panel .spinner {
+  position: absolute;
+}
+
+/* ================================================================
+   AVATAR PICKER
+   ================================================================ */
 
 .avatar-picker {
   display: flex;
   align-items: center;
-  gap: var(--s-4);
-  margin-bottom: var(--s-5);
+
+  gap: 14px;
+
+  margin: 0 0 22px;
+  padding: 13px;
+
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(24, 35, 48, 0.72),
+      rgba(12, 20, 29, 0.72)
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035),
+    0 5px 16px rgba(0, 0, 0, 0.10);
 }
 
-@media (min-width: 620px) {
-  .auth-panel { padding: var(--s-8) var(--s-6) var(--s-6); }
+.avatar-wrap {
+  position: relative;
+  flex: 0 0 auto;
 }
 
-/* ======================================================================
-   Inputs on the auth screens
+.avatar-camera {
+  position: absolute;
 
-   The auth pages are dark in BOTH themes — they match the landing page, not
-   the dashboard. That leaves the form controls in a bind: they inherit
-   --input-bg, which in light mode is white. White box, dark text, dark page:
-   the field looks empty while you type because the caret and the first
-   characters land on a background the eye reads as the page itself.
+  right: -2px;
+  bottom: -2px;
 
-   Pinning them to explicit dark values fixes it in both themes, and
-   -webkit-text-fill-color is what actually wins against Safari and Chrome
-   autofill, which override `color` but not that property.
-   ====================================================================== */
-.auth .field-input,
-.auth-panel .field-input {
-  background: rgba(255, 255, 255, .045);
-  border-color: rgba(255, 255, 255, .16);
-  color: #F3F7F5;
-  -webkit-text-fill-color: #F3F7F5;
-  caret-color: var(--gold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 22px;
+  height: 22px;
+
+  border: 2px solid #101923;
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #23b876,
+      #118552
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.30);
 }
 
-.auth .field-input::placeholder,
-.auth-panel .field-input::placeholder {
-  color: rgba(255, 255, 255, .38);
-  -webkit-text-fill-color: rgba(255, 255, 255, .38);
+.avatar-copy {
+  min-width: 0;
 }
 
-.auth .field-input:focus,
-.auth-panel .field-input:focus {
-  background: rgba(255, 255, 255, .07);
-  border-color: rgba(62, 152, 115, .65);
-  box-shadow: 0 0 0 3px rgba(62, 152, 115, .18);
+.avatar-upload {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  min-height: 36px;
+
+  padding: 0 11px;
+
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.035);
+
+  color: #d5dde6;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    transform 150ms ease,
+    color 150ms ease;
 }
 
-/* Chrome paints autofilled fields with its own yellow/blue and ignores
-   `background`. A long inset shadow is the only reliable way to cover it. */
+.avatar-upload:hover {
+  border-color: rgba(24, 167, 106, 0.34);
+
+  background: rgba(24, 167, 106, 0.075);
+
+  color: #ffffff;
+
+  transform: translateY(-1px);
+}
+
+.avatar-upload .field-hint {
+  margin-top: 6px;
+}
+
+/* ================================================================
+   SUPPORTING MESSAGE
+   ================================================================ */
+
+.auth-benefit {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 8px;
+
+  margin: 17px 1px 19px;
+
+  color: #788698;
+
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.auth-benefit svg {
+  flex: 0 0 auto;
+
+  color: #3bc889;
+
+  margin-top: 1px;
+
+  filter:
+    drop-shadow(0 0 5px rgba(24, 167, 106, 0.15));
+}
+
+/* ================================================================
+   FOOTER / NAVIGATION
+   ================================================================ */
+
+.auth-foot {
+  margin-top: 25px;
+  padding-top: 19px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.065);
+
+  color: #778495;
+
+  text-align: center;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.auth-foot a,
+.auth-inline-foot a {
+  color: #46cd8d;
+
+  font-weight: 750;
+
+  text-decoration: none;
+
+  transition: color 140ms ease;
+}
+
+.auth-inline-foot {
+  margin-top: 23px;
+  padding-top: 18px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.065);
+
+  color: #778495;
+
+  text-align: center;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ================================================================
+   SECURITY NOTE
+   ================================================================ */
+
+.auth-security-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  margin-top: 17px;
+
+  color: #596879;
+
+  font-size: 10px;
+  line-height: 1.4;
+
+  text-align: center;
+}
+
+.auth-security-note svg {
+  color: #4a8068;
+
+  flex: 0 0 auto;
+}
+
+/* ================================================================
+   SUCCESS
+   ================================================================ */
+
+.auth-success {
+  padding: 8px 0 3px;
+
+  text-align: center;
+}
+
+.auth-success-icon,
+.auth-disabled-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 58px;
+  height: 58px;
+
+  margin: 0 auto 15px;
+
+  border: 1px solid rgba(24, 167, 106, 0.15);
+  border-radius: 18px;
+
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(36, 196, 125, 0.16),
+      rgba(24, 167, 106, 0.07)
+    );
+
+  color: #43ce8d;
+
+  box-shadow:
+    0 0 25px rgba(24, 167, 106, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.auth-success .small {
+  color: #7c8998;
+}
+
+/* ================================================================
+   DISABLED ACCOUNT
+   ================================================================ */
+
+.auth-disabled {
+  margin: 0 0 20px;
+  padding: 17px;
+
+  border: 1px solid rgba(255, 117, 108, 0.16);
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(120, 29, 32, 0.12),
+      rgba(47, 17, 22, 0.08)
+    );
+
+  color: #8995a4;
+
+  font-size: 13px;
+  line-height: 1.55;
+
+  text-align: center;
+}
+
+.auth-disabled-icon {
+  width: 54px;
+  height: 54px;
+
+  margin-bottom: 11px;
+
+  border-color: rgba(255, 117, 108, 0.18);
+
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(255, 117, 108, 0.13),
+      rgba(120, 29, 32, 0.08)
+    );
+
+  color: #ff756c;
+}
+
+.auth-disabled p {
+  margin: 0;
+}
+
+/* ================================================================
+   MOBILE-SAFE FORM CONTROLS
+   ================================================================ */
+
+.auth input,
+.auth textarea,
+.auth select {
+  font-size: 16px !important;
+}
+
+/* ================================================================
+   MOBILE
+   ================================================================ */
+
+@media (max-width: 619px) {
+  .auth {
+    align-items: center;
+
+    padding: 14px 12px;
+
+    background:
+      radial-gradient(
+        520px 350px at 50% -10%,
+        rgba(24, 167, 106, 0.11),
+        transparent 70%
+      ),
+      linear-gradient(
+        180deg,
+        #071019 0%,
+        #060b11 65%,
+        #04080d 100%
+      );
+  }
+
+  .auth-shell {
+    max-width: 100%;
+  }
+
+  .auth-panel {
+    margin-top: 6px;
+
+    padding: 23px 18px 20px;
+
+    border-radius: 20px;
+
+    box-shadow:
+      0 25px 60px rgba(0, 0, 0, 0.42),
+      0 7px 20px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  }
+
+  .auth-topbar {
+    margin-bottom: 28px;
+  }
+
+  .auth-secure {
+    padding: 6px 9px;
+    font-size: 10px;
+  }
+
+  .auth-heading {
+    margin-bottom: 23px;
+  }
+
+  .auth-panel h1 {
+    font-size: 29px;
+  }
+
+  .auth-panel > .auth-heading > p,
+  .auth-heading .muted {
+    font-size: 14px;
+  }
+
+  .field-input {
+    min-height: 54px;
+    font-size: 16px !important;
+  }
+
+  .auth-panel .btn {
+    min-height: 54px;
+  }
+
+  .auth-form-meta {
+    margin-bottom: 18px;
+  }
+}
+
+/* ================================================================
+   SMALL PHONES
+   ================================================================ */
+
+@media (max-width: 380px) {
+  .auth {
+    padding: 10px 9px;
+  }
+
+  .auth-panel {
+    padding: 21px 15px 18px;
+    border-radius: 18px;
+  }
+
+  .auth-panel h1 {
+    font-size: 27px;
+  }
+
+  .auth-secure {
+    display: none;
+  }
+
+  .auth-form-meta > span {
+    display: none;
+  }
+
+  .auth-form-meta {
+    justify-content: flex-end;
+  }
+}
+
+
+/* ================================================================
+   SCOPE GUARD
+
+   The form rules above are unscoped, so they trade blows with
+   components.css: whichever loads second wins. main.jsx imports the
+   stylesheets after App, so components.css lands last and its
+   `background: var(--input-bg)` — white in light mode — overrode the
+   dark gradient. White box, white text, invisible until blur.
+
+   Re-declaring under `.auth` raises specificity to (0,2,0), which beats
+   a bare class regardless of load order. It also stops these leaking
+   into the dashboard, where #c7d0dc labels on a white card are unreadable.
+   ================================================================ */
+
+.auth .field-input {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(9, 17, 26, 0.92),
+      rgba(8, 15, 23, 0.96)
+    );
+  border-color: rgba(255, 255, 255, 0.105);
+  color: #f5f7fa;
+  -webkit-text-fill-color: #f5f7fa;
+  caret-color: var(--auth-primary-bright);
+}
+
+.auth .field-input::placeholder {
+  color: #586577;
+  -webkit-text-fill-color: #586577;
+  opacity: 1;
+}
+
+.auth .field-input:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.auth .field-input:focus {
+  border-color: rgba(36, 196, 125, 0.66);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(11, 21, 30, 0.98),
+      rgba(8, 17, 25, 1)
+    );
+  box-shadow:
+    0 0 0 4px rgba(24, 167, 106, 0.095),
+    0 0 22px rgba(24, 167, 106, 0.055),
+    inset 0 1px 2px rgba(0, 0, 0, 0.30);
+}
+
+.auth .field-label { color: #c7d0dc; }
+.auth .field-hint  { color: #687587; }
+.auth .field-error { color: var(--auth-danger); }
+
+/* Autofill. Chrome and Safari paint their own background and text colour and
+   ignore `background` entirely — a long inset shadow is the only thing that
+   covers it, and -webkit-text-fill-color the only thing that beats their text
+   colour. This is what makes the field look white on iOS. */
 .auth .field-input:-webkit-autofill,
 .auth .field-input:-webkit-autofill:hover,
 .auth .field-input:-webkit-autofill:focus,
-.auth-panel .field-input:-webkit-autofill,
-.auth-panel .field-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #F3F7F5;
-  -webkit-box-shadow: 0 0 0 1000px #0F2019 inset;
-  caret-color: var(--gold);
+.auth .field-input:-webkit-autofill:active {
+  -webkit-text-fill-color: #f5f7fa;
+  -webkit-box-shadow: 0 0 0 1000px #0a121b inset;
+  caret-color: var(--auth-primary-bright);
+  border-color: rgba(255, 255, 255, 0.105);
   transition: background-color 9999s ease-in-out 0s;
 }
 
-/* Labels and helper text sit on the same dark panel. */
-.auth .field-label,
-.auth-panel .field-label { color: rgba(255, 255, 255, .82); }
-
-.auth .field-hint,
-.auth-panel .field-hint { color: rgba(255, 255, 255, .5); }
-
-/* iOS zooms any field whose text is under 16px the moment it gains focus,
-   which yanks the whole page sideways mid-signup. */
-@media (max-width: 620px) {
-  .auth .field-input,
-  .auth-panel .field-input { font-size: 16px; }
+/* On the reset page the only field is also the last one, so the rule that
+   removes trailing margin leaves the button touching the input. */
+.auth-form .field:last-of-type + .btn,
+.auth-form .field:last-of-type + .auth-submit {
+  margin-top: 20px;
 }
 
-/* --- claim and passcode ------------------------------------------------ */
+/* ================================================================
+   CLAIM LINK
+
+   Shown once, at the moment someone is most likely to write their member
+   ID down. Deliberately the loudest thing on the panel.
+   ================================================================ */
+
 .claim-id {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 14px 16px;
-  margin-bottom: 20px;
-  border-radius: 12px;
-  background: rgba(36, 196, 125, .09);
-  border: 1px solid rgba(36, 196, 125, .24);
+  gap: 3px;
+
+  margin: 0 0 20px;
+  padding: 15px 17px;
+
+  border: 1px solid rgba(36, 196, 125, 0.22);
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(24, 167, 106, 0.12),
+      rgba(12, 60, 41, 0.10)
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 5px 18px rgba(0, 0, 0, 0.12);
 }
+
 .claim-id > span:first-child {
-  font-size: 11px;
-  font-weight: 650;
-  letter-spacing: .06em;
+  color: #8bc9aa;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, .55);
 }
+
 .claim-id strong {
-  font-family: var(--font-display, 'Sora', sans-serif);
-  font-size: 1.35rem;
-  font-weight: 700;
   color: #6fe0ab;
-  letter-spacing: .02em;
+  font-size: 26px;
+  font-weight: 760;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  text-shadow: 0 0 22px rgba(36, 196, 125, 0.20);
 }
-.claim-id .xs { font-size: 11px; color: rgba(255, 255, 255, .5); }
 
-/* The reveal sits inside the field rather than beside it — on a phone the
-   thumb is already there, and a passcode mistyped twice is a lockout. */
-.passcode-field { position: relative; }
-.passcode-eye {
-  position: absolute;
-  top: 34px;
-  right: 10px;
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: rgba(255, 255, 255, .5);
-  cursor: pointer;
+.claim-id-note {
+  color: #7f8d9a;
+  font-size: 11px;
+  line-height: 1.45;
 }
-.passcode-eye:hover { color: rgba(255, 255, 255, .85); background: rgba(255, 255, 255, .07); }
 
-/* Digits in a passcode should be evenly spaced and unmistakable. */
-.auth input[inputmode='numeric'] {
-  letter-spacing: .28em;
-  font-family: var(--font-display, 'Sora', sans-serif);
-  font-size: 1.05rem;
+/* Digits read more clearly spaced out, and a passcode mistyped twice is a
+   lockout — so this field gets more room than ordinary text. */
+.auth .field-input[inputmode='numeric'] {
+  letter-spacing: 0.3em;
+  font-size: 17px !important;
+  font-weight: 600;
 }
+
+.auth .field-input[inputmode='numeric']::placeholder {
+  letter-spacing: 0.3em;
+}
+/* ================================================================
+   REDUCED MOTION
+   ================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-brand,
+  .auth-panel a,
+  .auth-panel button,
+  .avatar-upload,
+  .field-input,
+  .password-toggle {
+    transition: none;
+  }
+}
+
