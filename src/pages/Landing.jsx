@@ -7,6 +7,9 @@ import {
   CheckCircle2,
   Clock3,
   Eye,
+  Route,
+  MessagesSquare,
+  Building2,
   FileCheck2,
   HandCoins,
   LockKeyhole,
@@ -771,34 +774,90 @@ export default function Landing() {
 
       {/* Links the pages that answer the questions someone asks right before
           they hand over cash. Placed last because that is when they ask. */}
+            {/* The last thing read before someone decides. It points at the pages
+          that answer "what is the catch" — a fintech that hides its charges
+          behind a link nobody finds is one people stop trusting later. */}
       <section className="lp-trust-links">
+        <div className="lp-trust-glow" aria-hidden="true" />
+
         <div className="container">
-          <h2>Before you start</h2>
-          <p>The things worth reading first.</p>
+          <div className="lp-trust-head">
+            <span className="lp-section-eyebrow">BEFORE YOU START</span>
+            <h2>
+              Know exactly
+              <span>what you are joining.</span>
+            </h2>
+            <p>
+              No hidden charges, no small print you find out about later.
+              Everything below is written plainly.
+            </p>
+          </div>
 
           <div className="lp-trust-grid">
             <Link to="/how-it-works" className="lp-trust-card">
+              <span className="lp-trust-icon">
+                <Route size={19} strokeWidth={1.7} />
+              </span>
               <h3>How it works</h3>
               <p>From your first contribution to the day your savings reach your bank.</p>
+              <span className="lp-trust-go">
+                Read the steps
+                <ArrowRight size={14} />
+              </span>
             </Link>
 
             <Link to="/financial-terms" className="lp-trust-card">
+              <span className="lp-trust-icon is-gold">
+                <ReceiptText size={19} strokeWidth={1.7} />
+              </span>
               <h3>Payment terms</h3>
               <p>What we charge, when a contribution counts, and how long a payout takes.</p>
+              <span className="lp-trust-go">
+                See the charges
+                <ArrowRight size={14} />
+              </span>
             </Link>
 
             <Link to="/faq" className="lp-trust-card">
+              <span className="lp-trust-icon">
+                <MessagesSquare size={19} strokeWidth={1.7} />
+              </span>
               <h3>Common questions</h3>
               <p>Missed a day? Payment pending? Answers to what people actually ask.</p>
+              <span className="lp-trust-go">
+                Browse answers
+                <ArrowRight size={14} />
+              </span>
             </Link>
 
             <Link to="/about" className="lp-trust-card">
+              <span className="lp-trust-icon">
+                <Building2 size={19} strokeWidth={1.7} />
+              </span>
               <h3>Who we are</h3>
               <p>Budget Save Int Limited — a registered Nigerian company, not a bank.</p>
+              <span className="lp-trust-go">
+                About the company
+                <ArrowRight size={14} />
+              </span>
             </Link>
+          </div>
+
+          {/* Stated on the marketing page, not buried in clause 14. A savings
+              product that is not NDIC-insured should say so where people can
+              see it. */}
+          <div className="lp-trust-footnote">
+            <ShieldCheck size={15} strokeWidth={1.9} />
+            <p>
+              BudgetSave is a contribution record and collection service, not a bank.
+              We pay no interest, and contributions are not NDIC-insured. Payments are
+              processed by OPay, licensed by the Central Bank of Nigeria.
+            </p>
           </div>
         </div>
       </section>
+
+
 
       {/* =========================================================
           FOOTER
