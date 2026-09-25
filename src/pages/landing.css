@@ -1971,6 +1971,67 @@
   gap: 5px;
 }
 
+/* --- trust links -------------------------------------------------------
+   Sits between the pitch and the footer: the last thing read before someone
+   decides, so it points at the pages that answer "what is the catch". */
+.lp-trust-links {
+  padding: 64px 0;
+  background: #0A1A14;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+
+.lp-trust-links h2 {
+  font-family: var(--font-display, 'Sora', sans-serif);
+  font-size: clamp(1.4rem, 3.5vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -.025em;
+  color: #fff;
+  margin: 0 0 6px;
+}
+
+.lp-trust-links > .container > p {
+  margin: 0 0 28px;
+  color: rgba(255, 255, 255, .55);
+  font-size: .9375rem;
+}
+
+.lp-trust-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) { .lp-trust-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .lp-trust-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.lp-trust-card {
+  display: block;
+  padding: 22px 20px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .035);
+  text-decoration: none;
+  transition: border-color .16s ease, background-color .16s ease, transform .16s ease;
+}
+.lp-trust-card:hover {
+  border-color: rgba(62, 152, 115, .5);
+  background: rgba(255, 255, 255, .06);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.lp-trust-card h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  font-weight: 650;
+  color: #fff;
+}
+.lp-trust-card p {
+  margin: 0;
+  font-size: .875rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, .58);
+}
+
 
 /* ================================================================
    TABLET
