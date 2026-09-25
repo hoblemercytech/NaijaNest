@@ -754,10 +754,12 @@ export default function Landing() {
 
           </div>
 
-          <div className="lp-final-actions">
+                <div className="lp-final-actions">
 
-            <Link to="/signup" className="btn btn-money">
-              Create account
+            {/* Customers do not open their own accounts — a collector has to
+                be assigned first — so this goes to the request form. */}
+            <Link to="/contact" className="btn btn-money">
+              Request an account
               <ArrowRight size={17} />
             </Link>
 
