@@ -14,7 +14,7 @@ export const COMPANY = {
   email: 'support@budgetsaveit.com',
   phone: '+234 810 937 4331',                // NEEDS CONFIRMING
   whatsapp: '+234 810 937 4331',             // NEEDS CONFIRMING
-  address: 'Ibadan, Oyo State, Nigeria',     // NEEDS CONFIRMING — full address
+  address: 'Benin, Edo State, Nigeria',     // NEEDS CONFIRMING — full address
   website: 'https://budgetsaveit.com',
   processor: 'OPay',
   processorLegal: 'OPay Digital Services Limited',
