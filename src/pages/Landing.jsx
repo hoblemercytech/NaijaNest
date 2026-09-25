@@ -17,6 +17,7 @@ import {
   WalletCards,
 } from 'lucide-react';
 
+
 import Logo from '../components/ui/Logo';
 import './landing.css';
 
@@ -768,12 +769,42 @@ export default function Landing() {
 
       </section>
 
+      {/* Links the pages that answer the questions someone asks right before
+          they hand over cash. Placed last because that is when they ask. */}
+      <section className="lp-trust-links">
+        <div className="container">
+          <h2>Before you start</h2>
+          <p>The things worth reading first.</p>
+
+          <div className="lp-trust-grid">
+            <Link to="/how-it-works" className="lp-trust-card">
+              <h3>How it works</h3>
+              <p>From your first contribution to the day your savings reach your bank.</p>
+            </Link>
+
+            <Link to="/financial-terms" className="lp-trust-card">
+              <h3>Payment terms</h3>
+              <p>What we charge, when a contribution counts, and how long a payout takes.</p>
+            </Link>
+
+            <Link to="/faq" className="lp-trust-card">
+              <h3>Common questions</h3>
+              <p>Missed a day? Payment pending? Answers to what people actually ask.</p>
+            </Link>
+
+            <Link to="/about" className="lp-trust-card">
+              <h3>Who we are</h3>
+              <p>Budget Save Int Limited — a registered Nigerian company, not a bank.</p>
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* =========================================================
           FOOTER
       ========================================================= */}
 
-      <footer className="lp-foot">
+            <footer className="lp-foot">
 
         <div className="container">
 
@@ -796,27 +827,25 @@ export default function Landing() {
 
               <div>
                 <span>Account</span>
-
-                <Link to="/login">
-                  Sign in
-                </Link>
-
-                <Link to="/signup">
-                  Create account
-                </Link>
+                <Link to="/login">Sign in</Link>
+                <Link to="/contact">Request an account</Link>
               </div>
 
 
               <div>
                 <span>BudgetSave</span>
+                <Link to="/how-it-works">How it works</Link>
+                <Link to="/about">About us</Link>
+                <Link to="/faq">Help</Link>
+              </div>
 
-                <a href="#how-it-works">
-                  How it works
-                </a>
 
-                <a href="#why-budgetsave">
-                  Why BudgetSave
-                </a>
+              <div>
+                <span>Legal</span>
+                <Link to="/terms">Terms &amp; Conditions</Link>
+                <Link to="/privacy">Privacy Policy</Link>
+                <Link to="/financial-terms">Payment terms</Link>
+                <Link to="/delete-account">Delete account</Link>
               </div>
 
             </div>
@@ -827,8 +856,8 @@ export default function Landing() {
           <div className="lp-foot-bottom">
 
             <p>
-              © {new Date().getFullYear()} BudgetSave.
-              All rights reserved.
+              © {new Date().getFullYear()} Budget Save Int Limited.
+              All rights reserved. BudgetSave is not a bank.
             </p>
 
             <div>
