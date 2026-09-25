@@ -440,3 +440,59 @@
 }
 
 .pub .field-has-error .field-input { border-color: #C9524A; }
+
+/* Catch-all: matches the fields whether or not they carry .field-input.
+   The class-based rules above stopped short because the request form's
+   inputs are plain elements. */
+.pub input[type='text'],
+.pub input[type='email'],
+.pub input[type='tel'],
+.pub input:not([type]),
+.pub textarea,
+.pub select {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+
+  border: 1px solid #D5E0DA;
+  border-radius: 11px;
+
+  background: #FFFFFF;
+  color: #0F1E18;
+  -webkit-text-fill-color: #0F1E18;
+  caret-color: #12694A;
+
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+
+  box-shadow: none;
+}
+
+.pub textarea { min-height: 120px; resize: vertical; }
+
+.pub input::placeholder,
+.pub textarea::placeholder {
+  color: #8A9A92;
+  -webkit-text-fill-color: #8A9A92;
+  opacity: 1;
+}
+
+.pub input:focus,
+.pub textarea:focus,
+.pub select:focus {
+  outline: none;
+  border-color: #3E9873;
+  box-shadow: 0 0 0 3px rgba(62, 152, 115, .16);
+  background: #FFFFFF;
+}
+
+.pub input:-webkit-autofill,
+.pub input:-webkit-autofill:hover,
+.pub input:-webkit-autofill:focus,
+.pub textarea:-webkit-autofill {
+  -webkit-text-fill-color: #0F1E18;
+  -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset;
+  border-color: #D5E0DA;
+  transition: background-color 9999s ease-in-out 0s;
+}
