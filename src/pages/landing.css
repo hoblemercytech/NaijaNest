@@ -1579,7 +1579,7 @@
 .lp-truth-icon {
   width: 55px;
   height: 55px;
-
+ margin-top: 5px;
   display: grid;
   place-items: center;
 
