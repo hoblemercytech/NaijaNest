@@ -202,7 +202,7 @@ export function LoginPage() {
         />
 
         <div className="auth-form-meta">
-          <span>Protected account access</span>
+          <Link to="/claim" className="small">I have a setup code</Link>
           <Link to="/forgot-password" className="small">Forgot passcode?</Link>
         </div>
 
