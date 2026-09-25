@@ -9,8 +9,8 @@ import './welcome.css';
  * Banking apps open on a photograph and two buttons because that is all a
  * returning customer needs — the decision is "sign in" or "join", and anything
  * else is in the way. The regulator line matters too: someone trusting a
- * stranger with cash daily wants to see who stands behind it before they type
- * anything.
+ * stranger with their savings wants to see who stands behind it before they
+ * type anything.
  *
  * The image is a background rather than an <img> so it can bleed edge to edge
  * behind the notch and the home indicator without layout maths.
@@ -31,10 +31,10 @@ export default function Welcome() {
         <div className="wc-centre">
           <Logo size={54} showName={false} />
           <h1 className="wc-name">BudgetSave</h1>
-          <p className="wc-tag">Daily contribution savings</p>
+          <p className="wc-tag">Contribution savings</p>
           <p className="wc-legal">
             <Landmark size={12} strokeWidth={2} />
-            Cash contributions, recorded and auditable
+            Contributions recorded and auditable
           </p>
         </div>
 
@@ -42,12 +42,16 @@ export default function Welcome() {
           <Link to="/login" className="wc-btn wc-btn-primary">Login</Link>
 
           <div className="wc-links">
-            <Link to="/signup">Open an Account</Link>
+            {/* Customers no longer sign themselves up, so this goes to the
+                request form rather than a signup page that does not exist. */}
+            <Link to="/contact">Request an Account</Link>
             <span className="wc-sep" aria-hidden="true" />
-            <Link to="/landing">Learn more</Link>
+            <Link to="/how-it-works">Learn more</Link>
           </div>
- <p className="wc-note">
-            <strong>BudgetSave</strong> where savings become a sucess <strong>PLAN.SAVE.GROW</strong>
+
+          <p className="wc-note">
+            <strong>BudgetSave</strong> — where savings become a success.{' '}
+            <strong>PLAN. SAVE. GROW.</strong>
           </p>
         </div>
       </div>
