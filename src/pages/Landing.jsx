@@ -3,10 +3,10 @@ import {
   ArrowRight,
   Banknote,
   CalendarCheck2,
-  Check,
   CheckCircle2,
   Clock3,
   Eye,
+  Landmark,
   Route,
   MessagesSquare,
   Building2,
@@ -71,34 +71,34 @@ const FEATURES = [
 
 const STEPS = [
   {
-    icon: CalendarCheck2,
+    icon: UserRoundCheck,
     number: '01',
-    title: 'Choose your plan',
-    body: 'Pick a daily amount and contribution period that works for you.',
+    title: 'Get your account',
+    body: 'Request an account and our team creates it for you, with a collector assigned to your area.',
   },
   {
-    icon: UserRoundCheck,
+    icon: CalendarCheck2,
     number: '02',
-    title: 'Get your collector',
-    body: 'Your collector activates your contribution cycle and becomes responsible for recording your payments.',
+    title: 'Choose your plan',
+    body: 'Pick an amount, how often you pay — daily, weekly or monthly — and for how long.',
   },
   {
     icon: HandCoins,
     number: '03',
-    title: 'Pay in cash',
-    body: 'Give your contribution to your collector. The payment is recorded against that day.',
+    title: 'Contribute',
+    body: 'Hand cash to your collector, or transfer to the account in your dashboard. Pay ahead if you want to.',
   },
   {
     icon: Eye,
     number: '04',
     title: 'Check your record',
-    body: 'Open your account and see which days are paid, unpaid or still ahead.',
+    body: 'Open your account and see which payments are made, missed or still ahead.',
   },
   {
     icon: Banknote,
     number: '05',
-    title: 'Withdraw your balance',
-    body: 'When you want your savings, request your balance and your collector pays you in cash.',
+    title: 'Withdraw to your bank',
+    body: 'When your plan completes, the office transfers your savings to an account in your own name.',
   },
 ];
 
@@ -122,8 +122,8 @@ export default function Landing() {
               Sign in
             </Link>
 
-            <Link to="/signup" className="btn btn-primary btn-sm">
-              Create account
+            <Link to="/contact" className="btn btn-primary btn-sm">
+              Request an account
             </Link>
           </nav>
 
@@ -148,20 +148,18 @@ export default function Landing() {
               <span>Simple. Transparent. Recorded.</span>
             </div>
 
-            <h1>
-              Save daily.
+                      <h1>
+              Save your way.
               <span>See every naira.</span>
             </h1>
 
             <p className="lp-lead">
-              BudgetSave gives you a clear digital record of the cash you
-              contribute to your collector — every naira, every day, with
-              the time it was paid.
+              BudgetSave gives you a clear digital record of every contribution
+              you make — daily, weekly or monthly, with the time it was paid.
             </p>
-
             <div className="lp-hero-actions">
-              <Link to="/signup" className="btn btn-money">
-                Create account
+              <Link to="/contact" className="btn btn-money">
+                Request an account
                 <ArrowRight size={17} />
               </Link>
 
@@ -186,9 +184,9 @@ export default function Landing() {
 
               <div className="lp-trust-divider" />
 
-              <div className="lp-trust-item">
+                           <div className="lp-trust-item">
                 <Banknote size={16} />
-                <span>Cash contributions</span>
+                <span>Cash or transfer</span>
               </div>
 
             </div>
@@ -277,19 +275,18 @@ export default function Landing() {
               </div>
 
 
-              <figcaption className="lp-ledger-foot">
+                            <figcaption className="lp-ledger-foot">
 
                 <div>
                   <Clock3 size={14} />
-                  Last recorded today
+                  ₦18,000 paid · ₦1,000 charge
                 </div>
 
                 <strong>
-                  ₦1,000 received
+                  ₦17,000 saved
                 </strong>
 
               </figcaption>
-
             </figure>
 
 
@@ -299,8 +296,8 @@ export default function Landing() {
                 <ReceiptText size={17} />
               </div>
 
-              <div>
-                <strong>Day 18 recorded</strong>
+                           <div>
+                <strong>Payment 18 recorded</strong>
                 <span>Contribution confirmed</span>
               </div>
 
@@ -329,11 +326,19 @@ export default function Landing() {
 
         <div className="container lp-trust-grid">
 
-          <div className="lp-trust-stat">
-            <ShieldCheck size={20} />
+                    <div className="lp-trust-stat">
+            <ReceiptText size={20} />
             <div>
-              <strong>Transparent</strong>
-              <span>Your record stays visible</span>
+              <strong>Every payment logged</strong>
+              <span>With the time it was made</span>
+            </div>
+          </div>
+
+          <div className="lp-trust-stat">
+            <Banknote size={20} />
+            <div>
+              <strong>Cash or transfer</strong>
+              <span>Pay whichever way suits you</span>
             </div>
           </div>
 
@@ -385,7 +390,7 @@ export default function Landing() {
               <span>a better record.</span>
             </h2>
 
-            <p>
+                    <p>
               Traditional daily savings can depend too much on notebooks,
               memory and conversations. BudgetSave gives everyone a clearer
               record of what actually happened.
@@ -508,11 +513,11 @@ export default function Landing() {
               separated.
             </p>
 
-            <ul className="lp-check-list">
+                       <ul className="lp-check-list">
 
               <li>
                 <CheckCircle2 size={17} />
-                <span>See each contribution day</span>
+                <span>See every scheduled payment</span>
               </li>
 
               <li>
@@ -532,8 +537,8 @@ export default function Landing() {
 
             </ul>
 
-            <Link to="/signup" className="lp-text-link">
-              Start your account
+                       <Link to="/contact" className="lp-text-link">
+              Request an account
               <ArrowRight size={16} />
             </Link>
 
@@ -608,16 +613,10 @@ export default function Landing() {
             </div>
 
 
-            <div className="lp-record-balance">
-
-              <span>Total recorded</span>
-
-              <strong className="num">
-                ₦17,000
-              </strong>
-
+                       <div className="lp-record-balance">
+              <span>Contributed ₦18,000 · charge ₦1,000</span>
+              <strong className="num">₦17,000</strong>
             </div>
-
           </div>
 
         </div>
@@ -643,15 +642,16 @@ export default function Landing() {
               OUR APPROACH
             </div>
 
-            <h2>
-              Miss a day,
+                    <h2>
+              Miss a payment,
               <span>owe nothing.</span>
             </h2>
 
             <p>
-              If you don't contribute on a given day, that day is simply
-              marked unpaid. It does not automatically become a debt.
-              Your balance reflects what you actually contributed.
+              If you don't contribute when a payment is due, it is simply
+              marked unpaid. It does not become a debt, there is no penalty,
+              and nobody may charge you for it. Your balance reflects what you
+              actually contributed.
             </p>
 
           </div>
@@ -665,7 +665,7 @@ export default function Landing() {
           CASH EXPLANATION
       ========================================================= */}
 
-      <section className="lp-cash">
+            <section className="lp-cash">
 
         <div className="container lp-cash-grid">
 
@@ -680,14 +680,20 @@ export default function Landing() {
             </span>
 
             <h2>
-              BudgetSave records
-              <span>your cash.</span>
+              Two ways to pay.
+              <span>One clear record.</span>
             </h2>
 
             <p>
-              BudgetSave is the record-keeping layer. Your assigned collector
-              handles your physical cash contributions and withdrawals.
-              The app does not receive your cash online.
+              Hand cash to your collector, or transfer to the account in your
+              dashboard. Either way the payment is recorded against the day it
+              was made, and you can check it yourself.
+            </p>
+
+            <p>
+              Withdrawals are different. When your plan completes, the office
+              sends your savings by bank transfer to an account in your own
+              name — your collector never handles a payout.
             </p>
 
           </div>
@@ -696,23 +702,26 @@ export default function Landing() {
           <div className="lp-cash-points">
 
             <div>
-              <Check size={17} />
-              <span>Contributions are made to your collector in cash.</span>
+              <Banknote size={17} />
+              <span>Pay cash to your collector, who records it on the spot.</span>
             </div>
 
             <div>
-              <Check size={17} />
-              <span>Your collector records the contribution in the app.</span>
+              <Landmark size={17} />
+              <span>Or transfer to the account shown in your dashboard.</span>
             </div>
 
             <div>
-              <Check size={17} />
-              <span>Your account shows the resulting contribution history.</span>
+              <Clock3 size={17} />
+              <span>
+                A transfer counts once the payment is confirmed received —
+                tapping <strong>I have paid</strong> alone does not credit it.
+              </span>
             </div>
 
             <div>
-              <Check size={17} />
-              <span>Withdrawals are handled by your collector in cash.</span>
+              <ShieldCheck size={17} />
+              <span>Savings are paid out by bank transfer, approved by the office.</span>
             </div>
 
           </div>
@@ -754,7 +763,7 @@ export default function Landing() {
 
           </div>
 
-                <div className="lp-final-actions">
+                    <div className="lp-final-actions">
 
             {/* Customers do not open their own accounts — a collector has to
                 be assigned first — so this goes to the request form. */}
