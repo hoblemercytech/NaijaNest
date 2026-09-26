@@ -1037,3 +1037,36 @@ a.stat:hover { text-decoration: none; border-color: var(--t-solid, var(--accent)
 
 .shell .field-error,
 .modal .field-error { color: var(--danger); }
+
+/* =====================================================================
+   MODAL, ON A PHONE
+
+   The sheet slides up from the same edge the tab bar occupies, so the
+   footer buttons ended up behind it. Clearing the nav height as well as the
+   home indicator puts them back.
+   ===================================================================== */
+@media (max-width: 899px) {
+  .modal {
+    max-height: calc(100dvh - 48px);
+    padding-bottom: 0;
+  }
+
+  /* The actions stay put while the body scrolls — a long form otherwise
+     buries the button that completes it. */
+  .modal-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+
+    margin: var(--s-4) calc(var(--s-5) * -1) 0;
+    padding: var(--s-4) var(--s-5)
+             calc(var(--s-4) + var(--nav-h) + env(safe-area-inset-bottom));
+
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+}
+
+@media (min-width: 900px) {
+  .modal-actions { padding-bottom: 0; }
+}
