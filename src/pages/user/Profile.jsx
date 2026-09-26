@@ -72,7 +72,9 @@ export default function Profile() {
         <CardHead title="Account" />
         <Button variant="outline" block onClick={signOut}>Sign out</Button>
       </Card>
-      <DeleteAccountSection />
+      {/* Customers only. Staff accounts are closed by an administrator, and
+          nn_request_account_deletion refuses them regardless. */}
+      {profile?.role === 'USER' && <DeleteAccountSection />}
     </>
   );
 }
