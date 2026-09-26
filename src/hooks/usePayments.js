@@ -120,3 +120,63 @@ export function useCollectorAccountActions() {
 
   return { setAccount };
 }
+
+/**
+ * Every payment in, cash and transfer together.
+ *
+ * Server-side filtering and paging: an admin with a year of daily
+ * contributions has tens of thousands of rows, and filtering those in the
+ * browser means shipping all of them first.
+ */
+export function usePaymentsLedger(filters) {
+  const {
+    from = '', to = '', collectorId = '', customerId = '',
+    method = '', page = 0, pageSize = 50,
+  } = filters || {};
+
+  return useSupabaseQuery(
+    async () => {
+      const { data, error } = await supabase.rpc('nn_payments_ledger', {
+        p_from: from || null,
+        p_to: to || null,
+        p_collector: collectorId || null,
+        p_customer: customerId || null,
+        p_method: method || null,
+        p_limit: pageSize,
+        p_offset: page * pageSize,
+      });
+      if (error) throw error;
+
+      return {
+        rows: data ?? [],
+        count: Number(data?.[0]?.total_count ?? 0),
+        pageSize,
+      };
+    },
+    [from, to, collectorId, customerId, method, page, pageSize]
+  );
+}
+
+/** How money reached each collector — cash against transfer. */
+export function useCollectorMoneyIn(from, to) {
+  return useSupabaseQuery(
+    async () => {
+      const { data, error } = await supabase.rpc('nn_collector_money_in', {
+        p_from: from || null,
+        p_to: to || null,
+      });
+      if (error) throw error;
+      return data ?? [];
+    },
+    [from, to]
+  );
+}
+
+/** Recent webhook activity, so a silent failure is visible. */
+export function useProviderEvents() {
+  return useSupabaseQuery(async () => {
+    const { data, error } = await supabase.rpc('nn_provider_events', { p_limit: 50 });
+    if (error) throw error;
+    return data ?? [];
+  }, []);
+}
