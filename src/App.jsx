@@ -162,6 +162,9 @@ export default function App() {
         <Route path="/admin/analytics" element={<Analytics />} />
         <Route path="/admin/email-alerts" element={<AdminNotificationSettings />} />
         <Route path="/admin/deletions" element={<AdminDeletions />} />
+        {/* Admins had no profile page, so no way to set a photo or change
+            their own details. The customer page handles every role. */}
+        <Route path="/admin/profile" element={<Profile />} />
         <Route path="/admin/audit-logs" element={<AuditLog />} />
         <Route path="/admin/notifications" element={<NotificationsPage />} />
       </Route>
