@@ -62,6 +62,7 @@ const NAV = {
     { to: '/admin/email-alerts', label: 'Email alerts', Icon: Mail },
     { to: '/admin/deletions', label: 'Deletions', Icon: UserX },
     { to: '/admin/audit-logs', label: 'Audit log', Icon: ScrollText },
+    { to: '/admin/profile', label: 'Profile', Icon: User },
   ],
 };
 
