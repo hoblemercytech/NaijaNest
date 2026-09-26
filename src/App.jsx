@@ -62,6 +62,9 @@ const AdminWithdrawals = lazy(() => import('./pages/admin/Withdrawals'));
 const AdminCash = lazy(() => import('./pages/admin/Cash'));
 const AdminKyc = lazy(() => import('./pages/admin/Kyc'));
 const AdminEnquiries = lazy(() => import('./pages/admin/Enquiries'));
+const AdminPaymentAccounts = lazy(() => import('./pages/admin/PaymentAccounts'));
+const CollectorClaims = lazy(() => import('./pages/collector/Claims'));
+const UserPay = lazy(() => import('./pages/user/Pay'));
 const AdminNotificationSettings = lazy(() => import('./pages/admin/Notifications'));
 const ClaimAccount = lazy(() => import('./pages/auth/ClaimAccount'));
 const Analytics = lazy(() => import('./pages/admin/Analytics'));
@@ -117,6 +120,7 @@ export default function App() {
       {/* customer */}
       <Route element={<RequireAuth roles={['USER']}><Section><AppShell /></Section></RequireAuth>}>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/pay" element={<UserPay />} />
         <Route path="/contributions" element={<Contributions />} />
         <Route path="/withdrawals" element={<Withdrawals />} />
         <Route path="/profile" element={<Profile />} />
@@ -131,6 +135,7 @@ export default function App() {
         <Route path="/collector/customers" element={<CollectorCustomers />} />
         <Route path="/collector/customers/:id" element={<CollectorCustomerDetail />} />
         <Route path="/collector/cycles" element={<CollectorCycles />} />
+        <Route path="/collector/payments" element={<CollectorClaims />} />
         <Route path="/collector/withdrawals" element={<CollectorWithdrawals />} />
         <Route path="/collector/cash" element={<CollectorCash />} />
         <Route path="/collector/profile" element={<CollectorProfile />} />
@@ -150,6 +155,8 @@ export default function App() {
         <Route path="/admin/withdrawals" element={<AdminWithdrawals />} />
         <Route path="/admin/cash" element={<AdminCash />} />
         <Route path="/admin/requests" element={<AdminEnquiries />} />
+        <Route path="/admin/payment-accounts" element={<AdminPaymentAccounts />} />
+        <Route path="/admin/payments" element={<CollectorClaims />} />
         <Route path="/admin/verification" element={<AdminKyc />} />
         <Route path="/admin/analytics" element={<Analytics />} />
         <Route path="/admin/email-alerts" element={<AdminNotificationSettings />} />
