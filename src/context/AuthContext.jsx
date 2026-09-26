@@ -3,6 +3,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { friendlyError } from '../lib/errors';
+import { PUBLIC_URL } from '../lib/pwa';
+import { signInWithPasscode } from '../lib/gateway';
 
 const AuthContext = createContext(null);
 
@@ -109,40 +111,14 @@ export function AuthProvider({ children }) {
   const refreshProfile = useCallback(() => setReloadTick((t) => t + 1), []);
 
   /**
-   * Accepts an email or a phone number.
+   * Sign in with a phone number and passcode.
    *
-   * Supabase authenticates on email, so a phone number is resolved to one
-   * first. A miss deliberately falls through to a normal sign-in attempt
-   * rather than returning early: the failure then reads "email or password is
-   * incorrect" exactly like a wrong password, instead of confirming whether
-   * that number has an account.
+   * The passcode never reaches Supabase Auth. An edge function verifies it
+   * behind a five-attempt lockout and hands back a session — that lockout is
+   * the entire reason a short numeric code is acceptable on a money app.
    */
-  const signIn = useCallback(async (identifier, password) => {
-    const raw = identifier.trim();
-    let email = raw.toLowerCase();
-
-    if (!raw.includes('@')) {
-      const { data } = await supabase.rpc('nn_email_for_identifier', {
-        p_identifier: raw,
-      });
-      if (data) email = data;
-    }
-
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-  }, []);
-
-  const signUp = useCallback(async ({ fullName, email, phone, password }) => {
-    const { data, error } = await supabase.auth.signUp({
-      email: email.trim().toLowerCase(),
-      password,
-      options: {
-        // Only non-privileged fields. The signup trigger hard-forces role=USER.
-        data: { full_name: fullName.trim(), phone: phone.trim() },
-      },
-    });
-    if (error) throw error;
-    return data.user;
+  const signIn = useCallback(async (phone, passcode) => {
+    await signInWithPasscode(phone, passcode);
   }, []);
 
   const signOut = useCallback(async () => {
@@ -151,9 +127,17 @@ export function AuthProvider({ children }) {
     setLoaded({ userId: null, profile: null, error: null });
   }, []);
 
+  /**
+   * The redirect has to be the public site, not window.location.origin.
+   *
+   * In the native shell the origin is the WebView's private hostname, which
+   * resolves nowhere — the customer taps the link in their email and the
+   * browser reports that the server cannot be found. The public URL works from
+   * every context: a browser tab, an installed PWA, and the native app.
+   */
   const sendPasswordReset = useCallback(async (email) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${PUBLIC_URL}/reset-password`,
     });
     if (error) throw error;
   }, []);
@@ -173,12 +157,11 @@ export function AuthProvider({ children }) {
       profileError,
       refreshProfile,
       signIn,
-      signUp,
       signOut,
       sendPasswordReset,
       updatePassword,
     }),
-    [session, profile, loading, profileError, refreshProfile, signIn, signUp, signOut, sendPasswordReset, updatePassword]
+    [session, profile, loading, profileError, refreshProfile, signIn, signOut, sendPasswordReset, updatePassword]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
