@@ -1,7 +1,9 @@
 import { useCallback, useState } from 'react';
+import { Minus, Plus } from 'lucide-react';
 import { useDueContributions, useTodaysCollections, useCollectorActions } from '../../hooks/useCollector';
 import { useAvatarUrls } from '../../hooks/useAvatar';
 import { useRealtime } from '../../hooks/useRealtime';
+import { usePaymentActions } from '../../hooks/usePayments';
 import { money, shortDate, timeOnly } from '../../lib/format';
 import { friendlyError } from '../../lib/errors';
 import { Card } from '../../components/ui/Card';
@@ -134,20 +136,50 @@ export default function Collect() {
   );
 }
 
+/**
+ * Recording cash.
+ *
+ * A customer regularly hands over several days at once — before travelling,
+ * or after a good market day. Forcing the collector to tap through one at a
+ * time is slow standing in the street, and every extra tap is a chance to
+ * record the wrong person.
+ *
+ * One payment goes through nn_record_contribution, several through
+ * nn_record_contributions_ahead in a single transaction. The second matters:
+ * looping the first from here would leave a half-recorded payment if the
+ * connection dropped between taps, which on a phone in a market is not rare.
+ */
 function RecordSheet({ row, onClose, onDone }) {
   const { recordPayment } = useCollectorActions();
+  const { recordAhead } = usePaymentActions();
   const { toast, toastError } = useToast();
   const [note, setNote] = useState('');
+  const [count, setCount] = useState(1);
   const [busy, setBusy] = useState(false);
 
   if (!row) return null;
 
+  const perPayment = Number(row.expected_amount || 0);
+  const remaining = Math.max(1, Number(row.unpaid_remaining ?? 1));
+  const maxCount = Math.min(60, remaining);
+  const total = perPayment * count;
+
   const submit = async () => {
     setBusy(true);
     try {
-      await recordPayment(row.id, new Date().toISOString(), note);
-      toast(`${money(row.expected_amount)} recorded for ${row.customer?.full_name}.`);
+      if (count === 1) {
+        await recordPayment(row.id, new Date().toISOString(), note);
+      } else {
+        await recordAhead(row.cycle_id, count, note || 'Paid ahead in cash');
+      }
+
+      toast(
+        count === 1
+          ? `${money(perPayment)} recorded for ${row.customer?.full_name}.`
+          : `${money(total)} recorded — ${count} payments.`
+      );
       setNote('');
+      setCount(1);
       onClose();
       onDone();
     } catch (err) {
@@ -166,10 +198,63 @@ function RecordSheet({ row, onClose, onDone }) {
       footer={
         <>
           <Button variant="outline" onClick={onClose} disabled={busy}>Cancel</Button>
-          <Button variant="money" onClick={submit} loading={busy}>Record payment</Button>
+          <Button variant="money" onClick={submit} loading={busy}>
+            Record {money(total)}
+          </Button>
         </>
       }
     >
+      {maxCount > 1 && (
+        <>
+          <p className="field-label">How many payments are they making?</p>
+
+          <div className="pay-stepper">
+            <button
+              type="button"
+              onClick={() => setCount((c) => Math.max(1, c - 1))}
+              disabled={count <= 1}
+              aria-label="One fewer"
+            >
+              <Minus size={18} strokeWidth={2.2} />
+            </button>
+
+            <div className="pay-stepper-value">
+              <strong className="num">{money(total)}</strong>
+              <span>{count} {count === 1 ? 'payment' : 'payments'}</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setCount((c) => Math.min(maxCount, c + 1))}
+              disabled={count >= maxCount}
+              aria-label="One more"
+            >
+              <Plus size={18} strokeWidth={2.2} />
+            </button>
+          </div>
+
+          <div className="pay-quick">
+            {[1, 5, 7, 30].filter((q) => q <= maxCount).map((q) => (
+              <button
+                key={q}
+                type="button"
+                className={count === q ? 'is-picked' : ''}
+                onClick={() => setCount(q)}
+              >
+                {q}×
+              </button>
+            ))}
+          </div>
+
+          {count > 1 && (
+            <p className="field-hint">
+              Count the cash before you tap. {count} payments is {money(total)}, and a
+              recorded contribution cannot be removed — only corrected with a reason.
+            </p>
+          )}
+        </>
+      )}
+
       {/* Shown as a figure, never an input. The database writes the scheduled
           amount regardless of anything sent from here. */}
       <div className="pay-confirm">
