@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check, UserPlus } from 'lucide-react';
+import { Copy, Check, UserPlus, CircleAlert } from 'lucide-react';
 import { createCustomer } from '../lib/gateway';
 import { useAuth } from '../context/AuthContext';
 import { isEmail, isPhone } from '../lib/validate';
@@ -39,7 +39,6 @@ export default function CreateCustomerModal({ open, onClose, onDone, collectors,
     if (form.fullName.trim().length < 2) next.fullName = "Enter the customer's full name.";
     if (!isPhone(form.phone)) next.phone = 'Enter a valid Nigerian phone number.';
     if (!isEmail(form.email)) next.email = 'Enter a valid email address — the claim link goes here.';
-    if (!isCollector && !form.collectorId) next.collectorId = 'Choose a collector.';
     setErrors(next);
     if (Object.keys(next).length) return;
 
@@ -177,19 +176,45 @@ export default function CreateCustomerModal({ open, onClose, onDone, collectors,
           This customer will be assigned to you.
         </p>
       ) : (
-        <Select
-          label="Assign a collector"
-          value={form.collectorId}
-          onChange={set('collectorId')}
-          error={errors.collectorId}
-        >
-          <option value="">Choose a collector…</option>
-          {(collectors || []).map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.full_name} ({c.member_id})
+        <>
+          <Select
+            label="Assign a collector"
+            value={form.collectorId}
+            onChange={set('collectorId')}
+            hint={
+              (collectors || []).length
+                ? 'You can assign one later if you are not sure yet.'
+                : undefined
+            }
+          >
+            <option value="">
+              {(collectors || []).length ? 'Assign later' : 'No collectors yet'}
             </option>
-          ))}
-        </Select>
+            {(collectors || []).map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.full_name} ({c.member_id})
+              </option>
+            ))}
+          </Select>
+
+          {/* Every collector is a promoted customer, so a new deployment has
+              none. Saying so here stops it reading as a broken dropdown. */}
+          {!form.collectorId && (
+            <div className="panel-note tone-amber" style={{ marginTop: 'var(--s-3)' }}>
+              <span className="panel-note-icon">
+                <CircleAlert size={17} strokeWidth={1.9} />
+              </span>
+              <div>
+                <h4>They cannot start a plan yet</h4>
+                <p>
+                  {(collectors || []).length
+                    ? 'Without a collector they can sign in but not contribute. Assign one from their profile when you are ready.'
+                    : 'You have no collectors yet. Create this customer, then promote them or someone else to collector from Collectors.'}
+                </p>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </Modal>
   );
