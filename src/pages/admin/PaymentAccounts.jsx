@@ -140,7 +140,10 @@ export default function PaymentAccounts() {
         })}
       </div>
 
+      {/* Keyed so opening a different collector gives a fresh form rather
+          than one carrying the previous values. */}
       <AccountModal
+        key={editing?.collector?.id ?? 'none'}
         editing={editing}
         onClose={() => setEditing(null)}
         onDone={accounts.refetch}
@@ -153,30 +156,24 @@ function AccountModal({ editing, onClose, onDone }) {
   const { setAccount } = useCollectorAccountActions();
   const { toast, toastError } = useToast();
 
-  const [form, setForm] = useState({
-    bankName: '', accountNumber: '', accountName: '', providerRef: '',
-  });
+  // Initialised from props, once. The parent gives this component a key so a
+  // different collector remounts it — which is both simpler and safer than
+  // syncing state in an effect, and avoids the setState-during-render that
+  // costs the caret after a single keystroke.
+  const [form, setForm] = useState(() => ({
+    bankName: editing?.account?.bank_name ?? '',
+    accountNumber: editing?.account?.account_number ?? '',
+    accountName: editing?.account?.account_name ?? '',
+    providerRef: editing?.account?.provider_ref ?? '',
+  }));
   const [errors, setErrors] = useState({});
   const [busy, setBusy] = useState(false);
-  const [ready, setReady] = useState(false);
-
-  // Prefill once the modal opens, not on every render.
-  if (editing && !ready) {
-    setForm({
-      bankName: editing.account?.bank_name ?? '',
-      accountNumber: editing.account?.account_number ?? '',
-      accountName: editing.account?.account_name ?? '',
-      providerRef: editing.account?.provider_ref ?? '',
-    });
-    setReady(true);
-  }
 
   if (!editing) return null;
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const close = () => {
-    setReady(false);
     setErrors({});
     onClose();
   };
