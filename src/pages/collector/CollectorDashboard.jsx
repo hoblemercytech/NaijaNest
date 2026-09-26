@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { ClipboardList, ArrowUpRight } from 'lucide-react';
 import { useCallback } from 'react';
@@ -119,9 +118,9 @@ export default function CollectorDashboard() {
 
 function TaskTile({ to, label, count, loading, hint, Icon }) {
   return (
-    <Link to={to} className={`task-tile${count > 0 ? ' is-waiting' : ''}`}>
+    <Link to={to} className={`task-tile tone-${count > 0 ? 'amber' : 'teal'}${count > 0 ? ' is-waiting' : ''}`}>
       {Icon && (
-        <span className={`stat-icon is-${count > 0 ? 'money' : 'neutral'}`} aria-hidden="true">
+        <span className="stat-icon" aria-hidden="true">
           <Icon size={17} strokeWidth={1.9} />
         </span>
       )}
