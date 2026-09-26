@@ -300,7 +300,7 @@ function StartCycleModal({ open, onClose, onDone }) {
       {!plans.loading && !plans.error && !plans.data?.length && (
         <EmptyState
           title="No plans available yet"
-          message="BudgetSave hasn't published any contribution plans. Check back shortly."
+          message="NaijaNest hasn't published any contribution plans. Check back shortly."
         />
       )}
 
@@ -395,7 +395,7 @@ function WithdrawModal({ open, onClose, cycle, amount, onDone }) {
     setBusy(true);
     try {
       await requestWithdrawal(cycle.id, form);
-      toast('Request sent to the BudgetSave office.');
+      toast('Request sent to the NaijaNest office.');
       setForm({ bankName: '', accountNumber: '', accountName: '' });
       onClose();
       onDone();
@@ -411,7 +411,7 @@ function WithdrawModal({ open, onClose, cycle, amount, onDone }) {
       open={open}
       onClose={onClose}
       title="Withdraw your savings"
-      description="Paid by bank transfer from the BudgetSave office."
+      description="Paid by bank transfer from the NaijaNest office."
       footer={
         <>
           <Button variant="outline" onClick={onClose} disabled={busy}>Cancel</Button>
