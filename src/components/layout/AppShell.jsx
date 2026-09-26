@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -7,6 +8,7 @@ import {
   Home, CalendarDays, ArrowUpRight, Bell, User, Users, Banknote, FileClock,
   ClipboardList, Wallet, LayoutDashboard, UserCog, BarChart3, Layers, ScrollText,
   MoreHorizontal, LogOut, X, ShieldCheck, PanelLeftClose, PanelLeft, ChevronDown, Mail,
+  Inbox, Landmark, HandCoins,
 } from 'lucide-react';
 import { isStandalone } from '../../lib/pwa';
 import Logo from '../ui/Logo';
@@ -25,6 +27,7 @@ import './layout.css';
 const NAV = {
   USER: [
     { to: '/dashboard', label: 'Home', Icon: Home, primary: true },
+    { to: '/pay', label: 'Pay', Icon: HandCoins, primary: true },
     { to: '/contributions', label: 'Contributions', Icon: CalendarDays, primary: true },
     { to: '/withdrawals', label: 'Withdrawals', Icon: ArrowUpRight, primary: true },
     { to: '/notifications', label: 'Alerts', Icon: Bell, primary: true, badge: true },
@@ -35,6 +38,7 @@ const NAV = {
     { to: '/collector/dashboard', label: 'Today', Icon: Home, primary: true },
     { to: '/collector/customers', label: 'Customers', Icon: Users, primary: true },
     { to: '/collector/collect', label: 'Collect', Icon: Banknote, primary: true, accent: true },
+    { to: '/collector/payments', label: 'Payments', Icon: Landmark },
     { to: '/collector/withdrawals', label: 'Payouts', Icon: ArrowUpRight, primary: true },
     { to: '/collector/cycles', label: 'Requests', Icon: ClipboardList },
     { to: '/collector/cash', label: 'Cash handover', Icon: Wallet },
@@ -43,9 +47,12 @@ const NAV = {
   ],
   ADMIN: [
     { to: '/admin/dashboard', label: 'Overview', Icon: LayoutDashboard, primary: true },
+    { to: '/admin/requests', label: 'Requests', Icon: Inbox },
     { to: '/admin/users', label: 'Customers', Icon: Users, primary: true },
     { to: '/admin/collectors', label: 'Collectors', Icon: UserCog, primary: true },
     { to: '/admin/analytics', label: 'Analytics', Icon: BarChart3, primary: true },
+    { to: '/admin/payments', label: 'Payments', Icon: Landmark },
+    { to: '/admin/payment-accounts', label: 'Payment accounts', Icon: Wallet },
     { to: '/admin/plans', label: 'Plans', Icon: Layers },
     { to: '/admin/cycles', label: 'Cycles', Icon: FileClock },
     { to: '/admin/contributions', label: 'Contributions', Icon: CalendarDays },
@@ -58,7 +65,7 @@ const NAV = {
   ],
 };
 
-const COMPACT_KEY = 'budgetsave-sidebar-compact';
+const COMPACT_KEY = 'naijanest-sidebar-compact';
 
 export default function AppShell() {
   const { profile, signOut } = useAuth();
@@ -176,7 +183,7 @@ export default function AppShell() {
       <header className="shell-top">
         <div className="top-lead">
           <span className="top-mark"><Logo size={26} showName={false} /></span>
-          <h1 className="top-title">{active?.label || 'BudgetSave'}</h1>
+          <h1 className="top-title">{active?.label || 'NaijaNest'}</h1>
         </div>
 
         <div className="top-actions">
