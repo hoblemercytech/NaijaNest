@@ -43,6 +43,35 @@ export function useDueContributions(scope = 'today', search = '') {
     }
 
     const rows = await unwrap(query.limit(200));
+
+    /**
+     * How many unpaid contributions remain on each cycle.
+     *
+     * The collect sheet needs it to cap the pay-ahead stepper — offering "30
+     * payments" on a plan with four left produces an error the collector only
+     * discovers after counting the cash.
+     *
+     * One query for all visible cycles rather than one per row.
+     */
+    const cycleIds = [...new Set(rows.map((r) => r.cycle_id).filter(Boolean))];
+    if (cycleIds.length) {
+      const unpaid = await unwrap(
+        supabase
+          .from('daily_contributions')
+          .select('cycle_id')
+          .in('cycle_id', cycleIds)
+          .eq('status', 'UNPAID')
+      );
+
+      const remaining = new Map();
+      for (const row of unpaid || []) {
+        remaining.set(row.cycle_id, (remaining.get(row.cycle_id) || 0) + 1);
+      }
+      for (const row of rows) {
+        row.unpaid_remaining = remaining.get(row.cycle_id) || 1;
+      }
+    }
+
     const term = search.trim().toLowerCase();
     if (!term) return rows;
 
