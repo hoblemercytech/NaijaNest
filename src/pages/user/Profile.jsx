@@ -8,6 +8,7 @@ import { Card, CardHead } from '../../components/ui/Card';
 import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
 import { useToast } from '../../components/ui/Toast';
+import DeleteAccountSection from '../../components/DeleteAccountSection';
 
 /**
  * Read-only by design. Customers can change their photo and password; name,
@@ -71,6 +72,7 @@ export default function Profile() {
         <CardHead title="Account" />
         <Button variant="outline" block onClick={signOut}>Sign out</Button>
       </Card>
+      <DeleteAccountSection />
     </>
   );
 }
