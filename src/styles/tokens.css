@@ -1,4 +1,3 @@
-
 /* =====================================================================
    NaijaNest design tokens
 
@@ -248,4 +247,96 @@
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* =====================================================================
+   EXTENDED PALETTE
+
+   Green alone makes every state read the same. A fintech dashboard has to
+   separate "this is money", "this needs you", "this is waiting" and "this
+   went wrong" at a glance, and four shades of one hue cannot do that.
+
+   Each colour has a solid, a soft fill and a text tone that stays readable
+   on that fill — in both themes.
+   ===================================================================== */
+
+:root {
+  /* Gold — money and anything the person must act on. */
+  --amber:        #B47A00;
+  --amber-solid:  #FAB500;
+  --amber-soft:   #FFF6E0;
+  --amber-text:   #7A5200;
+  --amber-line:   #F0D28A;
+
+  /* Blue — informational, and the payment/transfer path specifically.
+     Deliberately not green: a transfer is not yet money. */
+  --azure:        #1B6FB5;
+  --azure-solid:  #2A8FE0;
+  --azure-soft:   #E8F2FB;
+  --azure-text:   #12507F;
+  --azure-line:   #B7D6EF;
+
+  /* Violet — plans, cycles and schedules. Structure, not value. */
+  --violet:       #6B4BA8;
+  --violet-solid: #8964C9;
+  --violet-soft:  #F1ECFA;
+  --violet-text:  #4C3179;
+  --violet-line:  #D6C9EC;
+
+  /* Teal — verification and identity. Adjacent to the brand without
+     being mistaken for a balance. */
+  --teal:         #0F7B77;
+  --teal-solid:   #14A09B;
+  --teal-soft:    #E4F5F4;
+  --teal-text:    #0A5654;
+  --teal-line:    #A9DDDB;
+
+  /* Rose — problems, rejections, anything reversed. */
+  --rose:         #B03A45;
+  --rose-solid:   #D9525F;
+  --rose-soft:    #FCECEE;
+  --rose-text:    #8A2831;
+  --rose-line:    #F2C4C9;
+
+  /* Two gradients, used sparingly — the balance panel and the primary
+     call to action. Everywhere else stays flat. */
+  --grad-money:   linear-gradient(135deg, #0B3D2C 0%, #12694A 55%, #0E5638 100%);
+  --grad-gold:    linear-gradient(135deg, #FFCB3D 0%, #FAB500 52%, #E09E00 100%);
+  --grad-azure:   linear-gradient(135deg, #3AA0EE 0%, #2A8FE0 52%, #1B6FB5 100%);
+}
+
+[data-theme='dark'] {
+  --amber:        #F5C247;
+  --amber-solid:  #FAB500;
+  --amber-soft:   rgba(250, 181, 0, .13);
+  --amber-text:   #FFD469;
+  --amber-line:   rgba(250, 181, 0, .28);
+
+  --azure:        #6BBAF5;
+  --azure-solid:  #2A8FE0;
+  --azure-soft:   rgba(42, 143, 224, .14);
+  --azure-text:   #8ECCF8;
+  --azure-line:   rgba(42, 143, 224, .30);
+
+  --violet:       #B79BE8;
+  --violet-solid: #8964C9;
+  --violet-soft:  rgba(137, 100, 201, .15);
+  --violet-text:  #C4AEF0;
+  --violet-line:  rgba(137, 100, 201, .32);
+
+  --teal:         #4ECFC9;
+  --teal-solid:   #14A09B;
+  --teal-soft:    rgba(20, 160, 155, .14);
+  --teal-text:    #6FDCD7;
+  --teal-line:    rgba(20, 160, 155, .30);
+
+  --rose:         #F08A93;
+  --rose-solid:   #D9525F;
+  --rose-soft:    rgba(217, 82, 95, .14);
+  --rose-text:    #F6A3AA;
+  --rose-line:    rgba(217, 82, 95, .30);
+
+  --grad-money:   linear-gradient(135deg, #0C2B22 0%, #124535 55%, #0A2119 100%);
+  --grad-gold:    linear-gradient(135deg, #FFCB3D 0%, #FAB500 52%, #D99F00 100%);
+  --grad-azure:   linear-gradient(135deg, #2F87CE 0%, #2570AE 52%, #1A5486 100%);
 }
