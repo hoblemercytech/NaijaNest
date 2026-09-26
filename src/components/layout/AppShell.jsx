@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -8,7 +7,7 @@ import {
   Home, CalendarDays, ArrowUpRight, Bell, User, Users, Banknote, FileClock,
   ClipboardList, Wallet, LayoutDashboard, UserCog, BarChart3, Layers, ScrollText,
   MoreHorizontal, LogOut, X, ShieldCheck, PanelLeftClose, PanelLeft, ChevronDown, Mail,
-  Inbox, Landmark, HandCoins,
+  Inbox, Landmark, HandCoins, UserX,
 } from 'lucide-react';
 import { isStandalone } from '../../lib/pwa';
 import Logo from '../ui/Logo';
@@ -61,6 +60,7 @@ const NAV = {
     { to: '/admin/cash', label: 'Cash handovers', Icon: Wallet },
     { to: '/admin/notifications', label: 'Alerts', Icon: Bell, badge: true },
     { to: '/admin/email-alerts', label: 'Email alerts', Icon: Mail },
+    { to: '/admin/deletions', label: 'Deletions', Icon: UserX },
     { to: '/admin/audit-logs', label: 'Audit log', Icon: ScrollText },
   ],
 };
