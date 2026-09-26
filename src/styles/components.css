@@ -1,4 +1,3 @@
-
 /* =====================================================================
    Component styles. Kept flat and class-scoped to avoid specificity
    collisions between page sections and shared primitives.
@@ -967,3 +966,74 @@ a.stat:hover { text-decoration: none; border-color: var(--t-solid, var(--accent)
   background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
   opacity: .6;
 }
+
+
+/* =====================================================================
+   FORM CONTROLS IN THE DASHBOARD
+
+   auth.css declares `.field-input` and its hover state for a dark glass
+   panel, unscoped. Those rules reach every input in the app, so a field on a
+   white card turned near-black the moment the pointer touched it.
+
+   These rules are more specific than a bare class, so they win regardless of
+   which stylesheet loads last.
+   ===================================================================== */
+
+.shell .field-input,
+.modal .field-input {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+  -webkit-text-fill-color: var(--text-primary);
+  caret-color: var(--accent);
+  box-shadow: none;
+}
+
+.shell .field-input::placeholder,
+.modal .field-input::placeholder {
+  color: var(--text-muted);
+  -webkit-text-fill-color: var(--text-muted);
+  opacity: 1;
+}
+
+.shell .field-input:hover,
+.modal .field-input:hover {
+  border-color: var(--border-strong);
+  background: var(--input-bg);
+}
+
+.shell .field-input:focus,
+.modal .field-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--input-bg);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.shell .field-input:disabled,
+.modal .field-input:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* Chrome paints autofilled fields itself and ignores `background`. A long
+   inset shadow is the only thing that covers it. */
+.shell .field-input:-webkit-autofill,
+.shell .field-input:-webkit-autofill:hover,
+.shell .field-input:-webkit-autofill:focus,
+.modal .field-input:-webkit-autofill,
+.modal .field-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text-primary);
+  -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset;
+  border-color: var(--input-border);
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.shell .field-label,
+.modal .field-label { color: var(--text-secondary); }
+
+.shell .field-hint,
+.modal .field-hint { color: var(--text-muted); }
+
+.shell .field-error,
+.modal .field-error { color: var(--danger); }
