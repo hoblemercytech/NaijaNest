@@ -63,6 +63,7 @@ const AdminCash = lazy(() => import('./pages/admin/Cash'));
 const AdminKyc = lazy(() => import('./pages/admin/Kyc'));
 const AdminEnquiries = lazy(() => import('./pages/admin/Enquiries'));
 const AdminPaymentAccounts = lazy(() => import('./pages/admin/PaymentAccounts'));
+const AdminPaymentsLedger = lazy(() => import('./pages/admin/PaymentsLedger'));
 const AdminDeletions = lazy(() => import('./pages/admin/Deletions'));
 const CollectorClaims = lazy(() => import('./pages/collector/Claims'));
 const UserPay = lazy(() => import('./pages/user/Pay'));
@@ -157,7 +158,8 @@ export default function App() {
         <Route path="/admin/cash" element={<AdminCash />} />
         <Route path="/admin/requests" element={<AdminEnquiries />} />
         <Route path="/admin/payment-accounts" element={<AdminPaymentAccounts />} />
-        <Route path="/admin/payments" element={<CollectorClaims />} />
+        <Route path="/admin/payments" element={<AdminPaymentsLedger />} />
+        <Route path="/admin/payment-claims" element={<CollectorClaims />} />
         <Route path="/admin/verification" element={<AdminKyc />} />
         <Route path="/admin/analytics" element={<Analytics />} />
         <Route path="/admin/email-alerts" element={<AdminNotificationSettings />} />
