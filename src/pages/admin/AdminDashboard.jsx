@@ -2,10 +2,10 @@ import {
   ArrowUpRight, CalendarDays, CalendarRange, TrendingUp, UserCog, Users, Wallet,
 } from 'lucide-react';
 import { useAdminDashboard } from '../../hooks/useAdmin';
+import { useRealtime, LIVE_TABLES } from '../../hooks/useRealtime';
 import { money } from '../../lib/format';
 import { Card, CardHead } from '../../components/ui/Card';
 import { ErrorState, SkeletonPanel, SkeletonLines } from '../../components/ui/States';
-import { useRealtime, LIVE_TABLES } from '../../hooks/useRealtime';
 import './admin.css';
 
 /**
@@ -16,8 +16,8 @@ import './admin.css';
 export default function AdminDashboard() {
   const { data, loading, error, refetch } = useAdminDashboard();
 
-    useRealtime(LIVE_TABLES.ADMIN, refetch);
-    
+  useRealtime(LIVE_TABLES.ADMIN, refetch);
+
   if (loading) {
     return (
       <>
@@ -57,21 +57,21 @@ export default function AdminDashboard() {
       </section>
 
       <div className="metric-grid" style={{ marginTop: 'var(--s-4)' }}>
-        <Metric label="Collected today" value={money(d.collected_today)} Icon={TrendingUp} />
-        <Metric label="This week" value={money(d.collected_week)} Icon={CalendarDays} />
-        <Metric label="This month" value={money(d.collected_month)} Icon={CalendarRange} />
+        <Metric label="Collected today" value={money(d.collected_today)} Icon={TrendingUp} tone="amber" />
+        <Metric label="This week" value={money(d.collected_week)} Icon={CalendarDays} tone="amber" />
+        <Metric label="This month" value={money(d.collected_month)} Icon={CalendarRange} tone="green" />
         <Metric
           label="Customers"
           value={d.total_users ?? 0}
           foot={`${d.active_contributors ?? 0} contributing`}
-          Icon={Users}
+          Icon={Users} tone="violet"
         />
-        <Metric label="Collectors" value={d.total_collectors ?? 0} Icon={UserCog} />
+        <Metric label="Collectors" value={d.total_collectors ?? 0} Icon={UserCog} tone="teal" />
         <Metric
           label="Pending withdrawals"
           value={d.pending_withdrawals ?? 0}
           foot={money(d.pending_withdrawal_amount)}
-          Icon={ArrowUpRight}
+          Icon={ArrowUpRight} tone="azure"
           tone={(d.pending_withdrawals ?? 0) > 0 ? 'warn' : 'accent'}
         />
       </div>
