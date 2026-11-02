@@ -90,9 +90,8 @@ export default function Dashboard() {
           )}
 
           {stillRunning && cycleBalance > 0 && (
-            <p className="panel-locked">
-              Locked until {shortDate(openCycle.expected_end_date)} — your savings are
-              held for the full term.
+          <p className="panel-locked">
+              Your savings are still in progress. Once your full contribution target is reached, your cycle will be completed and you can request withdrawal after KYC verification.
             </p>
           )}
         </section>
