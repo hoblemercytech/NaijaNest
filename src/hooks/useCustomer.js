@@ -1,15 +1,15 @@
+
 import { useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useSupabaseQuery, unwrap } from './useSupabaseQuery';
 
 /**
- * Every number here comes from the database. Nothing is added up in the
- * browser — the view and the cycle_summary rollup are the source of truth,
- * so a stale render can never invent a balance.
+ * Financial summary comes directly from the database.
  */
 export function useFinancialSummary() {
   const { user } = useAuth();
+
   return useSupabaseQuery(
     async () => {
       const row = await unwrap(
@@ -19,8 +19,12 @@ export function useFinancialSummary() {
           .eq('user_id', user.id)
           .maybeSingle()
       );
-      // No rows yet simply means no contributions have been recorded.
-      return row || { total_contributed: 0, total_withdrawn: 0, current_balance: 0 };
+
+      return row || {
+        total_contributed: 0,
+        total_withdrawn: 0,
+        current_balance: 0,
+      };
     },
     [user?.id],
     { enabled: !!user }
@@ -28,42 +32,75 @@ export function useFinancialSummary() {
 }
 
 /**
- * The one cycle a customer can act on. COMPLETED counts as open because the
- * money is still sitting there until a withdrawal closes it.
+ * The customer's current actionable cycle.
+ * COMPLETED remains open until withdrawal is paid and the cycle is CLOSED.
  */
 export function useOpenCycle() {
   const { user } = useAuth();
+
   return useSupabaseQuery(
     async () => {
       const cycle = await unwrap(
         supabase
           .from('contribution_cycles')
           .select(`
-            id, status, daily_amount_snapshot, duration_days, periods, frequency,
-            start_date, expected_end_date, activated_at, rejection_reason, created_at,
-            collector:profiles!contribution_cycles_collector_id_fkey(id, full_name, phone)
+            id,
+            status,
+            daily_amount_snapshot,
+            duration_days,
+            frequency,
+            periods,
+            start_date,
+            expected_end_date,
+            activated_at,
+            rejection_reason,
+            created_at,
+            collector:profiles!contribution_cycles_collector_id_fkey(
+              id,
+              full_name,
+              phone
+            )
           `)
-          .in('status', ['PENDING_ACTIVATION', 'ACTIVE', 'COMPLETED'])
+          .eq('user_id', user.id)
+          .in('status', [
+            'PENDING_ACTIVATION',
+            'ACTIVE',
+            'COMPLETED',
+          ])
           .maybeSingle()
       );
+
       if (!cycle) return null;
 
       const rollup = await unwrap(
         supabase
           .from('cycle_summary')
-          .select('days_paid, days_missed, contributed, withdrawn')
+          .select(`
+            days_paid,
+            days_missed,
+            contributed,
+            withdrawn
+          `)
           .eq('cycle_id', cycle.id)
           .maybeSingle()
       );
 
-      return { ...cycle, ...(rollup || { days_paid: 0, days_missed: 0, contributed: 0, withdrawn: 0 }) };
+      return {
+        ...cycle,
+        ...(rollup || {
+          days_paid: 0,
+          days_missed: 0,
+          contributed: 0,
+          withdrawn: 0,
+        }),
+      };
     },
     [user?.id],
     { enabled: !!user }
   );
 }
 
-/** Day-by-day schedule for one cycle. */
+/** Day-by-day contribution schedule. */
 export function useCycleSchedule(cycleId) {
   return useSupabaseQuery(
     () =>
@@ -71,9 +108,18 @@ export function useCycleSchedule(cycleId) {
         supabase
           .from('daily_contributions')
           .select(`
-            id, day_number, contribution_date, expected_amount, actual_amount,
-            status, payment_method, paid_at, note,
-            recorder:profiles!daily_contributions_recorded_by_fkey(full_name)
+            id,
+            day_number,
+            contribution_date,
+            expected_amount,
+            actual_amount,
+            status,
+            payment_method,
+            paid_at,
+            note,
+            recorder:profiles!daily_contributions_recorded_by_fkey(
+              full_name
+            )
           `)
           .eq('cycle_id', cycleId)
           .order('day_number', { ascending: true })
@@ -83,14 +129,28 @@ export function useCycleSchedule(cycleId) {
   );
 }
 
+/** Customer's previous contribution cycles. */
 export function useCycleHistory() {
   const { user } = useAuth();
+
   return useSupabaseQuery(
     () =>
       unwrap(
         supabase
           .from('contribution_cycles')
-          .select('id, status, daily_amount_snapshot, duration_days, periods, frequency, start_date, expected_end_date, closed_at, rejection_reason, created_at')
+          .select(`
+            id,
+            status,
+            daily_amount_snapshot,
+            duration_days,
+            frequency,
+            periods,
+            start_date,
+            expected_end_date,
+            closed_at,
+            rejection_reason,
+            created_at
+          `)
           .order('created_at', { ascending: false })
       ),
     [user?.id],
@@ -98,14 +158,26 @@ export function useCycleHistory() {
   );
 }
 
+/** Customer withdrawal history. */
 export function useWithdrawals() {
   const { user } = useAuth();
+
   return useSupabaseQuery(
     () =>
       unwrap(
         supabase
           .from('withdrawals')
-          .select('id, cycle_id, requested_amount, status, requested_at, confirmed_at, paid_at, rejection_reason, note')
+          .select(`
+            id,
+            cycle_id,
+            requested_amount,
+            status,
+            requested_at,
+            confirmed_at,
+            paid_at,
+            rejection_reason,
+            note
+          `)
           .order('requested_at', { ascending: false })
       ),
     [user?.id],
@@ -113,13 +185,20 @@ export function useWithdrawals() {
   );
 }
 
+/** Active contribution plans and their supported frequencies. */
 export function useActivePlans() {
   return useSupabaseQuery(
     () =>
       unwrap(
         supabase
           .from('contribution_plans')
-          .select('id, name, daily_amount, description, allowed_frequencies')
+          .select(`
+            id,
+            name,
+            daily_amount,
+            description,
+            allowed_frequencies
+          `)
           .eq('is_active', true)
           .order('daily_amount', { ascending: true })
       ),
@@ -127,32 +206,42 @@ export function useActivePlans() {
   );
 }
 
-/** Thin wrappers so pages call one function instead of assembling RPC names. */
+/** Customer actions handled by database RPC functions. */
 export function useCustomerActions() {
-  const requestCycle = useCallback(async (planId, periods, frequency) => {
-    const { data, error } = await supabase.rpc('nn_request_cycle', {
-      p_plan_id: planId,
-      p_periods: periods,
-      p_frequency: frequency,
-    });
-    if (error) throw error;
-    return data;
-  }, []);
+  const requestCycle = useCallback(
+    async (planId, periods, frequency = 'DAILY') => {
+      const { data, error } = await supabase.rpc('nn_request_cycle', {
+        p_plan_id: planId,
+        p_periods: periods,
+        p_frequency: frequency,
+      });
 
-  /**
-   * No amount is passed — the database computes it under a row lock, and
-   * refuses entirely unless the cycle has completed.
-   */
-  const requestWithdrawal = useCallback(async (cycleId, bank) => {
-    const { data, error } = await supabase.rpc('nn_request_withdrawal', {
-      p_cycle_id: cycleId,
-      p_bank_name: bank.bankName,
-      p_account_number: bank.accountNumber,
-      p_account_name: bank.accountName,
-    });
-    if (error) throw error;
-    return data;
-  }, []);
+      if (error) throw error;
+      return data;
+    },
+    []
+  );
 
-  return { requestCycle, requestWithdrawal };
+  const requestWithdrawal = useCallback(
+    async (cycleId, bankDetails) => {
+      const { data, error } = await supabase.rpc(
+        'nn_request_withdrawal',
+        {
+          p_cycle_id: cycleId,
+          p_bank_name: bankDetails.bankName,
+          p_account_number: bankDetails.accountNumber,
+          p_account_name: bankDetails.accountName,
+        }
+      );
+
+      if (error) throw error;
+      return data;
+    },
+    []
+  );
+
+  return {
+    requestCycle,
+    requestWithdrawal,
+  };
 }
