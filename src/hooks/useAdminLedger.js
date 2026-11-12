@@ -15,9 +15,9 @@ export function useAdminCycles({ status = '', search = '', page = 0 } = {}) {
   return useSupabaseQuery(async () => {
     let query = supabase
       .from('contribution_cycles')
-      .select(
-        `id, status, daily_amount_snapshot, duration_days, start_date,
-         expected_end_date, closed_at, created_at, rejection_reason,
+          .select(
+        `id, status, daily_amount_snapshot, duration_days, frequency, periods,
+         start_date, expected_end_date, closed_at, created_at, rejection_reason,
          customer:profiles!contribution_cycles_user_id_fkey(id, member_id, full_name),
          collector:profiles!contribution_cycles_collector_id_fkey(id, full_name)`,
         { count: 'exact' }
