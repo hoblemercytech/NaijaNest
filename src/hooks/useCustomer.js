@@ -53,7 +53,7 @@ async function loadOpenCycles(userId) {
   const rollups = await unwrap(
     supabase
       .from('cycle_summary')
-      .select('cycle_id, days_paid, days_missed, contributed, withdrawn')
+            .select('cycle_id, days_paid, days_missed, contributed, withdrawn, service_charge, catchup_days')
       .in('cycle_id', cycles.map((c) => c.id))
   );
   const byId = new Map((rollups || []).map((r) => [r.cycle_id, r]));
