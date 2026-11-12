@@ -35,66 +35,54 @@ export function useFinancialSummary() {
  * The customer's current actionable cycle.
  * COMPLETED remains open until withdrawal is paid and the cycle is CLOSED.
  */
+async function loadOpenCycles(userId) {
+  const cycles = await unwrap(
+    supabase
+      .from('contribution_cycles')
+      .select(`
+        id, status, daily_amount_snapshot, duration_days, frequency, periods,
+        start_date, expected_end_date, activated_at, rejection_reason, created_at,
+        collector:profiles!contribution_cycles_collector_id_fkey(id, full_name, phone)
+      `)
+      .eq('user_id', userId)
+      .in('status', ['PENDING_ACTIVATION', 'ACTIVE', 'COMPLETED'])
+      .order('created_at', { ascending: false })
+  );
+  if (!cycles?.length) return [];
+
+  const rollups = await unwrap(
+    supabase
+      .from('cycle_summary')
+      .select('cycle_id, days_paid, days_missed, contributed, withdrawn')
+      .in('cycle_id', cycles.map((c) => c.id))
+  );
+  const byId = new Map((rollups || []).map((r) => [r.cycle_id, r]));
+
+  return cycles.map((c) => ({
+    ...c,
+    days_paid: 0, days_missed: 0, contributed: 0, withdrawn: 0,
+    ...(byId.get(c.id) || {}),
+  }));
+}
+
+/** Every plan the customer currently has open, newest first. */
+export function useOpenCycles() {
+  const { user } = useAuth();
+  return useSupabaseQuery(
+    () => loadOpenCycles(user.id),
+    [user?.id],
+    { enabled: !!user }
+  );
+}
+
+/**
+ * Kept so older screens still work: returns the newest open plan, or null.
+ * Any screen that should handle several plans needs useOpenCycles instead.
+ */
 export function useOpenCycle() {
   const { user } = useAuth();
-
   return useSupabaseQuery(
-    async () => {
-      const cycle = await unwrap(
-        supabase
-          .from('contribution_cycles')
-          .select(`
-            id,
-            status,
-            daily_amount_snapshot,
-            duration_days,
-            frequency,
-            periods,
-            start_date,
-            expected_end_date,
-            activated_at,
-            rejection_reason,
-            created_at,
-            collector:profiles!contribution_cycles_collector_id_fkey(
-              id,
-              full_name,
-              phone
-            )
-          `)
-          .eq('user_id', user.id)
-          .in('status', [
-            'PENDING_ACTIVATION',
-            'ACTIVE',
-            'COMPLETED',
-          ])
-          .maybeSingle()
-      );
-
-      if (!cycle) return null;
-
-      const rollup = await unwrap(
-        supabase
-          .from('cycle_summary')
-          .select(`
-            days_paid,
-            days_missed,
-            contributed,
-            withdrawn
-          `)
-          .eq('cycle_id', cycle.id)
-          .maybeSingle()
-      );
-
-      return {
-        ...cycle,
-        ...(rollup || {
-          days_paid: 0,
-          days_missed: 0,
-          contributed: 0,
-          withdrawn: 0,
-        }),
-      };
-    },
+    async () => (await loadOpenCycles(user.id))[0] ?? null,
     [user?.id],
     { enabled: !!user }
   );
