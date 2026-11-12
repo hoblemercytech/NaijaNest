@@ -103,6 +103,7 @@ export function useCycleSchedule(cycleId) {
             actual_amount,
             status,
             payment_method,
+             is_service_charge,
             paid_at,
             note,
             recorder:profiles!daily_contributions_recorded_by_fkey(
