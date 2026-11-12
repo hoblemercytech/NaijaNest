@@ -86,6 +86,15 @@ export function useDueContributions(scope = 'today', search = '') {
   }, [scope, search]);
 }
 
+export function useCashPosition() {
+  const { user } = useAuth();
+  return useSupabaseQuery(async () => {
+    const { data, error } = await supabase.rpc('nn_cash_position');
+    if (error) throw error;
+    return data?.[0] || null;
+  }, [user?.id], { enabled: !!user });
+}
+
 /** Today's already-recorded payments, so a collector can check their round. */
 export function useTodaysCollections(date = isoDate()) {
   return useSupabaseQuery(
