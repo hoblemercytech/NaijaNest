@@ -77,7 +77,7 @@ export default function CollectorDashboard() {
           </section>
 
           <Link
-            to="/collector/handover"
+            to="/collector/cash"
             className="btn btn-money btn-block"
             style={{ marginTop: 'var(--s-3)' }}
           >
