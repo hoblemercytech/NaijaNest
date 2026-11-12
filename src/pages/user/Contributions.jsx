@@ -43,7 +43,7 @@ export default function Contributions() {
           <Card key={c.id}>
             <div className="row-between" style={{ alignItems: 'flex-start' }}>
               <div>
-                <h3 className="num">{money(c.daily_amount_snapshot)} {PER_LABEL[c.frequency] || "a day"}</h3>
+                <h3 className="num">{money(c.daily_amount_snapshot)} {PER_LABEL[c.frequency] || 'a day'}</h3>
                 <p className="small muted" style={{ margin: '2px 0 0' }}>
                   {c.periods ?? c.duration_days} payments
                   {c.start_date && ` · from ${shortDate(c.start_date)}`}
@@ -67,7 +67,7 @@ export default function Contributions() {
               </Button>
             )}
 
-            {openId === c.id && <CycleDays cycleId={c.id} />}
+            {openId === c.id && <CycleDays cycleId={c.id} startDate={c.start_date} />}
           </Card>
         ))}
       </div>
@@ -75,13 +75,13 @@ export default function Contributions() {
   );
 }
 
-function CycleDays({ cycleId }) {
+function CycleDays({ cycleId, startDate }) {
   const { data, loading, error, refetch } = useCycleSchedule(cycleId);
   return (
     <div style={{ marginTop: 'var(--s-4)' }}>
       {loading && <SkeletonLines count={1} height={44} />}
       {error && !loading && <ErrorState message={error} onRetry={refetch} />}
-      {!loading && !error && <ContributionCalendar days={data || []} />}
+      {!loading && !error && <ContributionCalendar days={data || []} startDate={startDate} />}
     </div>
   );
 }
