@@ -1,7 +1,12 @@
 import { Link } from 'react-router-dom';
 import { ClipboardList, ArrowUpRight } from 'lucide-react';
 import { useCallback } from 'react';
-import { useDailySummary, usePendingCycles, useCollectorWithdrawals } from '../../hooks/useCollector';
+import {
+  useDailySummary,
+  usePendingCycles,
+  useCollectorWithdrawals,
+  useCashPosition,
+} from '../../hooks/useCollector';
 import { useRealtime, LIVE_TABLES } from '../../hooks/useRealtime';
 import { useAuth } from '../../context/AuthContext';
 import { money } from '../../lib/format';
@@ -18,22 +23,29 @@ import './collector.css';
 export default function CollectorDashboard() {
   const { profile } = useAuth();
   const summary = useDailySummary();
+  const cash = useCashPosition();
   const cycles = usePendingCycles();
   const withdrawals = useCollectorWithdrawals();
 
   const refreshAll = useCallback(() => {
     summary.refetch();
+    cash.refetch();
     cycles.refetch();
     withdrawals.refetch();
-  }, [summary, cycles, withdrawals]);
+  }, [summary, cash, cycles, withdrawals]);
 
   useRealtime(LIVE_TABLES.COLLECTOR, refreshAll);
 
+  // Today's round (progress bar): cash and confirmed transfers together.
   const s = summary.data;
   const expected = Number(s?.expected_amount ?? 0);
   const collected = Number(s?.collected_amount ?? 0);
-  const paidOut = Number(s?.withdrawals_paid_amount ?? 0);
-  const inHand = collected - paidOut;
+
+  // Cash the collector is physically holding. Transfers never enter this.
+  const inHand = Number(cash.data?.cash_in_hand ?? 0);
+  const awaiting = Number(cash.data?.handover_pending ?? 0);
+  const cashToday = Number(cash.data?.cash_today ?? 0);
+  const transferToday = Number(cash.data?.transfer_today ?? 0);
 
   const pendingWithdrawals = (withdrawals.data || []).filter((w) =>
     ['PENDING', 'CONFIRMED'].includes(w.status)
@@ -46,48 +58,66 @@ export default function CollectorDashboard() {
         <p>Here is today's round.</p>
       </header>
 
-      {summary.loading && <SkeletonPanel />}
+      {/* Cash in hand is the figure a collector is accountable for, so it
+          takes the prominent surface rather than gross collections. */}
+      {cash.loading && <SkeletonPanel />}
+      {cash.error && !cash.loading && (
+        <ErrorState message={cash.error} onRetry={cash.refetch} />
+      )}
+
+      {!cash.loading && !cash.error && (
+        <>
+          <section className="panel-balance">
+            <div className="label">Cash you are holding</div>
+            <div className="amount num">{money(inHand)}</div>
+            <div className="footnote">
+              Cash today {money(cashToday)} · Transfers today {money(transferToday)} (already with the office)
+              {awaiting > 0 && ` · ${money(awaiting)} awaiting admin`}
+            </div>
+          </section>
+
+          <Link
+            to="/collector/handover"
+            className="btn btn-money btn-block"
+            style={{ marginTop: 'var(--s-3)' }}
+          >
+            Cash handover
+          </Link>
+        </>
+      )}
+
+      {summary.loading && (
+        <div style={{ marginTop: 'var(--s-4)' }}><SkeletonPanel /></div>
+      )}
       {summary.error && !summary.loading && (
         <ErrorState message={summary.error} onRetry={summary.refetch} />
       )}
 
       {!summary.loading && !summary.error && (
-        <>
-          {/* Cash in hand is the figure a collector is accountable for, so it
-              takes the prominent surface rather than gross collections. */}
-          <section className="panel-balance">
-            <div className="label">Cash you are holding today</div>
-            <div className="amount num">{money(inHand)}</div>
-            <div className="footnote">
-              Collected {money(collected)} · Paid out {money(paidOut)}
-            </div>
-          </section>
+        <Card large style={{ marginTop: 'var(--s-4)' }}>
+          <CardHead title="Today's collection" />
+          <ProgressBar
+            value={collected}
+            max={expected || 1}
+            label={`${money(collected)} of ${money(expected)} collected`}
+          />
+          <div className="row-between small" style={{ marginTop: 8 }}>
+            <span className="muted num">{money(collected)} of {money(expected)}</span>
+            <span className="num">
+              {s?.customers_paid ?? 0} paid · {s?.customers_unpaid ?? 0} unpaid
+            </span>
+          </div>
 
-          <Card large style={{ marginTop: 'var(--s-4)' }}>
-            <CardHead title="Today's collection" />
-            <ProgressBar
-              value={collected}
-              max={expected || 1}
-              label={`${money(collected)} of ${money(expected)} collected`}
-            />
-            <div className="row-between small" style={{ marginTop: 8 }}>
-              <span className="muted num">{money(collected)} of {money(expected)}</span>
-              <span className="num">
-                {s?.customers_paid ?? 0} paid · {s?.customers_unpaid ?? 0} unpaid
-              </span>
-            </div>
-
-            {/* A navigation action, so it is an anchor wearing the button's
-                styles — not a button wrapping a link. */}
-            <Link
-              to="/collector/collect"
-              className="btn btn-money btn-block"
-              style={{ marginTop: 'var(--s-4)' }}
-            >
-              Record a payment
-            </Link>
-          </Card>
-        </>
+          {/* A navigation action, so it is an anchor wearing the button's
+              styles — not a button wrapping a link. */}
+          <Link
+            to="/collector/collect"
+            className="btn btn-money btn-block"
+            style={{ marginTop: 'var(--s-4)' }}
+          >
+            Record a payment
+          </Link>
+        </Card>
       )}
 
       <div className="grid-2" style={{ marginTop: 'var(--s-4)' }}>
