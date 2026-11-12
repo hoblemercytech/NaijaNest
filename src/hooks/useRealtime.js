@@ -61,7 +61,7 @@ export function useRealtime(tables, onChange, { enabled = true, delay = 400 } = 
 
 /** The tables each role's screens actually depend on. */
 export const LIVE_TABLES = {
-  USER: ['daily_contributions', 'contribution_cycles', 'withdrawals', 'profiles'],
-  COLLECTOR: ['daily_contributions', 'contribution_cycles', 'withdrawals', 'cash_handovers'],
-  ADMIN: ['daily_contributions', 'contribution_cycles', 'withdrawals', 'cash_handovers', 'kyc_submissions'],
+  USER: ['daily_contributions', 'contribution_cycles', 'withdrawals', 'profiles', 'payment_claims'],
+  COLLECTOR: ['daily_contributions', 'contribution_cycles', 'withdrawals', 'cash_handovers', 'payment_claims'],
+  ADMIN: ['daily_contributions', 'contribution_cycles', 'withdrawals', 'cash_handovers', 'payment_claims', 'kyc_submissions'],
 };
