@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useMyHandovers, useDailySummary, useCollectorActions } from '../../hooks/useCollector';
+import { useMyHandovers, useCashPosition, useCollectorActions } from '../../hooks/useCollector';
+import { useRealtime, LIVE_TABLES } from '../../hooks/useRealtime';
 import { money, dateTime, shortDate } from '../../lib/format';
 import { friendlyError } from '../../lib/errors';
 import { Card, CardHead } from '../../components/ui/Card';
@@ -12,36 +13,55 @@ import { useToast } from '../../components/ui/Toast';
 import './collector.css';
 
 /**
- * Cash handovers. The amount here is genuinely typed, because it is physical
- * money the collector counted — unlike contributions and withdrawals, the
- * database has no way to know it. An admin confirms receipt separately, so a
- * handover is a claim until then, not a fact.
+ * Cash handovers. Only physical cash can be handed over — transfers go straight
+ * to the office account and never pass through the collector's hands. The
+ * database enforces the limit; this screen just starts from the right number.
  */
 export default function Cash() {
   const handovers = useMyHandovers();
-  const summary = useDailySummary();
+  const cash = useCashPosition();
   const [open, setOpen] = useState(false);
 
-  const s = summary.data;
-  const inHand = Number(s?.collected_amount ?? 0) - Number(s?.withdrawals_paid_amount ?? 0);
+  const refresh = () => {
+    handovers.refetch();
+    cash.refetch();
+  };
+  useRealtime(LIVE_TABLES.COLLECTOR, refresh);
+
+  const c = cash.data;
+  const inHand = Number(c?.cash_in_hand ?? 0);
+  const awaiting = Number(c?.handover_pending ?? 0);
+  const available = Number(c?.available_to_hand_over ?? 0);
 
   return (
     <>
       <header className="page-head row-between">
         <div>
           <h1>Cash handover</h1>
-          <p>Money you have passed to BudgetSave.</p>
+          <p>Cash you have passed to the office.</p>
         </div>
-        <Button onClick={() => setOpen(true)}>New handover</Button>
+        <Button onClick={() => setOpen(true)} disabled={cash.loading || available <= 0}>
+          New handover
+        </Button>
       </header>
 
-      {!summary.loading && !summary.error && (
+      {cash.loading && <SkeletonLines count={1} height={160} />}
+      {cash.error && !cash.loading && <ErrorState message={cash.error} onRetry={cash.refetch} />}
+
+      {!cash.loading && !cash.error && (
         <Card large>
-          <CardHead title="Today" />
-          <dl className="detail-list">
-            <div><dt>Collected</dt><dd className="num">{money(s?.collected_amount)}</dd></div>
-            <div><dt>Paid out as withdrawals</dt><dd className="num">{money(s?.withdrawals_paid_amount)}</dd></div>
-            <div><dt>In hand from today</dt><dd className="num">{money(inHand)}</dd></div>
+          <CardHead title="Cash you are holding" />
+          <div className="num" style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.8rem' }}>
+            {money(inHand)}
+          </div>
+          <dl className="detail-list" style={{ marginTop: 'var(--s-3)' }}>
+            <div><dt>Cash collected (all time)</dt><dd className="num">{money(c?.cash_collected)}</dd></div>
+            <div><dt>Paid out to customers</dt><dd className="num">{money(c?.cash_paid_out)}</dd></div>
+            <div><dt>Handed over and confirmed</dt><dd className="num">{money(c?.cash_handed_over)}</dd></div>
+            <div><dt>Waiting for admin</dt><dd className="num">{money(awaiting)}</dd></div>
+            <div><dt>You can hand over now</dt><dd className="num">{money(available)}</dd></div>
+            <div><dt>Cash collected today</dt><dd className="num">{money(c?.cash_today)}</dd></div>
+            <div><dt>Transfers today (already with the office)</dt><dd className="num">{money(c?.transfer_today)}</dd></div>
           </dl>
         </Card>
       )}
@@ -88,37 +108,39 @@ export default function Cash() {
         </div>
       </div>
 
-      <HandoverModal
-        open={open}
-        suggested={inHand}
-        onClose={() => setOpen(false)}
-        onDone={() => { handovers.refetch(); summary.refetch(); }}
-      />
+      {open && (
+        <HandoverModal
+          available={available}
+          onClose={() => setOpen(false)}
+          onDone={refresh}
+        />
+      )}
     </>
   );
 }
 
-function HandoverModal({ open, suggested, onClose, onDone }) {
+function HandoverModal({ available, onClose, onDone }) {
   const { createHandover } = useCollectorActions();
   const { toast, toastError } = useToast();
-  const [amount, setAmount] = useState('');
+  // Starts at everything he can hand over; he edits it down if handing over less.
+  const [amount, setAmount] = useState(String(available));
   const [note, setNote] = useState('');
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
-
-  if (!open) return null;
 
   const submit = async () => {
     const value = Number(amount);
     if (!Number.isFinite(value) || value <= 0) {
       return setError('Enter the amount you are handing over.');
     }
+    if (value > available) {
+      return setError(`You can hand over at most ${money(available)}.`);
+    }
     setBusy(true);
     setError(null);
     try {
       await createHandover(value, note);
       toast('Handover recorded. An admin will confirm it.');
-      setAmount(''); setNote('');
       onClose();
       onDone();
     } catch (err) {
@@ -146,10 +168,11 @@ function HandoverModal({ open, suggested, onClose, onDone }) {
         type="number"
         inputMode="numeric"
         min="1"
+        max={available}
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
         error={error}
-        hint={suggested > 0 ? `You collected ${money(suggested)} net today.` : undefined}
+        hint={`Cash you can hand over now: ${money(available)}. Lower the amount if you are handing over less. Transfers are not included — they already went to the office.`}
       />
       <Textarea
         label="Note (optional)"
