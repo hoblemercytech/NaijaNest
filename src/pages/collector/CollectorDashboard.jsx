@@ -46,6 +46,7 @@ export default function CollectorDashboard() {
   const awaiting = Number(cash.data?.handover_pending ?? 0);
   const cashToday = Number(cash.data?.cash_today ?? 0);
   const transferToday = Number(cash.data?.transfer_today ?? 0);
+  const collectedToday = cashToday + transferToday;
 
   const pendingWithdrawals = (withdrawals.data || []).filter((w) =>
     ['PENDING', 'CONFIRMED'].includes(w.status)
@@ -66,25 +67,33 @@ export default function CollectorDashboard() {
       )}
 
       {!cash.loading && !cash.error && (
-        <>
-          <section className="panel-balance">
-            <div className="label">Cash you are holding</div>
-            <div className="amount num">{money(inHand)}</div>
-            <div className="footnote">
-              Cash today {money(cashToday)} · Transfers today {money(transferToday)} (already with the office)
-              {awaiting > 0 && ` · ${money(awaiting)} awaiting admin`}
-            </div>
-          </section>
+  <>
+    <section className="panel-balance">
+      <div className="label">Collected today</div>
+      <div className="amount num">{money(collectedToday)}</div>
+      <div className="footnote">
+        Cash {money(cashToday)} · Transfer {money(transferToday)}
+      </div>
+    </section>
 
-          <Link
-            to="/collector/cash"
-            className="btn btn-money btn-block"
-            style={{ marginTop: 'var(--s-3)' }}
-          >
-            Cash handover
-          </Link>
-        </>
-      )}
+    <Card large style={{ marginTop: 'var(--s-3)' }}>
+      <CardHead title="Cash to hand over" />
+      <dl className="detail-list">
+        <div><dt>Cash you are holding</dt><dd className="num">{money(inHand)}</dd></div>
+        {awaiting > 0 && (
+          <div><dt>Waiting for admin</dt><dd className="num">{money(awaiting)}</dd></div>
+        )}
+      </dl>
+      <Link
+        to="/collector/cash"
+        className="btn btn-money btn-block"
+        style={{ marginTop: 'var(--s-3)' }}
+      >
+        Cash handover
+      </Link>
+    </Card>
+  </>
+)}
 
       {summary.loading && (
         <div style={{ marginTop: 'var(--s-4)' }}><SkeletonPanel /></div>
