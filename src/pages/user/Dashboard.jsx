@@ -1,9 +1,11 @@
 import { useCallback, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
-import { FileQuestion, ShieldCheck, ShieldAlert, Clock, Banknote, CalendarCheck } from 'lucide-react';
 import {
-  useFinancialSummary, useOpenCycle, useCycleSchedule,
+  FileQuestion, ShieldCheck, ShieldAlert, Clock, Banknote, CalendarCheck, Plus,
+} from 'lucide-react';
+import {
+  useFinancialSummary, useOpenCycles, useCycleSchedule,
   useActivePlans, useCustomerActions,
 } from '../../hooks/useCustomer';
 import { useRealtime, LIVE_TABLES } from '../../hooks/useRealtime';
@@ -20,37 +22,29 @@ import { useToast } from '../../components/ui/Toast';
 import ContributionCalendar from '../../components/ContributionCalendar';
 import './user.css';
 
-
-
 export default function Dashboard() {
   const { profile } = useAuth();
   const summary = useFinancialSummary();
-  const cycle = useOpenCycle();
-  const schedule = useCycleSchedule(cycle.data?.id);
+  const cycles = useOpenCycles();
   const [startOpen, setStartOpen] = useState(false);
-  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [withdrawing, setWithdrawing] = useState(null); // { cycle, amount }
 
   const refreshAll = useCallback(() => {
     summary.refetch();
-    cycle.refetch();
-    schedule.refetch();
-  }, [summary, cycle, schedule]);
+    cycles.refetch();
+  }, [summary, cycles]);
 
   // No address bar in an installed app, so the balance has to keep itself honest.
   useRealtime(LIVE_TABLES.USER, refreshAll);
 
-  const today = isoDate();
-  const todayRow = schedule.data?.find((d) => d.contribution_date === today);
-  const openCycle = cycle.data;
+  const list = cycles.data || [];
   const balance = Number(summary.data?.current_balance ?? 0);
-  const cycleBalance = Number(openCycle?.contributed ?? 0) - Number(openCycle?.withdrawn ?? 0);
-  // A fixed term means fixed: the money is locked until the cycle completes.
-  const hasBalance = openCycle?.status === 'COMPLETED' && cycleBalance > 0;
-  const stillRunning = openCycle?.status === 'ACTIVE';
-  // The database refuses an unverified withdrawal regardless, but showing the
-  // button and then failing would be a worse experience than saying so first.
   const verified = profile?.kyc_verified;
-  const canWithdraw = hasBalance && verified;
+  const savedIn = (c) => Number(c.contributed ?? 0) - Number(c.withdrawn ?? 0);
+
+  // A fixed term means fixed: money is locked until that plan completes.
+  const anyWithdrawable = list.some((c) => c.status === 'COMPLETED' && savedIn(c) > 0);
+  const anyRunning = list.some((c) => c.status === 'ACTIVE' && savedIn(c) > 0);
 
   return (
     <>
@@ -72,140 +66,188 @@ export default function Dashboard() {
             Contributed {money(summary.data.total_contributed)} · Withdrawn{' '}
             {money(summary.data.total_withdrawn)}
           </div>
-          {canWithdraw && (
-            <Button
-              variant="money"
-              block
-              onClick={() => setWithdrawOpen(true)}
-              style={{ marginTop: 'var(--s-5)' }}
-            >
-              Withdraw {money(cycleBalance)}
-            </Button>
-          )}
 
-          {hasBalance && !verified && (
+          {anyWithdrawable && !verified && (
             <Link to="/verification" className="btn btn-outline btn-block panel-cta">
               Verify your identity to withdraw
             </Link>
           )}
 
-          {stillRunning && cycleBalance > 0 && (
-          <p className="panel-locked">
-              Your savings are still in progress. Once your full contribution target is reached, your cycle will be completed and you can request withdrawal after KYC verification.
+          {anyRunning && (
+            <p className="panel-locked">
+              Your savings are still in progress. Once a plan reaches its full contribution
+              target it is completed, and you can request withdrawal for that plan after
+              KYC verification.
             </p>
           )}
         </section>
       )}
 
-      {/* --- today ------------------------------------------------------ */}
-      {openCycle?.status === 'ACTIVE' && (
+      <VerificationNotice status={profile?.kyc_status} verified={profile?.kyc_verified} />
+
+      {/* --- plans ------------------------------------------------------ */}
+      <div style={{ marginTop: 'var(--s-6)' }}>
+        {cycles.loading && <SkeletonLines count={2} height={92} />}
+        {cycles.error && !cycles.loading && (
+          <ErrorState message={cycles.error} onRetry={cycles.refetch} />
+        )}
+
+        {!cycles.loading && !cycles.error && list.length === 0 && (
+          <Card large>
+            <EmptyState
+              title="You don't have a contribution plan yet"
+              message="Choose how much and how long you want to save for. Your collector activates it, then you start contributing."
+              Icon={FileQuestion}
+              action={<Button onClick={() => setStartOpen(true)}>Start a plan</Button>}
+            />
+          </Card>
+        )}
+
+        {list.length > 0 && (
+          <>
+            <div className="row-between" style={{ marginBottom: 'var(--s-3)' }}>
+              <h2 style={{ fontSize: 'var(--t-h3)', margin: 0 }}>Your plans</h2>
+              <Button variant="outline" size="sm" onClick={() => setStartOpen(true)}>
+                <Plus size={16} strokeWidth={2} /> Start another plan
+              </Button>
+            </div>
+
+            <div className="stack">
+              {list.map((c) => (
+                <CycleCard
+                  key={c.id}
+                  cycle={c}
+                  verified={verified}
+                  onWithdraw={(amount) => setWithdrawing({ cycle: c, amount })}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      <StartCycleModal open={startOpen} onClose={() => setStartOpen(false)} onDone={refreshAll} />
+      <WithdrawModal
+        open={!!withdrawing}
+        onClose={() => setWithdrawing(null)}
+        cycle={withdrawing?.cycle}
+        amount={withdrawing?.amount ?? 0}
+        onDone={refreshAll}
+      />
+    </>
+  );
+}
+
+/* --------------------------------------------------------------- one plan */
+function CycleCard({ cycle, verified, onWithdraw }) {
+  const isPending = cycle.status === 'PENDING_ACTIVATION';
+  const schedule = useCycleSchedule(isPending ? null : cycle.id);
+  useRealtime(LIVE_TABLES.USER, schedule.refetch, { enabled: !isPending });
+  const [showDays, setShowDays] = useState(false);
+
+  const total = cycle.periods ?? cycle.duration_days;
+  const saved = Number(cycle.contributed ?? 0) - Number(cycle.withdrawn ?? 0);
+  const today = isoDate();
+  const todayRow = schedule.data?.find((d) => d.contribution_date === today);
+  const canWithdraw = cycle.status === 'COMPLETED' && saved > 0 && verified;
+
+  if (isPending) {
+    return (
+      <Card large>
+        <CardHead title="Waiting for your collector" action={<StatusBadge status={cycle.status} />} />
+        <p className="muted small">
+          You asked for {money(cycle.daily_amount_snapshot)} {PER_LABEL[cycle.frequency] || 'a day'} for{' '}
+          {total} payments. {cycle.collector?.full_name || 'Your collector'} needs to activate it
+          before payment 1 starts.
+        </p>
+      </Card>
+    );
+  }
+
+  return (
+    <Card large>
+      <CardHead
+        title={`${money(cycle.daily_amount_snapshot)} ${PER_LABEL[cycle.frequency] || 'a day'}`}
+        action={<StatusBadge status={cycle.status} />}
+      >
+        <p className="small muted" style={{ margin: '2px 0 0' }}>
+          {shortDate(cycle.start_date)} — {shortDate(cycle.expected_end_date)}
+        </p>
+      </CardHead>
+
+      <ProgressBar
+        value={cycle.days_paid}
+        max={total}
+        label={`${cycle.days_paid} of ${total} payments made`}
+      />
+      <div className="row-between small muted" style={{ marginTop: 8 }}>
+        <span>Payment {cycle.days_paid} of {total}</span>
+        <span className="num">{money(saved)} saved</span>
+      </div>
+
+      {cycle.status === 'ACTIVE' && (
         <div className="grid-2" style={{ marginTop: 'var(--s-4)' }}>
           <Stat
             label="Due now"
             value={todayRow ? money(todayRow.expected_amount) : '—'}
-            foot={todayRow ? (todayRow.status === 'PAID' ? 'Paid' : 'Not paid yet') : 'Outside your cycle'}
+            foot={todayRow ? (todayRow.status === 'PAID' ? 'Paid' : 'Not paid yet') : 'Nothing due today'}
             Icon={Banknote}
             tone={todayRow?.status === 'PAID' ? 'ok' : 'warn'}
           />
           <Stat
             label="Payments made"
-            value={`${openCycle.days_paid} / ${openCycle.periods ?? openCycle.duration_days}`}
-            foot={openCycle.days_missed > 0 ? `${openCycle.days_missed} missed` : 'On track'}
+            value={`${cycle.days_paid} / ${total}`}
+            foot={cycle.days_missed > 0 ? `${cycle.days_missed} missed` : 'On track'}
             Icon={CalendarCheck}
-            tone={openCycle.days_missed > 0 ? 'warn' : 'ok'}
+            tone={cycle.days_missed > 0 ? 'warn' : 'ok'}
           />
         </div>
       )}
 
-      <VerificationNotice status={profile?.kyc_status} verified={profile?.kyc_verified} />
-
-      {/* --- cycle ------------------------------------------------------ */}
-      <div style={{ marginTop: 'var(--s-6)' }}>
-        {cycle.loading && <SkeletonLines count={2} height={92} />}
-        {cycle.error && !cycle.loading && <ErrorState message={cycle.error} onRetry={cycle.refetch} />}
-
-        {!cycle.loading && !cycle.error && !openCycle && (
-          <Card large>
-            <EmptyState
-              title="You don't have an active contribution cycle yet"
-              message="Choose a daily amount and how long you want to save for. Your collector activates it, then you start contributing."
-              Icon={FileQuestion}
-              action={<Button onClick={() => setStartOpen(true)}>Start a cycle</Button>}
-            />
-          </Card>
+      <dl className="detail-list" style={{ marginTop: 'var(--s-4)' }}>
+        <div><dt>Collector</dt><dd>{cycle.collector?.full_name || '—'}</dd></div>
+        {cycle.collector?.phone && (
+          <div><dt>Phone</dt><dd className="num">{cycle.collector.phone}</dd></div>
         )}
+      </dl>
 
-        {openCycle?.status === 'PENDING_ACTIVATION' && (
-          <Card large>
-            <CardHead title="Waiting for your collector" action={<StatusBadge status={openCycle.status} />} />
-            <p className="muted small">
-              You asked for {money(openCycle.daily_amount_snapshot)} a day for{' '}
-              {openCycle.duration_days} days. {openCycle.collector?.full_name || 'Your collector'} needs
-              to activate it before day 1 starts.
-            </p>
-          </Card>
-        )}
+      {canWithdraw && (
+        <Button
+          variant="money"
+          block
+          onClick={() => onWithdraw(saved)}
+          style={{ marginTop: 'var(--s-4)' }}
+        >
+          Withdraw {money(saved)}
+        </Button>
+      )}
+      {cycle.status === 'COMPLETED' && saved > 0 && !verified && (
+        <Link to="/verification" className="btn btn-outline btn-block" style={{ marginTop: 'var(--s-4)' }}>
+          Verify your identity to withdraw
+        </Link>
+      )}
 
-        {openCycle?.status === 'REJECTED' && (
-          <Card large>
-            <CardHead title="Request not approved" action={<StatusBadge status={openCycle.status} />} />
-            <p className="muted small">{openCycle.rejection_reason}</p>
-            <Button variant="outline" onClick={() => setStartOpen(true)}>Request again</Button>
-          </Card>
-        )}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setShowDays((v) => !v)}
+        style={{ marginTop: 8, marginLeft: -12 }}
+      >
+        {showDays ? 'Hide days' : 'View days'}
+      </Button>
 
-        {(openCycle?.status === 'ACTIVE' || openCycle?.status === 'COMPLETED') && (
-          <Card large>
-            <CardHead
-              title={`${money(openCycle.daily_amount_snapshot)} ${PER_LABEL[openCycle.frequency] || "a day"}`}
-              action={<StatusBadge status={openCycle.status} />}
-            >
-              <p className="small muted" style={{ margin: '2px 0 0' }}>
-                {shortDate(openCycle.start_date)} — {shortDate(openCycle.expected_end_date)}
-              </p>
-            </CardHead>
-
-            <ProgressBar
-              value={openCycle.days_paid}
-              max={openCycle.periods ?? openCycle.duration_days}
-              label={`${openCycle.days_paid} of ${openCycle.periods ?? openCycle.duration_days} payments made`}
-            />
-            <div className="row-between small muted" style={{ marginTop: 8 }}>
-              <span>Payment {openCycle.days_paid} of {openCycle.periods ?? openCycle.duration_days}</span>
-              <span className="num">{money(cycleBalance)} saved</span>
-            </div>
-
-            <dl className="detail-list" style={{ marginTop: 'var(--s-4)' }}>
-              <div><dt>Collector</dt><dd>{openCycle.collector?.full_name || '—'}</dd></div>
-              {openCycle.collector?.phone && (
-                <div><dt>Phone</dt><dd className="num">{openCycle.collector.phone}</dd></div>
-              )}
-            </dl>
-          </Card>
-        )}
-      </div>
-
-      {/* --- calendar --------------------------------------------------- */}
-      {openCycle && ['ACTIVE', 'COMPLETED'].includes(openCycle.status) && (
-        <Card large style={{ marginTop: 'var(--s-4)' }}>
-          <CardHead title="Your contribution days" />
+      {showDays && (
+        <div style={{ marginTop: 'var(--s-3)' }}>
           {schedule.loading && <SkeletonLines count={2} height={44} />}
           {schedule.error && !schedule.loading && (
             <ErrorState message={schedule.error} onRetry={schedule.refetch} />
           )}
-          {!schedule.loading && !schedule.error && <ContributionCalendar days={schedule.data || []} />}
-        </Card>
+          {!schedule.loading && !schedule.error && (
+            <ContributionCalendar days={schedule.data || []} />
+          )}
+        </div>
       )}
-
-      <StartCycleModal open={startOpen} onClose={() => setStartOpen(false)} onDone={refreshAll} />
-      <WithdrawModal
-        open={withdrawOpen}
-        onClose={() => setWithdrawOpen(false)}
-        cycle={openCycle}
-        amount={cycleBalance}
-        onDone={refreshAll}
-      />
-    </>
+    </Card>
   );
 }
 
@@ -284,7 +326,7 @@ function StartCycleModal({ open, onClose, onDone }) {
     <Modal
       open={open}
       onClose={onClose}
-      title="Start a contribution cycle"
+      title="Start a contribution plan"
       description="Your terms are locked in once your collector activates this."
       footer={
         <>
@@ -426,7 +468,7 @@ function WithdrawModal({ open, onClose, cycle, amount, onDone }) {
       </div>
 
       <p className="muted small">
-        Your cycle has completed, so this is everything you contributed. Send your bank
+        This plan has completed, so this is everything you contributed to it. Send your bank
         details and the office will transfer it.
       </p>
 
