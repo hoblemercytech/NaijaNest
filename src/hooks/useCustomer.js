@@ -60,7 +60,7 @@ async function loadOpenCycles(userId) {
 
   return cycles.map((c) => ({
     ...c,
-    days_paid: 0, days_missed: 0, contributed: 0, withdrawn: 0,
+       days_paid: 0, days_missed: 0, contributed: 0, withdrawn: 0, service_charge: 0, catchup_days: 0,
     ...(byId.get(c.id) || {}),
   }));
 }
