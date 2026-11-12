@@ -17,13 +17,13 @@ export default function Withdrawals() {
     <>
       <header className="page-head">
         <h1>Withdrawals</h1>
-        <p>Every payout is cash, handed to you by your collector.</p>
+       <p>Every payout is sent to your bank account by the NaijaNest office.</p>
       </header>
 
       {!summary.loading && !summary.error && (
         <div className="grid-2" style={{ marginBottom: 'var(--s-5)' }}>
           <div className="stat">
-            <div className="stat-label">Available now</div>
+          <div className="stat-label">Total saved</div>
             <div className="stat-value num">{money(summary.data.current_balance)}</div>
           </div>
           <div className="stat">
