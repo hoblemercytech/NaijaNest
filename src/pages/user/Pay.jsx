@@ -4,11 +4,11 @@ import {
   Landmark, Copy, Check, Minus, Plus, Clock3, CircleAlert,
   BadgeCheck, Banknote, ArrowRight, Info,
 } from 'lucide-react';
-import { useOpenCycle } from '../../hooks/useCustomer';
+import { useOpenCycles } from '../../hooks/useCustomer';
 import { useMyPaymentAccount, useMyPaymentClaims, usePaymentActions } from '../../hooks/usePayments';
 import { useRealtime } from '../../hooks/useRealtime';
 import { PER_LABEL } from '../../lib/banks';
-import { money, dateTime } from '../../lib/format';
+import { money, dateTime, shortDate } from '../../lib/format';
 import { friendlyError } from '../../lib/errors';
 import { Card, CardHead } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -29,30 +29,49 @@ const QUICK = [1, 5, 10, 30];
  * "I have paid" does not credit anything. People watch their balance after
  * tapping, and a balance that does not move looks like a broken app unless
  * you told them first.
+ *
+ * A customer can have several plans running at once, so the payment is always
+ * for one chosen plan. With a single active plan there is nothing to choose and
+ * the picker stays hidden.
  */
 export default function Pay() {
-  const cycle = useOpenCycle();
+  const cycles = useOpenCycles();
   const account = useMyPaymentAccount();
   const claims = useMyPaymentClaims();
   const { submitClaim } = usePaymentActions();
   const { toast, toastError } = useToast();
 
+  const [pickedId, setPickedId] = useState(null);
   const [count, setCount] = useState(1);
   const [confirming, setConfirming] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useRealtime(['payment_claims', 'daily_contributions'], () => {
     claims.refetch();
-    cycle.refetch();
+    cycles.refetch();
   });
 
-  const open = cycle.data;
+  // Only an active plan can be paid. If the customer picked one, use it;
+  // otherwise fall back to the first active plan.
+  const activeCycles = (cycles.data || []).filter((c) => c.status === 'ACTIVE');
+  const picked = activeCycles.find((c) => c.id === pickedId) || activeCycles[0] || null;
+
+  // With no active plan, still show the newest open one so the screen can say
+  // why paying isn't possible yet (waiting for activation, completed, etc.).
+  const open = picked || cycles.data?.[0] || null;
+
   const perPayment = Number(open?.daily_amount_snapshot || 0);
   const remaining = open ? (open.periods ?? open.duration_days) - (open.days_paid ?? 0) : 0;
   const maxCount = Math.max(1, Math.min(60, remaining));
-  const total = perPayment * count;
+  // The plan can shrink under the stepper (a payment confirmed in the
+  // background), so the count is clamped rather than trusted.
+  const safeCount = Math.min(count, maxCount);
+  const total = perPayment * safeCount;
 
-  const pending = (claims.data || []).find((c) => c.status === 'PENDING');
+  // One waiting transfer per plan — the database enforces the same rule.
+  const pending = (claims.data || []).find(
+    (c) => c.status === 'PENDING' && c.cycle_id === open?.id
+  );
 
   const copyNumber = async () => {
     try {
@@ -64,7 +83,12 @@ export default function Pay() {
     }
   };
 
-  const loading = cycle.loading || account.loading;
+  const pickPlan = (id) => {
+    setPickedId(id);
+    setCount(1);
+  };
+
+  const loading = cycles.loading || account.loading;
 
   return (
     <>
@@ -74,9 +98,9 @@ export default function Pay() {
       </header>
 
       {loading && <SkeletonLines count={3} height={120} />}
-      {cycle.error && !loading && <ErrorState message={cycle.error} onRetry={cycle.refetch} />}
+      {cycles.error && !loading && <ErrorState message={cycles.error} onRetry={cycles.refetch} />}
 
-      {!loading && !open && (
+      {!loading && !cycles.error && !open && (
         <Card large>
           <EmptyState
             title="No active plan"
@@ -92,7 +116,7 @@ export default function Pay() {
       {!loading && open && open.status !== 'ACTIVE' && (
         <Card large>
           <EmptyState
-            title={`Your plan is ${open.status.toLowerCase().replace('_', ' ')}`}
+            title={`Your plan is ${open.status.toLowerCase().replace(/_/g, ' ')}`}
             message="Payments can only be made once your collector activates the plan."
             Icon={Clock3}
           />
@@ -101,6 +125,30 @@ export default function Pay() {
 
       {!loading && open?.status === 'ACTIVE' && (
         <>
+          {/* Only shown when there is a real choice to make. */}
+          {activeCycles.length > 1 && (
+            <Card large style={{ marginBottom: 'var(--s-4)' }}>
+              <CardHead title="Which plan are you paying?" />
+              <div className="choice-grid">
+                {activeCycles.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className={`choice${open.id === c.id ? ' is-picked' : ''}`}
+                    onClick={() => pickPlan(c.id)}
+                    aria-pressed={open.id === c.id}
+                  >
+                    <span className="choice-main num">{money(c.daily_amount_snapshot)}</span>
+                    <span className="choice-sub">
+                      {PER_LABEL[c.frequency] || 'a day'} · from {shortDate(c.start_date)} ·{' '}
+                      {(c.periods ?? c.duration_days) - (c.days_paid ?? 0)} left
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </Card>
+          )}
+
           {pending && (
             <div className="pay-pending" style={{ marginBottom: 'var(--s-4)' }}>
               <span className="pay-pending-dot" aria-hidden="true" />
@@ -166,8 +214,8 @@ export default function Pay() {
             <div className="pay-stepper">
               <button
                 type="button"
-                onClick={() => setCount((c) => Math.max(1, c - 1))}
-                disabled={count <= 1}
+                onClick={() => setCount(Math.max(1, safeCount - 1))}
+                disabled={safeCount <= 1}
                 aria-label="One fewer"
               >
                 <Minus size={18} strokeWidth={2.2} />
@@ -175,13 +223,13 @@ export default function Pay() {
 
               <div className="pay-stepper-value">
                 <strong className="num">{money(total)}</strong>
-                <span>{count} {count === 1 ? 'payment' : 'payments'}</span>
+                <span>{safeCount} {safeCount === 1 ? 'payment' : 'payments'}</span>
               </div>
 
               <button
                 type="button"
-                onClick={() => setCount((c) => Math.min(maxCount, c + 1))}
-                disabled={count >= maxCount}
+                onClick={() => setCount(Math.min(maxCount, safeCount + 1))}
+                disabled={safeCount >= maxCount}
                 aria-label="One more"
               >
                 <Plus size={18} strokeWidth={2.2} />
@@ -193,7 +241,7 @@ export default function Pay() {
                 <button
                   key={q}
                   type="button"
-                  className={count === q ? 'is-picked' : ''}
+                  className={safeCount === q ? 'is-picked' : ''}
                   onClick={() => setCount(q)}
                 >
                   {q}×
@@ -224,7 +272,7 @@ export default function Pay() {
 
             {pending && (
               <p className="field-hint">
-                Wait for your last payment to be confirmed before reporting another.
+                Wait for your last payment on this plan to be confirmed before reporting another.
               </p>
             )}
           </Card>
@@ -257,10 +305,10 @@ export default function Pay() {
         open={confirming}
         onClose={() => setConfirming(false)}
         cycle={open}
-        count={count}
+        count={safeCount}
         total={total}
         account={account.data}
-        onDone={() => { claims.refetch(); cycle.refetch(); }}
+        onDone={() => { claims.refetch(); cycles.refetch(); }}
         submitClaim={submitClaim}
         toast={toast}
         toastError={toastError}
