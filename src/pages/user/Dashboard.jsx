@@ -40,7 +40,8 @@ export default function Dashboard() {
   const list = cycles.data || [];
   const balance = Number(summary.data?.current_balance ?? 0);
   const verified = profile?.kyc_verified;
-  const savedIn = (c) => Number(c.contributed ?? 0) - Number(c.withdrawn ?? 0);
+ const savedIn = (c) =>
+  Number(c.contributed ?? 0) - Number(c.service_charge ?? 0) - Number(c.withdrawn ?? 0);
 
   // A fixed term means fixed: money is locked until that plan completes.
   const anyWithdrawable = list.some((c) => c.status === 'COMPLETED' && savedIn(c) > 0);
@@ -146,7 +147,8 @@ function CycleCard({ cycle, verified, onWithdraw }) {
   const [showDays, setShowDays] = useState(false);
 
   const total = cycle.periods ?? cycle.duration_days;
-  const saved = Number(cycle.contributed ?? 0) - Number(cycle.withdrawn ?? 0);
+  const saved =
+  Number(cycle.contributed ?? 0) - Number(cycle.service_charge ?? 0) - Number(cycle.withdrawn ?? 0);
   const today = isoDate();
   const todayRow = schedule.data?.find((d) => d.contribution_date === today);
   const canWithdraw = cycle.status === 'COMPLETED' && saved > 0 && verified;
