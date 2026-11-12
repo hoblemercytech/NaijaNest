@@ -25,7 +25,7 @@ export function useMyPaymentClaims() {
       unwrap(
         supabase
           .from('payment_claims')
-          .select('id, periods, claimed_amount, reference, status, reject_reason, created_at, reviewed_at')
+          .select('id, cycle_id, periods, claimed_amount, reference, status, reject_reason, created_at, reviewed_at')
           .order('created_at', { ascending: false })
           .limit(20)
       ),
