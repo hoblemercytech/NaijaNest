@@ -75,7 +75,7 @@ export default function ContributionCalendar({ days = [] }) {
               <>
                 <div><dt>Amount paid</dt><dd className="num">{money(selected.actual_amount)}</dd></div>
                 <div><dt>Time paid</dt><dd>{timeOnly(selected.paid_at)}</dd></div>
-                <div><dt>Method</dt><dd>Cash</dd></div>
+                <div><dt>Method</dt><dd>{selected.payment_method === 'TRANSFER' ? 'Bank transfer' : 'Cash'}</dd></div>
                 <div><dt>Recorded by</dt><dd>{selected.recorder?.full_name || '—'}</dd></div>
               </>
             )}
