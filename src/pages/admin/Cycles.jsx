@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAdminCycles } from '../../hooks/useAdminLedger';
+import { PER_LABEL, FREQUENCY_LABEL } from '../../lib/banks';
 import { money, shortDate } from '../../lib/format';
 import { downloadCsv } from '../../lib/csv';
 import { Card } from '../../components/ui/Card';
@@ -31,15 +32,17 @@ export default function Cycles() {
         { key: 'customer.member_id', label: 'Member ID' },
         { key: 'customer.full_name', label: 'Customer' },
         { key: 'collector.full_name', label: 'Collector' },
-        { key: 'daily_amount_snapshot', label: 'Daily amount (NGN)' },
-        { key: 'duration_days', label: 'Duration (days)' },
+        { key: 'daily_amount_snapshot', label: 'Amount per payment (NGN)' },
+        { key: 'frequency', label: 'Frequency', format: (v) => FREQUENCY_LABEL[v] || 'Daily' },
+        { key: 'periods', label: 'Payments' },
         { key: 'status', label: 'Status' },
         { key: 'start_date', label: 'Start', format: (v) => (v ? shortDate(v) : '') },
         { key: 'expected_end_date', label: 'Expected end', format: (v) => (v ? shortDate(v) : '') },
         { key: 'closed_at', label: 'Closed', format: (v) => (v ? shortDate(v) : '') },
         { key: 'rejection_reason', label: 'Rejection reason' },
       ],
-      rows
+      // Older rows may predate `periods`, so the export falls back to the day count.
+      rows.map((r) => ({ ...r, periods: r.periods ?? r.duration_days }))
     );
 
   return (
@@ -94,7 +97,8 @@ export default function Cycles() {
                     {c.customer?.full_name}
                   </Link>
                   <p className="xs muted num" style={{ margin: '2px 0 0' }}>
-                    {c.customer?.member_id} · {money(c.daily_amount_snapshot)}/day × {c.duration_days}
+                    {c.customer?.member_id} · {money(c.daily_amount_snapshot)}{' '}
+                    {PER_LABEL[c.frequency] || 'a day'} × {c.periods ?? c.duration_days}
                   </p>
                   <p className="xs muted" style={{ margin: '2px 0 0' }}>
                     {c.collector?.full_name || 'no collector'}
