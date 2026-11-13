@@ -25,7 +25,7 @@ export function useMyPaymentClaims() {
       unwrap(
         supabase
           .from('payment_claims')
-          .select('id, cycle_id, periods, claimed_amount, reference, status, reject_reason, created_at, reviewed_at')
+         .select('id, cycle_id, periods, claimed_amount, reference, status, reject_reason, created_at, reviewed_at, provider, virtual_bank_code, virtual_account_number, expires_at')
           .order('created_at', { ascending: false })
           .limit(20)
       ),
@@ -83,7 +83,29 @@ export function usePaymentActions() {
     return data;
   }, []);
 
-  return { submitClaim, confirmClaim, rejectClaim, recordAhead };
+    const fnError = async (error) => {
+    try { return new Error((await error.context.json()).error || error.message); }
+    catch { return error; }
+  };
+
+  const startGatewayPayment = useCallback(async (cycleId, periods) => {
+    const { data, error } = await supabase.functions.invoke('alatpay', {
+      body: { action: 'init', cycleId, periods },
+    });
+    if (error) throw await fnError(error);
+    if (data?.error) throw new Error(data.error);
+    return data;
+  }, []);
+
+  const checkGatewayPayment = useCallback(async (claimId) => {
+    const { data, error } = await supabase.functions.invoke('alatpay', {
+      body: { action: 'check', claimId },
+    });
+    if (error) throw await fnError(error);
+    return data;
+  }, []);
+
+   return { submitClaim, confirmClaim, rejectClaim, recordAhead, startGatewayPayment, checkGatewayPayment };
 }
 
 /** Collector payment accounts, for the admin screen. */
