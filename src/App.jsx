@@ -4,6 +4,7 @@ import { RequireAuth, RedirectIfAuthed } from './routes/guards';
 import AppShell from './components/layout/AppShell';
 import Landing from './pages/Landing';
 import Welcome from './pages/Welcome';
+import PaymentReview from './pages/admin/PaymentReview';
 import PublicLayout from './pages/public/PublicLayout';
 import { isStandalone } from './lib/pwa';
 import {
@@ -160,6 +161,7 @@ export default function App() {
         <Route path="/admin/payment-accounts" element={<AdminPaymentAccounts />} />
         <Route path="/admin/payments" element={<AdminPaymentsLedger />} />
         <Route path="/admin/payment-claims" element={<CollectorClaims />} />
+        <Route path="/admin/payment-review" element={<PaymentReview />} />
         <Route path="/admin/verification" element={<AdminKyc />} />
         <Route path="/admin/analytics" element={<Analytics />} />
         <Route path="/admin/email-alerts" element={<AdminNotificationSettings />} />
