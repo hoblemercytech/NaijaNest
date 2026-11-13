@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { useCollectorDetail } from '../../hooks/useAdmin';
+import { useCollectorTotals } from '../../hooks/useCollectorTotals';
 import { useAvatarUrl, useAvatarUrls } from '../../hooks/useAvatar';
 import { money, shortDate, dateTime } from '../../lib/format';
 import { Card, CardHead } from '../../components/ui/Card';
@@ -13,13 +14,15 @@ import { UserCog, Users, Wallet } from 'lucide-react';
 /**
  * One collector's position.
  *
- * The headline figure is cash in hand — collections minus payouts minus
- * confirmed handovers. That is the number an operator actually needs, because
- * it is what the collector is personally accountable for right now.
+ * The headline figure is physical cash in hand — cash they recorded, minus any
+ * customer payouts they made themselves, minus confirmed handovers. Transfers
+ * go straight to the business account and never pass through their hands, so
+ * they are shown separately and never counted as cash.
  */
 export default function CollectorDetail() {
   const { id } = useParams();
   const { data, loading, error, refetch } = useCollectorDetail(id);
+  const totalsQuery = useCollectorTotals(id);
   const avatar = useAvatarUrl(data?.profile?.avatar_url);
   const avatars = useAvatarUrls(data?.customers?.map((c) => c.avatar_url));
 
@@ -42,8 +45,10 @@ export default function CollectorDetail() {
     );
   }
 
-  const { profile, customers, handovers, totals } = data;
-  const pendingHandovers = handovers.filter((h) => h.status === 'PENDING');
+  const { profile, customers, handovers } = data;
+  const t = totalsQuery.data;
+  const inHand = Number(t?.cash_in_hand ?? 0);
+  const pendingAmount = Number(t?.handover_pending ?? 0);
 
   return (
     <>
@@ -62,18 +67,40 @@ export default function CollectorDetail() {
 
       <section className="panel-balance">
         <div className="label">Cash they should be holding</div>
-        <div className="amount num">{money(totals.inHand)}</div>
+        <div className="amount num">{totalsQuery.loading ? '—' : money(inHand)}</div>
         <div className="footnote">
-          Collected {money(totals.collected)} · Paid out {money(totals.paidOut)} · Handed over{' '}
-          {money(totals.handedOver)}
+          Cash collected {money(t?.cash_collected)} · Handed over {money(t?.cash_handed_over)}
         </div>
       </section>
 
-      {pendingHandovers.length > 0 && (
+      {totalsQuery.error && !totalsQuery.loading && (
+        <div style={{ marginTop: 'var(--s-3)' }}>
+          <ErrorState message={totalsQuery.error} onRetry={totalsQuery.refetch} />
+        </div>
+      )}
+
+      {pendingAmount > 0 && (
         <p className="field-hint" style={{ marginTop: 'var(--s-3)' }}>
-          {money(pendingHandovers.reduce((s, h) => s + Number(h.amount), 0))} is submitted but not
-          yet confirmed — it still counts as in hand until you confirm it.
+          {money(pendingAmount)} is submitted but not yet confirmed — it still counts as in hand
+          until you confirm it.
         </p>
+      )}
+
+      {t && (
+        <Card large style={{ marginTop: 'var(--s-4)' }}>
+          <CardHead title="Money collected" />
+          <dl className="detail-list">
+            <div><dt>Cash collected, today</dt><dd className="num">{money(t.cash_today)}</dd></div>
+            <div><dt>Transfers collected, today</dt><dd className="num">{money(t.transfer_today)}</dd></div>
+            <div><dt>Cash collected, all time</dt><dd className="num">{money(t.cash_collected)}</dd></div>
+            <div><dt>Transfers collected, all time</dt><dd className="num">{money(t.transfers_collected)}</dd></div>
+            <div><dt>Customer payouts they paid in cash</dt><dd className="num">{money(t.cash_paid_out)}</dd></div>
+          </dl>
+          <p className="field-hint">
+            Transfers are paid into the business account, so they are never part of the cash
+            a collector holds.
+          </p>
+        </Card>
       )}
 
       <h2 className="section-head">Customers ({customers.length})</h2>
