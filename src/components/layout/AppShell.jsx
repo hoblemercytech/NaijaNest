@@ -6,7 +6,7 @@ import { useAvatarUrl } from '../../hooks/useAvatar';
 import {
   Home, CalendarDays, ArrowUpRight, Bell, User, Users, Banknote, FileClock,
   ClipboardList, Wallet, LayoutDashboard, UserCog, BarChart3, Layers, ScrollText,
-  MoreHorizontal, LogOut, X, ShieldCheck, PanelLeftClose, PanelLeft, ChevronDown, Mail,
+  MoreHorizontal, LogOut, X, ShieldCheck, ShieldAlert,PanelLeftClose, PanelLeft, ChevronDown, Mail,
   Inbox, Landmark, HandCoins, UserX,
 } from 'lucide-react';
 import { isStandalone } from '../../lib/pwa';
@@ -38,7 +38,7 @@ const NAV = {
     { to: '/collector/customers', label: 'Customers', Icon: Users, primary: true },
     { to: '/collector/collect', label: 'Collect', Icon: Banknote, primary: true, accent: true },
     { to: '/collector/payments', label: 'Payments', Icon: Landmark },
-   { to: '/collector/withdrawals', label: 'Payouts', Icon: ArrowUpRight },
+  { to: '/collector/withdrawals', label: 'Payouts', Icon: ArrowUpRight },
 { to: '/collector/cash', label: 'Handover', Icon: Wallet, primary: true },
     { to: '/collector/cycles', label: 'Requests', Icon: ClipboardList },
     { to: '/collector/notifications', label: 'Alerts', Icon: Bell, badge: true },
@@ -52,7 +52,7 @@ const NAV = {
     { to: '/admin/analytics', label: 'Analytics', Icon: BarChart3, primary: true },
     { to: '/admin/payments', label: 'Payments', Icon: Banknote },
     { to: '/admin/payment-claims', label: 'Reported payments', Icon: Landmark },
-    { to: '/admin/payment-accounts', label: 'Payment accounts', Icon: Wallet },
+       { to: '/admin/payment-review', label: 'Payment review', Icon: ShieldAlert },
     { to: '/admin/plans', label: 'Plans', Icon: Layers },
     { to: '/admin/cycles', label: 'Cycles', Icon: FileClock },
     { to: '/admin/contributions', label: 'Contributions', Icon: CalendarDays },
