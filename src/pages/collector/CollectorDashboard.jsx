@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ClipboardList, ArrowUpRight } from 'lucide-react';
+import { ClipboardList, ArrowUpRight, Landmark } from 'lucide-react';
 import { useCallback } from 'react';
 import {
   useDailySummary,
@@ -7,6 +7,7 @@ import {
   useCollectorWithdrawals,
   useCashPosition,
 } from '../../hooks/useCollector';
+import { usePendingClaims } from '../../hooks/usePayments';
 import { useRealtime, LIVE_TABLES } from '../../hooks/useRealtime';
 import { useAuth } from '../../context/AuthContext';
 import { money } from '../../lib/format';
@@ -16,9 +17,9 @@ import { ErrorState, SkeletonPanel, SkeletonLines } from '../../components/ui/St
 import './collector.css';
 
 /**
- * The collector's morning screen: what is owed today, what has come in, and
- * what is waiting on them. Every figure is calculated by the database from real
- * transactions — none of it is a running total kept in the app.
+ * The collector's morning screen: what has come in today, what to hand over,
+ * and what is waiting on them. Every figure is calculated by the database from
+ * real transactions — none of it is a running total kept in the app.
  */
 export default function CollectorDashboard() {
   const { profile } = useAuth();
@@ -26,13 +27,15 @@ export default function CollectorDashboard() {
   const cash = useCashPosition();
   const cycles = usePendingCycles();
   const withdrawals = useCollectorWithdrawals();
+  const claims = usePendingClaims();
 
   const refreshAll = useCallback(() => {
     summary.refetch();
     cash.refetch();
     cycles.refetch();
     withdrawals.refetch();
-  }, [summary, cash, cycles, withdrawals]);
+    claims.refetch();
+  }, [summary, cash, cycles, withdrawals, claims]);
 
   useRealtime(LIVE_TABLES.COLLECTOR, refreshAll);
 
@@ -41,7 +44,8 @@ export default function CollectorDashboard() {
   const expected = Number(s?.expected_amount ?? 0);
   const collected = Number(s?.collected_amount ?? 0);
 
-  // Cash the collector is physically holding. Transfers never enter this.
+  // What the collector is holding: cash he recorded plus transfers paid into his
+  // account, less anything already handed over.
   const inHand = Number(cash.data?.cash_in_hand ?? 0);
   const awaiting = Number(cash.data?.handover_pending ?? 0);
   const cashToday = Number(cash.data?.cash_today ?? 0);
@@ -59,41 +63,45 @@ export default function CollectorDashboard() {
         <p>Here is today's round.</p>
       </header>
 
-      {/* Cash in hand is the figure a collector is accountable for, so it
-          takes the prominent surface rather than gross collections. */}
       {cash.loading && <SkeletonPanel />}
       {cash.error && !cash.loading && (
         <ErrorState message={cash.error} onRetry={cash.refetch} />
       )}
 
       {!cash.loading && !cash.error && (
-  <>
-    <section className="panel-balance">
-      <div className="label">Collected today</div>
-      <div className="amount num">{money(collectedToday)}</div>
-      <div className="footnote">
-        Cash {money(cashToday)} · Transfer {money(transferToday)}
-      </div>
-    </section>
+        <>
+          <section className="panel-balance">
+            <div className="label">Collected today</div>
+            <div className="amount num">{money(collectedToday)}</div>
+            <div className="footnote">
+              Cash {money(cashToday)} · Transfers {money(transferToday)}
+            </div>
+          </section>
 
-    <Card large style={{ marginTop: 'var(--s-3)' }}>
-      <CardHead title="Cash to hand over" />
-      <dl className="detail-list">
-        <div><dt>Cash you are holding</dt><dd className="num">{money(inHand)}</dd></div>
-        {awaiting > 0 && (
-          <div><dt>Waiting for admin</dt><dd className="num">{money(awaiting)}</dd></div>
-        )}
-      </dl>
-      <Link
-        to="/collector/cash"
-        className="btn btn-money btn-block"
-        style={{ marginTop: 'var(--s-3)' }}
-      >
-        Cash handover
-      </Link>
-    </Card>
-  </>
-)}
+          <Card large style={{ marginTop: 'var(--s-3)' }}>
+            <CardHead title="To hand over" />
+            <dl className="detail-list">
+              <div>
+                <dt>Cash and transfers you are holding</dt>
+                <dd className="num">{money(inHand)}</dd>
+              </div>
+              {awaiting > 0 && (
+                <div>
+                  <dt>Waiting for admin</dt>
+                  <dd className="num">{money(awaiting)}</dd>
+                </div>
+              )}
+            </dl>
+            <Link
+              to="/collector/cash"
+              className="btn btn-money btn-block"
+              style={{ marginTop: 'var(--s-3)' }}
+            >
+              Hand over
+            </Link>
+          </Card>
+        </>
+      )}
 
       {summary.loading && (
         <div style={{ marginTop: 'var(--s-4)' }}><SkeletonPanel /></div>
@@ -131,6 +139,14 @@ export default function CollectorDashboard() {
 
       <div className="grid-2" style={{ marginTop: 'var(--s-4)' }}>
         <TaskTile
+          Icon={Landmark}
+          to="/collector/payments"
+          label="Payments to confirm"
+          count={claims.data?.length ?? 0}
+          loading={claims.loading}
+          hint="Customers say they have paid"
+        />
+        <TaskTile
           Icon={ClipboardList}
           to="/collector/cycles"
           label="Cycle requests"
@@ -148,7 +164,7 @@ export default function CollectorDashboard() {
         />
       </div>
 
-      {(cycles.loading || withdrawals.loading) && (
+      {(cycles.loading || withdrawals.loading || claims.loading) && (
         <div style={{ marginTop: 'var(--s-4)' }}><SkeletonLines count={1} height={60} /></div>
       )}
     </>
