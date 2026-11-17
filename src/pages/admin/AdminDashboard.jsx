@@ -71,7 +71,7 @@ export default function AdminDashboard() {
           label="Pending withdrawals"
           value={d.pending_withdrawals ?? 0}
           foot={money(d.pending_withdrawal_amount)}
-          Icon={ArrowUpRight} tone="azure"
+          Icon={ArrowUpRight} 
           tone={(d.pending_withdrawals ?? 0) > 0 ? 'warn' : 'accent'}
         />
       </div>
