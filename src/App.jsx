@@ -5,6 +5,7 @@ import AppShell from './components/layout/AppShell';
 import Landing from './pages/Landing';
 import Welcome from './pages/Welcome';
 import PaymentReview from './pages/admin/PaymentReview';
+import Transfers from './pages/admin/Transfers';
 import PublicLayout from './pages/public/PublicLayout';
 import { isStandalone } from './lib/pwa';
 import {
@@ -161,6 +162,7 @@ export default function App() {
         <Route path="/admin/payment-accounts" element={<AdminPaymentAccounts />} />
         <Route path="/admin/payments" element={<AdminPaymentsLedger />} />
         <Route path="/admin/payment-claims" element={<CollectorClaims />} />
+        <Route path="/admin/transfers" element={<Transfers />} />
         <Route path="/admin/payment-review" element={<PaymentReview />} />
         <Route path="/admin/verification" element={<AdminKyc />} />
         <Route path="/admin/analytics" element={<Analytics />} />
