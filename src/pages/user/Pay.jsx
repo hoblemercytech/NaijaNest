@@ -4,11 +4,11 @@ import {
   Landmark, Copy, Check, Minus, Plus, Clock3, CircleAlert,
   BadgeCheck, Banknote, ArrowRight, Info,
 } from 'lucide-react';
-import { useOpenCycle } from '../../hooks/useCustomer';
+import { useOpenCycles } from '../../hooks/useCustomer';
 import { useMyPaymentAccount, useMyPaymentClaims, usePaymentActions } from '../../hooks/usePayments';
 import { useRealtime } from '../../hooks/useRealtime';
 import { PER_LABEL } from '../../lib/banks';
-import { money, dateTime } from '../../lib/format';
+import { money, dateTime, shortDate } from '../../lib/format';
 import { friendlyError } from '../../lib/errors';
 import { Card, CardHead } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -22,37 +22,44 @@ import './user.css';
 const QUICK = [1, 5, 10, 30];
 
 /**
- * Pay by transfer.
+ * Pay by transfer, confirmed by your collector or the office.
  *
- * Two things this screen has to get across, and it says both more than once:
- * the money goes to the account shown here and nowhere else, and tapping
- * "I have paid" does not credit anything. People watch their balance after
- * tapping, and a balance that does not move looks like a broken app unless
- * you told them first.
+ * The money goes to the account shown here and nowhere else. Tapping "I have
+ * paid" does not credit anything: staff check the account first, so the
+ * screen says so before the customer taps.
  */
 export default function Pay() {
-  const cycle = useOpenCycle();
+  const cycles = useOpenCycles();
   const account = useMyPaymentAccount();
   const claims = useMyPaymentClaims();
   const { submitClaim } = usePaymentActions();
   const { toast, toastError } = useToast();
 
+  const [pickedId, setPickedId] = useState(null);
   const [count, setCount] = useState(1);
   const [confirming, setConfirming] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useRealtime(['payment_claims', 'daily_contributions'], () => {
     claims.refetch();
-    cycle.refetch();
+    cycles.refetch();
   });
 
-  const open = cycle.data;
+  const activeCycles = (cycles.data || []).filter((c) => c.status === 'ACTIVE');
+  const picked = activeCycles.find((c) => c.id === pickedId) || activeCycles[0] || null;
+  const open = picked || cycles.data?.[0] || null;
+
   const perPayment = Number(open?.daily_amount_snapshot || 0);
   const remaining = open ? (open.periods ?? open.duration_days) - (open.days_paid ?? 0) : 0;
   const maxCount = Math.max(1, Math.min(60, remaining));
-  const total = perPayment * count;
+  const safeCount = Math.min(count, maxCount);
+  const total = perPayment * safeCount;
 
-  const pending = (claims.data || []).find((c) => c.status === 'PENDING');
+  // One waiting report per plan. Unpaid ALATPay accounts are not manual reports.
+  const pending = (claims.data || []).find(
+    (c) => c.status === 'PENDING' && c.cycle_id === open?.id && c.provider !== 'ALATPAY'
+  );
+  const history = (claims.data || []).filter((c) => c.provider !== 'ALATPAY' || c.status === 'CONFIRMED');
 
   const copyNumber = async () => {
     try {
@@ -64,7 +71,8 @@ export default function Pay() {
     }
   };
 
-  const loading = cycle.loading || account.loading;
+  const pickPlan = (id) => { setPickedId(id); setCount(1); };
+  const loading = cycles.loading || account.loading;
 
   return (
     <>
@@ -74,9 +82,9 @@ export default function Pay() {
       </header>
 
       {loading && <SkeletonLines count={3} height={120} />}
-      {cycle.error && !loading && <ErrorState message={cycle.error} onRetry={cycle.refetch} />}
+      {cycles.error && !loading && <ErrorState message={cycles.error} onRetry={cycles.refetch} />}
 
-      {!loading && !open && (
+      {!loading && !cycles.error && !open && (
         <Card large>
           <EmptyState
             title="No active plan"
@@ -92,7 +100,7 @@ export default function Pay() {
       {!loading && open && open.status !== 'ACTIVE' && (
         <Card large>
           <EmptyState
-            title={`Your plan is ${open.status.toLowerCase().replace('_', ' ')}`}
+            title={`Your plan is ${open.status.toLowerCase().replace(/_/g, ' ')}`}
             message="Payments can only be made once your collector activates the plan."
             Icon={Clock3}
           />
@@ -101,20 +109,42 @@ export default function Pay() {
 
       {!loading && open?.status === 'ACTIVE' && (
         <>
+          {activeCycles.length > 1 && (
+            <Card large style={{ marginBottom: 'var(--s-4)' }}>
+              <CardHead title="Which plan are you paying?" />
+              <div className="choice-grid">
+                {activeCycles.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className={`choice${open.id === c.id ? ' is-picked' : ''}`}
+                    onClick={() => pickPlan(c.id)}
+                    aria-pressed={open.id === c.id}
+                  >
+                    <span className="choice-main num">{money(c.daily_amount_snapshot)}</span>
+                    <span className="choice-sub">
+                      {PER_LABEL[c.frequency] || 'a day'} · from {shortDate(c.start_date)} ·{' '}
+                      {(c.periods ?? c.duration_days) - (c.days_paid ?? 0)} left
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </Card>
+          )}
+
           {pending && (
             <div className="pay-pending" style={{ marginBottom: 'var(--s-4)' }}>
               <span className="pay-pending-dot" aria-hidden="true" />
               <div>
                 <strong>{money(pending.claimed_amount)} waiting to be confirmed</strong>
                 <span>
-                  Reported {dateTime(pending.created_at)}. We credit it as soon as the
-                  transfer is confirmed.
+                  Reported {dateTime(pending.created_at)}. We credit it as soon as your collector
+                  or the office confirms the transfer.
                 </span>
               </div>
             </div>
           )}
 
-          {/* Where to send it */}
           {account.data ? (
             <Card large>
               <div className="pay-account">
@@ -156,7 +186,6 @@ export default function Pay() {
             </Card>
           )}
 
-          {/* How much */}
           <Card large style={{ marginTop: 'var(--s-4)' }}>
             <CardHead
               title="How many payments?"
@@ -166,8 +195,8 @@ export default function Pay() {
             <div className="pay-stepper">
               <button
                 type="button"
-                onClick={() => setCount((c) => Math.max(1, c - 1))}
-                disabled={count <= 1}
+                onClick={() => setCount(Math.max(1, safeCount - 1))}
+                disabled={safeCount <= 1}
                 aria-label="One fewer"
               >
                 <Minus size={18} strokeWidth={2.2} />
@@ -175,13 +204,13 @@ export default function Pay() {
 
               <div className="pay-stepper-value">
                 <strong className="num">{money(total)}</strong>
-                <span>{count} {count === 1 ? 'payment' : 'payments'}</span>
+                <span>{safeCount} {safeCount === 1 ? 'payment' : 'payments'}</span>
               </div>
 
               <button
                 type="button"
-                onClick={() => setCount((c) => Math.min(maxCount, c + 1))}
-                disabled={count >= maxCount}
+                onClick={() => setCount(Math.min(maxCount, safeCount + 1))}
+                disabled={safeCount >= maxCount}
                 aria-label="One more"
               >
                 <Plus size={18} strokeWidth={2.2} />
@@ -193,7 +222,7 @@ export default function Pay() {
                 <button
                   key={q}
                   type="button"
-                  className={count === q ? 'is-picked' : ''}
+                  className={safeCount === q ? 'is-picked' : ''}
                   onClick={() => setCount(q)}
                 >
                   {q}×
@@ -224,25 +253,22 @@ export default function Pay() {
 
             {pending && (
               <p className="field-hint">
-                Wait for your last payment to be confirmed before reporting another.
+                Wait for your last payment on this plan to be confirmed before reporting another.
               </p>
             )}
           </Card>
 
-          {/* History */}
-          {claims.data?.length > 0 && (
+          {history.length > 0 && (
             <Card large style={{ marginTop: 'var(--s-4)' }}>
               <CardHead title="Reported payments" />
-              {claims.data.map((c) => (
+              {history.map((c) => (
                 <div className="done-row" key={c.id}>
                   <div>
                     <div className="small" style={{ fontWeight: 600 }}>
                       {money(c.claimed_amount)} · {c.periods}×
                     </div>
                     <div className="xs muted">
-                      {c.status === 'REJECTED' && c.reject_reason
-                        ? c.reject_reason
-                        : dateTime(c.created_at)}
+                      {c.status === 'REJECTED' && c.reject_reason ? c.reject_reason : dateTime(c.created_at)}
                     </div>
                   </div>
                   <StatusBadge status={c.status} />
@@ -257,10 +283,10 @@ export default function Pay() {
         open={confirming}
         onClose={() => setConfirming(false)}
         cycle={open}
-        count={count}
+        count={safeCount}
         total={total}
         account={account.data}
-        onDone={() => { claims.refetch(); cycle.refetch(); }}
+        onDone={() => { claims.refetch(); cycles.refetch(); }}
         submitClaim={submitClaim}
         toast={toast}
         toastError={toastError}
@@ -281,7 +307,7 @@ function ConfirmModal({
     setBusy(true);
     try {
       await submitClaim(cycle.id, count, reference);
-      toast('Reported. We will confirm it shortly.');
+      toast('Reported. Your collector will confirm it shortly.');
       setReference('');
       onClose();
       onDone();
@@ -305,15 +331,13 @@ function ConfirmModal({
         </>
       }
     >
-      {/* Said plainly, at the moment they are about to tap. This is the
-          misunderstanding that generates support messages. */}
       <div className="panel-note tone-amber">
         <span className="panel-note-icon"><Clock3 size={17} strokeWidth={1.9} /></span>
         <div>
           <h4>This does not credit your balance yet</h4>
           <p>
-            It tells us to look for your transfer. Your payments are credited once the
-            money is confirmed — usually within minutes.
+            It tells your collector to check for your transfer. Your payments are credited
+            once they confirm the money has arrived.
           </p>
         </div>
       </div>
