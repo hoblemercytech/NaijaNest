@@ -96,9 +96,10 @@ export default function AdminDashboard() {
             <dd className="num">{money(d.cash_paid_out)}</dd>
           </div>
         </dl>
-        <p className="field-hint">
-          Held by collectors is collections minus payouts minus confirmed handovers.
-          It is what should physically be in their hands right now.
+               <p className="field-hint">
+          Held by collectors is the cash and transfers they collected, minus payouts they made
+          themselves and confirmed handovers. It is what should be in their hands or their
+          accounts right now.
         </p>
       </Card>
     </>
