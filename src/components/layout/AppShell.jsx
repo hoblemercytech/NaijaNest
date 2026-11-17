@@ -54,6 +54,7 @@ const NAV = {
     { to: '/admin/payment-claims', label: 'Reported payments', Icon: Landmark },
        { to: '/admin/payment-review', label: 'Payment review', Icon: ShieldAlert },
         { to: '/admin/payment-accounts', label: 'Payment accounts', Icon: Wallet },
+      { to: '/admin/transfers', label: 'Transfers', Icon: Banknote },
     { to: '/admin/plans', label: 'Plans', Icon: Layers },
     { to: '/admin/cycles', label: 'Cycles', Icon: FileClock },
     { to: '/admin/contributions', label: 'Contributions', Icon: CalendarDays },
