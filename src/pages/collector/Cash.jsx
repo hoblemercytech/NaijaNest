@@ -13,9 +13,9 @@ import { useToast } from '../../components/ui/Toast';
 import './collector.css';
 
 /**
- * Cash handovers. Only physical cash can be handed over — transfers go straight
- * to the office account and never pass through the collector's hands. The
- * database enforces the limit; this screen just starts from the right number.
+ * Handovers. What a collector holds is the cash he recorded plus the transfers
+ * paid into his account, less anything already handed over. The database
+ * enforces the limit; this screen just starts from the right number.
  */
 export default function Cash() {
   const handovers = useMyHandovers();
@@ -37,8 +37,8 @@ export default function Cash() {
     <>
       <header className="page-head row-between">
         <div>
-          <h1>Cash handover</h1>
-          <p>Cash you have passed to the office.</p>
+          <h1>Handover</h1>
+          <p>Money you have passed to the office.</p>
         </div>
         <Button onClick={() => setOpen(true)} disabled={cash.loading || available <= 0}>
           New handover
@@ -50,18 +50,19 @@ export default function Cash() {
 
       {!cash.loading && !cash.error && (
         <Card large>
-          <CardHead title="Cash you are holding" />
+          <CardHead title="Cash and transfers you are holding" />
           <div className="num" style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.8rem' }}>
             {money(inHand)}
           </div>
           <dl className="detail-list" style={{ marginTop: 'var(--s-3)' }}>
             <div><dt>Cash collected (all time)</dt><dd className="num">{money(c?.cash_collected)}</dd></div>
+            <div><dt>Transfers received (all time)</dt><dd className="num">{money(c?.transfers_collected)}</dd></div>
             <div><dt>Paid out to customers</dt><dd className="num">{money(c?.cash_paid_out)}</dd></div>
             <div><dt>Handed over and confirmed</dt><dd className="num">{money(c?.cash_handed_over)}</dd></div>
             <div><dt>Waiting for admin</dt><dd className="num">{money(awaiting)}</dd></div>
             <div><dt>You can hand over now</dt><dd className="num">{money(available)}</dd></div>
-            <div><dt>Cash collected today</dt><dd className="num">{money(c?.cash_today)}</dd></div>
-            <div><dt>Transfers today (already with the office)</dt><dd className="num">{money(c?.transfer_today)}</dd></div>
+            <div><dt>Cash today</dt><dd className="num">{money(c?.cash_today)}</dd></div>
+            <div><dt>Transfers today</dt><dd className="num">{money(c?.transfer_today)}</dd></div>
           </dl>
         </Card>
       )}
@@ -76,7 +77,7 @@ export default function Cash() {
           <Card large>
             <EmptyState
               title="No handovers yet"
-              message="Record one each time you pass cash to the office, so the books match."
+              message="Record one each time you pass money to the office, so the books match."
               icon="▦"
             />
           </Card>
@@ -109,11 +110,7 @@ export default function Cash() {
       </div>
 
       {open && (
-        <HandoverModal
-          available={available}
-          onClose={() => setOpen(false)}
-          onDone={refresh}
-        />
+        <HandoverModal available={available} onClose={() => setOpen(false)} onDone={refresh} />
       )}
     </>
   );
@@ -122,7 +119,6 @@ export default function Cash() {
 function HandoverModal({ available, onClose, onDone }) {
   const { createHandover } = useCollectorActions();
   const { toast, toastError } = useToast();
-  // Starts at everything he can hand over; he edits it down if handing over less.
   const [amount, setAmount] = useState(String(available));
   const [note, setNote] = useState('');
   const [error, setError] = useState(null);
@@ -154,8 +150,8 @@ function HandoverModal({ available, onClose, onDone }) {
     <Modal
       open
       onClose={onClose}
-      title="Record a cash handover"
-      description="Count the cash first — an admin confirms this against what they receive."
+      title="Record a handover"
+      description="Count the cash and check your account first — an admin confirms this against what they receive."
       footer={
         <>
           <Button variant="outline" onClick={onClose} disabled={busy}>Cancel</Button>
@@ -172,7 +168,7 @@ function HandoverModal({ available, onClose, onDone }) {
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
         error={error}
-        hint={`Cash you can hand over now: ${money(available)}. Lower the amount if you are handing over less. Transfers are not included — they already went to the office.`}
+        hint={`You can hand over ${money(available)} now. That is your cash plus the transfers paid into your account. Lower the amount if you are handing over less.`}
       />
       <Textarea
         label="Note (optional)"
